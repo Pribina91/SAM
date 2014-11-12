@@ -1,15 +1,168 @@
 ﻿@{
     ViewBag.Title = "Home Page";
 }
+<script type="text/javascript"
+        src="Scripts/Dygraphs/dygraph-combined.js">
+</script>
 
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="http://asp.net" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
+<script type="text/javascript"
+        src="Scripts/d3/d3.js">
+</script>
+
+<div id="lineGraph"></div>
+<script type="text/javascript">
+    g3 = new Dygraph(
+    document.getElementById("lineGraph"),
+    "Scripts/temperatures.csv",
+    {
+        rollPeriod: 7,
+        showRoller: true
+    }
+  );
+</script>
+<div id="calendar_basic" style="width: 1000px; height: 350px;"></div>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+    google.load("visualization", "1.1", { packages: ["calendar"] });
+    google.setOnLoadCallback(drawCalendarChart);
+
+    function drawCalendarChart() {
+        var dataTableCalendar = new google.visualization.DataTable();
+        dataTableCalendar.addColumn({ type: 'date', id: 'Date' });
+        dataTableCalendar.addColumn({ type: 'number', id: 'Won/Loss' });
+        dataTableCalendar.addRows([
+        //   [new Date(2012, 3, 13), 37032],
+        //   [new Date(2012, 3, 14), 38024],
+        //   [new Date(2012, 3, 15), 38024],
+        //   [new Date(2012, 3, 16), 38108],
+        //   [new Date(2012, 3, 17), 38229],
+           // Many rows omitted for brevity.
+           [new Date(2013, 9, 4), 38177],
+           [new Date(2013, 9, 5), 38705],
+           [new Date(2013, 9, 12), 38210],
+           [new Date(2013, 9, 13), 38029],
+           [new Date(2013, 9, 19), 38823],
+           [new Date(2013, 9, 23), 38345],
+           [new Date(2013, 9, 24), 38436],
+           [new Date(2013, 9, 30), 38447]
+        ]);
+
+        var chart = new google.visualization.Calendar(document.getElementById('calendar_basic'));
+
+        var options = {
+            title: "Calendar",
+            height: 350,
+        };
+
+        chart.draw(dataTableCalendar, options);
+    }
+</script>
+
+
+<hr />
+<div id="pieChart">
+    <script type="text/javascript">
+        google.load("visualization", '1.1', { packages: ['corechart'] });
+        google.setOnLoadCallback(drawPieChart);
+        function drawPieChart() {
+            var oldData = google.visualization.arrayToDataTable([
+              ['Major', 'Degrees'],
+              ['Business', 256070], ['Education', 108034],
+              ['Social Sciences & History', 127101], ['Health', 81863],
+              ['Psychology', 74194]]);
+
+            var newData = google.visualization.arrayToDataTable([
+              ['Major', 'Degrees'],
+              ['Business', 358293], ['Education', 101265],
+              ['Social Sciences & History', 172780], ['Health', 129634],
+              ['Psychology', 97216]]);
+
+            var options = { pieSliceText: 'none' };
+
+              //var chartBefore = new google.visualization.PieChart(document.getElementById('piechart_before'));
+              //var chartAfter = new google.visualization.PieChart(document.getElementById('piechart_after'));
+              var chartDiff = new google.visualization.PieChart(document.getElementById('piechart_diff'));
+
+               //chartBefore.draw(oldData, options);
+              // chartAfter.draw(newData, options);
+
+            var diffData = chartDiff.computeDiff(oldData, newData);
+            chartDiff.draw(diffData, options);
+        }
+    </script>
+    @*<span id='piechart_before' style='width: 450px; display: inline-block'></span>
+    <span id='piechart_after' style='width: 450px; display: inline-block'></span>*@
+
+    <span id='piechart_diff'> </span>
+</div> 
+<br />
+<br />
+<hr />
+<br />
+<hr />
+
+
+<hr />
+
+
+<div id="treemapGoogle">
+    <script type="text/javascript">
+        google.load("visualization", "1", { packages: ["treemap"] });
+        google.setOnLoadCallback(drawTreeChart);
+        function drawTreeChart() {
+            var data = google.visualization.arrayToDataTable([
+              ['Location', 'Parent', 'Market trade volume (size)', 'Market increase/decrease (color)'],
+              ['Global', null, 0, 0],
+              ['America', 'Global', 0, 0],
+              ['Europe', 'Global', 0, 0],
+              ['Asia', 'Global', 0, 0],
+              ['Australia', 'Global', 0, 0],
+              ['Africa', 'Global', 0, 0],
+              ['Brazil', 'America', 11, 10],
+              ['USA', 'America', 52, 31],
+              ['Mexico', 'America', 24, 12],
+              ['Canada', 'America', 16, -23],
+              ['France', 'Europe', 42, -11],
+              ['Germany', 'Europe', 31, -2],
+              ['Sweden', 'Europe', 22, -13],
+              ['Italy', 'Europe', 17, 4],
+              ['UK', 'Europe', 21, -5],
+              ['China', 'Asia', 36, 4],
+              ['Japan', 'Asia', 20, -12],
+              ['India', 'Asia', 40, 63],
+              ['Laos', 'Asia', 4, 34],
+              ['Mongolia', 'Asia', 1, -5],
+              ['Israel', 'Asia', 12, 24],
+              ['Iran', 'Asia', 18, 13],
+              ['Pakistan', 'Asia', 11, -52],
+              ['Egypt', 'Africa', 21, 0],
+              ['S. Africa', 'Africa', 30, 43],
+              ['Sudan', 'Africa', 12, 2],
+              ['Congo', 'Africa', 10, 12],
+              ['Zaire', 'Africa', 8, 10]
+            ]);
+
+            tree = new google.visualization.TreeMap(document.getElementById('treemapGoogle'));
+
+            tree.draw(data, {
+                minColor: '#f00',
+                midColor: '#ddd',
+                maxColor: '#0d0',
+                headerHeight: 15,
+                fontColor: 'black',
+                showScale: true
+            });
+
+        }
+    </script>
+
 </div>
 
+
+
 <div class="row">
-    <div class="col-md-4">
+
+    @*<div class="col-md-4">
         <h2>Getting started</h2>
         <p>
             ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
@@ -27,5 +180,5 @@
         <h2>Web Hosting</h2>
         <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
         <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
+    </div>*@
 </div>
