@@ -3,13 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using VisualAnalytics.Controllers.Helpers;
+using log4net.Config;
+using log4net;
 
 namespace VisualAnalytics.Controllers
 {
 	public class HomeController : Controller
 	{
+		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		public ActionResult Index()
 		{
+
+			log.Info("halo svet");
+			log.Error("koniec");
 			return View();
 		}
 
