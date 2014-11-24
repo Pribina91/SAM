@@ -1,0 +1,63 @@
+﻿@model IEnumerable<VisualAnalytics.Models.Consuption>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Amount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DayOffset)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.MeasurementSequence)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.MeasurementTime)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IDDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ConsuptionPlace.ZipCode)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Amount)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DayOffset)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.MeasurementSequence)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.MeasurementTime)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IDDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ConsuptionPlace.ZipCode)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.IDConsuption }) |
+            @Html.ActionLink("Details", "Details", new { id=item.IDConsuption }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.IDConsuption })
+        </td>
+    </tr>
+}
+
+</table>

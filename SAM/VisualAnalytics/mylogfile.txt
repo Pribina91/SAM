@@ -10,3 +10,53 @@
 2014-11-24 00:26:38,880 [6] ERROR VisualAnalytics.Controllers.HomeController - koniec
 2014-11-24 00:51:18,048 [6] INFO VisualAnalytics.Controllers.HomeController - halo svet
 2014-11-24 00:51:18,068 [6] ERROR VisualAnalytics.Controllers.HomeController - koniec
+2014-11-24 01:45:49,067 [6] INFO VisualAnalytics.Controllers.HomeController - halo svet
+2014-11-24 01:45:49,094 [6] ERROR VisualAnalytics.Controllers.HomeController - koniec
+2014-11-24 01:51:17,872 [6] INFO VisualAnalytics.Controllers.HomeController - 83101
+2014-11-24 01:55:06,652 [9] INFO VisualAnalytics.Controllers.HomeController - 83101
+2014-11-24 01:55:32,774 [9] ERROR VisualAnalytics.Controllers.HomeController - koniec
+2014-11-24 01:59:16,132 [8] INFO VisualAnalytics.Controllers.HomeController - 83101
+2014-11-24 01:59:16,161 [8] ERROR VisualAnalytics.Controllers.HomeController - koniec
+2014-11-24 02:03:24,089 [5] INFO VisualAnalytics.Controllers.HomeController - 83101
+2014-11-24 02:03:24,116 [5] ERROR VisualAnalytics.Controllers.HomeController - koniec
+2014-11-24 02:08:51,538 [8] INFO VisualAnalytics.Controllers.HomeController - 83101
+2014-11-24 02:08:51,560 [8] ERROR VisualAnalytics.Controllers.HomeController - koniec
+2014-11-24 02:10:42,930 [8] INFO VisualAnalytics.Controllers.HomeController - 83101
+2014-11-24 02:10:42,944 [8] ERROR VisualAnalytics.Controllers.HomeController - koniec
+2014-11-24 02:13:28,562 [6] INFO VisualAnalytics.Controllers.HomeController - 83101
+2014-11-24 02:13:28,584 [6] ERROR VisualAnalytics.Controllers.HomeController - koniec
+2014-11-24 03:02:03,755 [8] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:1	0.32	368	2
+2014-11-24 03:02:04,722 [8] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:2	2.1	368	3
+2014-11-24 03:02:04,771 [8] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:3	0.1	368	4
+2014-11-24 03:02:04,773 [8] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:4	0.123	368	5
+2014-11-24 03:02:43,724 [6] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:1	0.32	368	2
+2014-11-24 03:06:53,246 [6] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:1	0.32	368	2
+2014-11-24 03:07:41,374 [6] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:2	2.1	368	3
+2014-11-24 03:07:42,973 [6] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:3	0.1	368	4
+2014-11-24 03:07:43,885 [6] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:4	0.123	368	5
+2014-11-24 03:09:30,239 [11] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:1	0.32	368	2
+2014-11-24 03:16:25,223 [7] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:1	0.32	368	2
+2014-11-24 03:16:42,653 [7] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:2	2.1	368	3
+2014-11-24 03:16:43,827 [7] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:3	0.1	368	4
+2014-11-24 03:16:44,545 [7] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:4	0.123	368	5
+2014-11-24 03:19:39,047 [6] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:9999	0.32	368	2
+2014-11-24 03:21:06,261 [8] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:9999	0.32	368	2
+2014-11-24 03:21:10,960 [8] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:9999	2.1	368	3
+2014-11-24 03:21:12,259 [8] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:9999	0.1	368	4
+2014-11-24 03:21:13,033 [8] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:9999	0.123	368	5
+2014-11-24 03:21:57,249 [6] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:9999	0.32	368	2
+2014-11-24 03:22:22,466 [6] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:9999	2.1	368	3
+2014-11-24 03:22:22,468 [6] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:9999	0.1	368	4
+2014-11-24 03:22:22,471 [6] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:9999	0.123	368	5
+2014-11-24 03:24:58,287 [6] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:9999	0.32	368	2
+2014-11-24 03:24:58,349 [6] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:9999	2.1	368	3
+2014-11-24 03:24:58,356 [6] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:9999	0.1	368	4
+2014-11-24 03:24:58,357 [6] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:9999	0.123	368	5
+2014-11-24 03:26:42,357 [10] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:9999	0.32	368	2
+2014-11-24 03:26:42,359 [10] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:9999	2.1	368	3
+2014-11-24 03:26:42,361 [10] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:9999	0.1	368	4
+2014-11-24 03:26:42,363 [10] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:9999	0.123	368	5
+2014-11-24 03:43:32,526 [6] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:9999	0.32	368	2
+2014-11-24 03:43:33,337 [6] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:9999	2.1	368	3
+2014-11-24 03:43:33,353 [6] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:9999	0.1	368	4
+2014-11-24 03:43:33,355 [6] DEBUG VisualAnalytics.Controllers.Helpers.InputParser - New Consuption:9999	0.123	368	5

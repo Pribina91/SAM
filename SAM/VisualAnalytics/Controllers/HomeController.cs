@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using VisualAnalytics.Controllers.Helpers;
 using log4net.Config;
 using log4net;
+using VisualAnalytics.Models;
 
 namespace VisualAnalytics.Controllers
 {
@@ -14,9 +15,8 @@ namespace VisualAnalytics.Controllers
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		public ActionResult Index()
 		{
-
-			log.Info("halo svet");
-			log.Error("koniec");
+			InputParser ip = new InputParser();
+			ip.parseCSV(@"C:\Workspace\SAM\SAM\VisualAnalytics\DataBackUp\ConsuptionCSV.txt");
 			return View();
 		}
 

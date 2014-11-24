@@ -1,0 +1,66 @@
+﻿@model VisualAnalytics.Models.Consuption
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Consuption</h4>
+	<hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Amount)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Amount)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DayOffset)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DayOffset)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.MeasurementSequence)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MeasurementSequence)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.MeasurementTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MeasurementTime)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IDDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IDDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ConsuptionPlace.ZipCode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ConsuptionPlace.ZipCode)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.IDConsuption }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

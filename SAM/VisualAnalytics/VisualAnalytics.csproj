@@ -106,6 +106,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.Owin.Security.Twitter.3.0.0\lib\net45\Microsoft.Owin.Security.Twitter.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -205,13 +206,42 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ConsuptionController.cs" />
     <Compile Include="Controllers\Helpers\FileLogger.cs" />
+    <Compile Include="Controllers\Helpers\InputParser.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Consuption.cs">
+      <DependentUpon>SAMmodel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ConsuptionPlace.cs">
+      <DependentUpon>SAMmodel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Event.cs">
+      <DependentUpon>SAMmodel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\SAMmodel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SAMmodel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SAMmodel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SAMmodel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SAMmodel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SAMmodel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\sysdiagram.cs">
+      <DependentUpon>SAMmodel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -220,6 +250,7 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="DataBackUp\OdberneMiesto.sql" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -841,6 +872,23 @@
     <Content Include="Scripts\Jit\Extras\excanvas.js" />
     <Content Include="Scripts\Jit\jit-yc.js" />
     <Content Include="Scripts\Jit\jit.js" />
+    <EntityDeploy Include="Models\SAMmodel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>SAMmodel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\SAMmodel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>SAMmodel.edmx</DependentUpon>
+      <LastGenOutput>SAMmodel.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\SAMmodel.edmx.diagram">
+      <DependentUpon>SAMmodel.edmx</DependentUpon>
+    </Content>
+    <Content Include="Models\SAMmodel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>SAMmodel.edmx</DependentUpon>
+      <LastGenOutput>SAMmodel.cs</LastGenOutput>
+    </Content>
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.1.js" />
     <Content Include="Scripts\jquery-2.1.1.min.js" />
@@ -1291,6 +1339,11 @@
     <Content Include="Scripts\Protovis\lib\google-compiler\README" />
     <Content Include="Scripts\Protovis\Makefile" />
     <Content Include="Scripts\Protovis\TODO" />
+    <Content Include="Views\Consuption\Create.cshtml" />
+    <Content Include="Views\Consuption\Delete.cshtml" />
+    <Content Include="Views\Consuption\Details.cshtml" />
+    <Content Include="Views\Consuption\Edit.cshtml" />
+    <Content Include="Views\Consuption\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
