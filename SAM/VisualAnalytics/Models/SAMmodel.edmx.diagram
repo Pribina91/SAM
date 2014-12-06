@@ -5,11 +5,12 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="3a8720fcad4f46fa8c5b15400cc50ff6" Name="Diagram1">
-        <EntityTypeShape EntityType="SAMModel.ConsuptionPlace" Width="1.5" PointX="0.75" PointY="1.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="SAMModel.ConsuptionPlace" Width="1.75" PointX="0.75" PointY="1.375" IsExpanded="true" />
         <EntityTypeShape EntityType="SAMModel.Consuption" Width="2.125" PointX="3.125" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="SAMModel.sysdiagram" Width="1.5" PointX="3.375" PointY="4.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="SAMModel.sysdiagram" Width="1.5" PointX="3.5" PointY="5.125" IsExpanded="true" />
         <AssociationConnector Association="SAMModel.FK_IDConsuptionPlace" ManuallyRouted="false" />
-        <EntityTypeShape EntityType="SAMModel.Event" Width="1.5" PointX="6.375" PointY="1.125" />
+        <EntityTypeShape EntityType="SAMModel.Event" Width="1.5" PointX="5.75" PointY="1" />
+        <EntityTypeShape EntityType="SAMModel.weather" Width="1.5" PointX="7.5" PointY="1" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

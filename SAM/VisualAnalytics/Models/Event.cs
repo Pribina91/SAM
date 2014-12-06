@@ -15,7 +15,10 @@ namespace VisualAnalytics.Models
     public partial class Event
     {
         public int IDEvents { get; set; }
-        public System.DateTimeOffset DateTime { get; set; }
         public long IDDate { get; set; }
+        public string eventName { get; set; }
+        public string weekday { get; set; }
+        public string eventType { get; set; }
+        public System.DateTime eventDate { get; set; }
     }
 }

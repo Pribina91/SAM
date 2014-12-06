@@ -21,8 +21,8 @@ namespace VisualAnalytics.Models
         public int MeasurementTime { get; set; }
         public long IDDate { get; set; }
         public long IDConsuptionPlace { get; set; }
+        public Nullable<int> source { get; set; }
     
         public virtual ConsuptionPlace ConsuptionPlace { get; set; }
-
     }
 }

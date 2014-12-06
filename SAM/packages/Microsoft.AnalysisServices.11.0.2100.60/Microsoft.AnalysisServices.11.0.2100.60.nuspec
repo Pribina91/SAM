@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.AnalysisServices</id>
+    <version>11.0.2100.60</version>
+    <title>Microsoft.AnalysisServices</title>
+    <authors>Microsoft</authors>
+    <owners>Microsoft</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Microsoft.AnalysisServices</description>
+    <releaseNotes />
+    <copyright>Microsoft Corp. All rights reserved.</copyright>
+  </metadata>
+</package>

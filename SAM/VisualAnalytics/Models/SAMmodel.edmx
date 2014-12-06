@@ -4,67 +4,88 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="SAMModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-        <EntityType Name="ConsuptionPlaces">
-          <Key>
-            <PropertyRef Name="IDConsuptionPlace" />
-          </Key>
-          <Property Name="IDConsuptionPlace" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="ZipCode" Type="nvarchar(max)" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Consuptions">
-          <Key>
-            <PropertyRef Name="IDConsuption" />
-          </Key>
-          <Property Name="IDConsuption" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Amount" Type="real" Nullable="false" />
-          <Property Name="DayOffset" Type="int" Nullable="false" />
-          <Property Name="MeasurementSequence" Type="int" Nullable="false" />
-          <Property Name="MeasurementTime" Type="int" Nullable="false" />
-          <Property Name="IDDate" Type="bigint" Nullable="false" />
-          <Property Name="IDConsuptionPlace" Type="bigint" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Events">
-          <Key>
-            <PropertyRef Name="IDDate" />
-          </Key>
-          <Property Name="IDEvents" Type="int" Nullable="false" />
-          <Property Name="DateTime" Type="datetimeoffset" Precision="7" Nullable="false" />
-          <Property Name="IDDate" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
-        </EntityType>
-        <EntityType Name="sysdiagrams">
-          <Key>
-            <PropertyRef Name="diagram_id" />
-          </Key>
-          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="principal_id" Type="int" Nullable="false" />
-          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="version" Type="int" />
-          <Property Name="definition" Type="varbinary(max)" />
-        </EntityType>
-        <Association Name="FK_IDConsuptionPlace">
-          <End Role="ConsuptionPlaces" Type="Self.ConsuptionPlaces" Multiplicity="1" />
-          <End Role="Consuptions" Type="Self.Consuptions" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ConsuptionPlaces">
-              <PropertyRef Name="IDConsuptionPlace" />
-            </Principal>
-            <Dependent Role="Consuptions">
-              <PropertyRef Name="IDConsuptionPlace" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityContainer Name="SAMModelStoreContainer">
-          <EntitySet Name="ConsuptionPlaces" EntityType="Self.ConsuptionPlaces" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Consuptions" EntityType="Self.Consuptions" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Events" EntityType="Self.Events" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK_IDConsuptionPlace" Association="Self.FK_IDConsuptionPlace">
-            <End Role="ConsuptionPlaces" EntitySet="ConsuptionPlaces" />
-            <End Role="Consuptions" EntitySet="Consuptions" />
-          </AssociationSet>
-        </EntityContainer>
-      </Schema></edmx:StorageModels>
+    <Schema Namespace="SAMModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2012" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityContainer Name="SAMModelStoreContainer">
+    <EntitySet Name="ConsuptionPlaces" EntityType="SAMModel.Store.ConsuptionPlaces" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Consuptions" EntityType="SAMModel.Store.Consuptions" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="sysdiagrams" EntityType="SAMModel.Store.sysdiagrams" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Events" EntityType="SAMModel.Store.Events" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="weathers" EntityType="SAMModel.Store.weathers" store:Type="Tables" Schema="dbo" />
+    <AssociationSet Name="FK_IDConsuptionPlace" Association="SAMModel.Store.FK_IDConsuptionPlace">
+      <End Role="ConsuptionPlaces" EntitySet="ConsuptionPlaces" />
+      <End Role="Consuptions" EntitySet="Consuptions" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="ConsuptionPlaces">
+    <Key>
+      <PropertyRef Name="IDConsuptionPlace" />
+    </Key>
+    <Property Name="IDConsuptionPlace" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="ZipCode" Type="nvarchar(max)" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Consuptions">
+    <Key>
+      <PropertyRef Name="IDConsuption" />
+    </Key>
+    <Property Name="IDConsuption" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Amount" Type="real" Nullable="false" />
+    <Property Name="DayOffset" Type="int" Nullable="false" />
+    <Property Name="MeasurementSequence" Type="int" Nullable="false" />
+    <Property Name="MeasurementTime" Type="int" Nullable="false" />
+    <Property Name="IDDate" Type="bigint" Nullable="false" />
+    <Property Name="IDConsuptionPlace" Type="bigint" Nullable="false" />
+    <Property Name="source" Type="int" Nullable="true" />
+  </EntityType>
+  <EntityType Name="sysdiagrams">
+    <Key>
+      <PropertyRef Name="diagram_id" />
+    </Key>
+    <Property Name="name" Type="nvarchar" Nullable="false" MaxLength="128" />
+    <Property Name="principal_id" Type="int" Nullable="false" />
+    <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="version" Type="int" Nullable="true" />
+    <Property Name="definition" Type="varbinary(max)" Nullable="true" />
+  </EntityType>
+  <EntityType Name="Events">
+    <Key>
+      <PropertyRef Name="IDDate" />
+    </Key>
+    <Property Name="IDEvents" Type="int" Nullable="false" />
+    <Property Name="IDDate" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="eventName" Type="nchar" Nullable="true" MaxLength="200" />
+    <Property Name="weekday" Type="nchar" Nullable="true" MaxLength="20" />
+    <Property Name="eventType" Type="nchar" Nullable="true" MaxLength="30" />
+    <Property Name="eventDate" Type="datetime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="weathers">
+    <Key>
+      <PropertyRef Name="idweather" />
+    </Key>
+    <Property Name="dt" Type="varchar" Nullable="true" MaxLength="50" />
+    <Property Name="atmosphericPressure" Type="smallint" Nullable="true" />
+    <Property Name="rainfall" Type="smallint" Nullable="true" />
+    <Property Name="windSpeed" Type="real" Nullable="true" />
+    <Property Name="windDirection" Type="real" Nullable="true" />
+    <Property Name="surfaceTemperature" Type="real" Nullable="true" />
+    <Property Name="relativeHumidity" Type="real" Nullable="true" />
+    <Property Name="solarFlux" Type="smallint" Nullable="true" />
+    <Property Name="battery" Type="real" Nullable="true" />
+    <Property Name="dtt" Type="datetime" Nullable="true" />
+    <Property Name="idweather" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+  </EntityType>
+  <Association Name="FK_IDConsuptionPlace">
+    <End Role="ConsuptionPlaces" Type="SAMModel.Store.ConsuptionPlaces" Multiplicity="1" />
+    <End Role="Consuptions" Type="SAMModel.Store.Consuptions" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ConsuptionPlaces">
+        <PropertyRef Name="IDConsuptionPlace" />
+      </Principal>
+      <Dependent Role="Consuptions">
+        <PropertyRef Name="IDConsuptionPlace" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="SAMModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -88,6 +109,7 @@
           <Property Name="IDDate" Type="Int64" Nullable="false" />
           <Property Name="IDConsuptionPlace" Type="Int64" Nullable="false" />
           <NavigationProperty Name="ConsuptionPlace" Relationship="Self.FK_IDConsuptionPlace" FromRole="Consuptions" ToRole="ConsuptionPlaces" />
+          <Property Name="source" Type="Int32" />
         </EntityType>
         <EntityType Name="sysdiagram">
           <Key>
@@ -120,65 +142,105 @@
             <End Role="Consuptions" EntitySet="Consuptions" />
           </AssociationSet>
           <EntitySet Name="Events" EntityType="SAMModel.Event" />
+          <EntitySet Name="weathers" EntityType="SAMModel.weather" />
         </EntityContainer>
         <EntityType Name="Event">
           <Key>
             <PropertyRef Name="IDDate" />
           </Key>
           <Property Name="IDEvents" Type="Int32" Nullable="false" />
-          <Property Name="DateTime" Type="DateTimeOffset" Nullable="false" Precision="7" />
           <Property Name="IDDate" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="eventName" Type="String" MaxLength="200" Unicode="true" FixedLength="true" />
+          <Property Name="weekday" Type="String" MaxLength="20" FixedLength="true" Unicode="true" />
+          <Property Name="eventType" Type="String" MaxLength="30" FixedLength="true" Unicode="true" />
+          <Property Name="eventDate" Type="DateTime" Nullable="false" Precision="7" />
+        </EntityType>
+        <EntityType Name="weather">
+          <Key>
+            <PropertyRef Name="idweather" />
+          </Key>
+          <Property Name="dt" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="atmosphericPressure" Type="Int16" />
+          <Property Name="rainfall" Type="Int16" />
+          <Property Name="windSpeed" Type="Single" />
+          <Property Name="windDirection" Type="Single" />
+          <Property Name="surfaceTemperature" Type="Single" />
+          <Property Name="relativeHumidity" Type="Single" />
+          <Property Name="solarFlux" Type="Int16" />
+          <Property Name="battery" Type="Single" />
+          <Property Name="dtt" Type="DateTime" Precision="3" />
+          <Property Name="idweather" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
-      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="SAMModelStoreContainer" CdmEntityContainer="SAMcontext">
-          <EntitySetMapping Name="ConsuptionPlaces">
-            <EntityTypeMapping TypeName="SAMModel.ConsuptionPlace">
-              <MappingFragment StoreEntitySet="ConsuptionPlaces">
-                <ScalarProperty Name="IDConsuptionPlace" ColumnName="IDConsuptionPlace" />
-                <ScalarProperty Name="ZipCode" ColumnName="ZipCode" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Consuptions">
-            <EntityTypeMapping TypeName="SAMModel.Consuption">
-              <MappingFragment StoreEntitySet="Consuptions">
-                <ScalarProperty Name="IDConsuption" ColumnName="IDConsuption" />
-                <ScalarProperty Name="Amount" ColumnName="Amount" />
-                <ScalarProperty Name="DayOffset" ColumnName="DayOffset" />
-                <ScalarProperty Name="MeasurementSequence" ColumnName="MeasurementSequence" />
-                <ScalarProperty Name="MeasurementTime" ColumnName="MeasurementTime" />
-                <ScalarProperty Name="IDDate" ColumnName="IDDate" />
-                <ScalarProperty Name="IDConsuptionPlace" ColumnName="IDConsuptionPlace" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="sysdiagrams">
-            <EntityTypeMapping TypeName="SAMModel.sysdiagram">
-              <MappingFragment StoreEntitySet="sysdiagrams">
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
-                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
-                <ScalarProperty Name="version" ColumnName="version" />
-                <ScalarProperty Name="definition" ColumnName="definition" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Events">
-            <EntityTypeMapping TypeName="SAMModel.Event">
-              <MappingFragment StoreEntitySet="Events">
-                <ScalarProperty Name="IDDate" ColumnName="IDDate" />
-                <ScalarProperty Name="DateTime" ColumnName="DateTime" />
-                <ScalarProperty Name="IDEvents" ColumnName="IDEvents" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-        </EntityContainerMapping>
-      </Mapping>
-    </edmx:Mappings>
+    <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="SAMModelStoreContainer" CdmEntityContainer="SAMcontext">
+    <EntitySetMapping Name="ConsuptionPlaces">
+      <EntityTypeMapping TypeName="IsTypeOf(SAMModel.ConsuptionPlace)">
+        <MappingFragment StoreEntitySet="ConsuptionPlaces">
+          <ScalarProperty Name="IDConsuptionPlace" ColumnName="IDConsuptionPlace" />
+          <ScalarProperty Name="ZipCode" ColumnName="ZipCode" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Consuptions">
+      <EntityTypeMapping TypeName="IsTypeOf(SAMModel.Consuption)">
+        <MappingFragment StoreEntitySet="Consuptions">
+          <ScalarProperty Name="IDConsuption" ColumnName="IDConsuption" />
+          <ScalarProperty Name="Amount" ColumnName="Amount" />
+          <ScalarProperty Name="DayOffset" ColumnName="DayOffset" />
+          <ScalarProperty Name="MeasurementSequence" ColumnName="MeasurementSequence" />
+          <ScalarProperty Name="MeasurementTime" ColumnName="MeasurementTime" />
+          <ScalarProperty Name="IDDate" ColumnName="IDDate" />
+          <ScalarProperty Name="IDConsuptionPlace" ColumnName="IDConsuptionPlace" />
+          <ScalarProperty Name="source" ColumnName="source" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="sysdiagrams">
+      <EntityTypeMapping TypeName="IsTypeOf(SAMModel.sysdiagram)">
+        <MappingFragment StoreEntitySet="sysdiagrams">
+          <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+          <ScalarProperty Name="version" ColumnName="version" />
+          <ScalarProperty Name="definition" ColumnName="definition" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Events">
+      <EntityTypeMapping TypeName="IsTypeOf(SAMModel.Event)">
+        <MappingFragment StoreEntitySet="Events">
+          <ScalarProperty Name="IDDate" ColumnName="IDDate" />
+          <ScalarProperty Name="IDEvents" ColumnName="IDEvents" />
+          <ScalarProperty Name="eventName" ColumnName="eventName" />
+          <ScalarProperty Name="weekday" ColumnName="weekday" />
+          <ScalarProperty Name="eventType" ColumnName="eventType" />
+          <ScalarProperty Name="eventDate" ColumnName="eventDate" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="weathers">
+      <EntityTypeMapping TypeName="IsTypeOf(SAMModel.weather)">
+        <MappingFragment StoreEntitySet="weathers">
+          <ScalarProperty Name="idweather" ColumnName="idweather" />
+          <ScalarProperty Name="dt" ColumnName="dt" />
+          <ScalarProperty Name="atmosphericPressure" ColumnName="atmosphericPressure" />
+          <ScalarProperty Name="rainfall" ColumnName="rainfall" />
+          <ScalarProperty Name="windSpeed" ColumnName="windSpeed" />
+          <ScalarProperty Name="windDirection" ColumnName="windDirection" />
+          <ScalarProperty Name="surfaceTemperature" ColumnName="surfaceTemperature" />
+          <ScalarProperty Name="relativeHumidity" ColumnName="relativeHumidity" />
+          <ScalarProperty Name="solarFlux" ColumnName="solarFlux" />
+          <ScalarProperty Name="battery" ColumnName="battery" />
+          <ScalarProperty Name="dtt" ColumnName="dtt" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping></edmx:Mappings>
   </edmx:Runtime>
   <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
   <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
@@ -192,7 +254,7 @@
         <DesignerProperty Name="ValidateOnBuild" Value="true" />
         <DesignerProperty Name="EnablePluralization" Value="true" />
         <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
-        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="UseLegacyProvider" Value="False" />
         <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
       </DesignerInfoPropertySet>
     </Options>

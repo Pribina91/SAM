@@ -11,8 +11,6 @@ namespace VisualAnalytics.Models
 {
     using System;
     using System.Collections.Generic;
-	using System.ComponentModel.DataAnnotations;
-	using System.ComponentModel.DataAnnotations.Schema;
     
     public partial class ConsuptionPlace
     {
@@ -20,7 +18,7 @@ namespace VisualAnalytics.Models
         {
             this.Consuptions = new HashSet<Consuption>();
         }
-		[Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
+    
         public long IDConsuptionPlace { get; set; }
         public string ZipCode { get; set; }
     
