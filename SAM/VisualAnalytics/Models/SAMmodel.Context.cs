@@ -29,6 +29,12 @@ namespace VisualAnalytics.Models
         public virtual DbSet<Consuption> Consuptions { get; set; }
         public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
         public virtual DbSet<Event> Events { get; set; }
-        public virtual DbSet<weather> weathers { get; set; }
+        public virtual DbSet<Weather> Weathers { get; set; }
+        public virtual DbSet<PlaceWeather> PlaceWeathers { get; set; }
+        public virtual DbSet<ConsuptionsDaily> ConsuptionsDailies { get; set; }
+        public virtual DbSet<ConsuptionsHourly> ConsuptionsHourlies { get; set; }
+        public virtual DbSet<WeathersDaily> WeathersDailies { get; set; }
+        public virtual DbSet<ConsuptionModelDaily> ConsuptionModelDailies { get; set; }
+        public virtual DbSet<ConsuptionModelHourly> ConsuptionModelHourlies { get; set; }
     }
 }

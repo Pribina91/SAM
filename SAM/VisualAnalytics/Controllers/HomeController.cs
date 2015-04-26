@@ -23,7 +23,10 @@ namespace VisualAnalytics.Controllers
 		public ActionResult Index()
 		{
 			//new Prediction().Test(this);
-		//new InputParser().parseCSVBelgium(@"C:\Workspace\SAM\SAM\VisualAnalytics\DataBackUp\ELIA_LOAD_2014 (1).csv");
+
+
+
+			//new InputParser().parseCSVBelgium(@"D:\Workspace\SamData\20141215_RAJA_ASFEU_OOM_0.txt");
 			//return null;
 			return View();
 		}
@@ -78,13 +81,13 @@ namespace VisualAnalytics.Controllers
 		public ContentResult getWeather()
 		{
 
-			List<weather> weathers = db.weathers.Where(x => x.idweather % 100 == 0).ToList();
+			List<Weather> weathers = db.Weathers.Where(x => x.IDLocation.Equals(1)).ToList();
 
 			var ev = //consuptions.First();
 				weathers
 				//.Where(x => x.idweather % 100 == 0)
-				.Select(a => new { dtt = a.dtt, temperature = a.surfaceTemperature, humidity = a.relativeHumidity, wind = a.windSpeed, rain = a.rainfall })
-				.OrderBy(x => x.dtt );
+				.Select(a => new { dt = a.dt, temperature = a.surfaceTemperature, humidity = a.relativeHumidity, wind = a.windSpeed, rain = a.rainfall })
+				.OrderBy(x => x.dt );
 			//var jsonData = Json(ev, JsonRequestBehavior.AllowGet);
 			var json2 = ev.ToJSON();
 			return new ContentResult { Content = json2, ContentType = "application/json" }; 
@@ -96,22 +99,22 @@ namespace VisualAnalytics.Controllers
 					.GroupBy(ce => ce.IDDate)
 					.Select(a => new { dt = a.Key, amount = a.Sum(c => c.Amount) })
 					.AsEnumerable()
-					.Join(db.weathers
-						//.Where(x => x.dtt < new DateTime(2014, 04, 01))
-						.AsEnumerable().GroupBy(gr => makeDateId(gr.dtt))
+					.Where(temp => temp.dt < 20140401)
+					.Join(db.Weathers
+						.Where(x => x.dt < new DateTime(2014, 04, 01))
+						.AsEnumerable().GroupBy(gr => makeDateId(gr.dt))
 						.Select(grW => new
 						{
 							iddate = grW.Key,
 							Temperature = grW.Average(n => n.surfaceTemperature),
 							Rain =grW.Average(n => n.rainfall),
 							WindSpeed = grW.Average(n => n.windSpeed),
-							WindDirection =grW.Average(n => n.windDirection),
 							Humidity = grW.Average(n => n.relativeHumidity),
-							Solar = grW.Average(n => n.solarFlux)
+							Solar = grW.Average(n => n.solarShine)
 						})
 						.OrderBy(orderW => orderW.iddate)
 						, c => c.dt, w => w.iddate, (c, w) => new { Consup = c, weat = w })
-					//.Where(temp => temp.Consup.dt < 20140401)
+					
 					.Select(a => new
 						{
 							Amount = a.Consup.amount,
@@ -119,13 +122,29 @@ namespace VisualAnalytics.Controllers
 							Temperature = a.weat.Temperature,
 							Rain = a.weat.Rain,
 							WindSpeed = a.weat.WindSpeed,
-							WindDirection = a.weat.WindDirection,
 							Humidity = a.weat.Humidity,
 							Solar = a.weat.Solar 
 						}
 					)
 					.OrderBy(order => order.IdDate);
 			return new ContentResult { Content = bigTable.ToJSON(), ContentType = "application/json" };				
+		}
+		public ContentResult getClusters()
+		{
+			//if(ViewData["clusters"])
+			var JSONCluster = ViewData["clusters"];
+
+			return new ContentResult { Content = JSONCluster.ToJSON(), ContentType = "application/json" };
+
+		}
+		public ActionResult cluster()
+		{
+			var cl = new Clustering().cluster();
+			//var t = cl.Select(a => new {idddate = a[1], cluster = a[0]});
+			ViewData.Add("clusters", cl);
+
+		    // ReSharper disable once Mvc.ViewNotResolved
+			return View();
 		}
 		private long makeDateId(DateTime ?dt)
 		{

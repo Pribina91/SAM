@@ -12,18 +12,10 @@ namespace VisualAnalytics.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Consuption
+    public partial class PlaceWeather
     {
-        public long IDConsuption { get; set; }
-        public float Amount { get; set; }
-        public int DayOffset { get; set; }
-        public int MeasurementSequence { get; set; }
-        public int MeasurementTime { get; set; }
-        public long IDDate { get; set; }
-        public long IDConsuptionPlace { get; set; }
-        public Nullable<int> source { get; set; }
-        public string Type { get; set; }
-    
-        public virtual ConsuptionPlace ConsuptionPlace { get; set; }
+        public string DistrictName { get; set; }
+        public int IDDistrict { get; set; }
+        public Nullable<int> IDLocation { get; set; }
     }
 }

@@ -4,88 +4,235 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="SAMModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2012" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-  <EntityContainer Name="SAMModelStoreContainer">
-    <EntitySet Name="ConsuptionPlaces" EntityType="SAMModel.Store.ConsuptionPlaces" store:Type="Tables" Schema="dbo" />
-    <EntitySet Name="Consuptions" EntityType="SAMModel.Store.Consuptions" store:Type="Tables" Schema="dbo" />
-    <EntitySet Name="sysdiagrams" EntityType="SAMModel.Store.sysdiagrams" store:Type="Tables" Schema="dbo" />
-    <EntitySet Name="Events" EntityType="SAMModel.Store.Events" store:Type="Tables" Schema="dbo" />
-    <EntitySet Name="weathers" EntityType="SAMModel.Store.weathers" store:Type="Tables" Schema="dbo" />
-    <AssociationSet Name="FK_IDConsuptionPlace" Association="SAMModel.Store.FK_IDConsuptionPlace">
-      <End Role="ConsuptionPlaces" EntitySet="ConsuptionPlaces" />
-      <End Role="Consuptions" EntitySet="Consuptions" />
-    </AssociationSet>
-  </EntityContainer>
-  <EntityType Name="ConsuptionPlaces">
-    <Key>
-      <PropertyRef Name="IDConsuptionPlace" />
-    </Key>
-    <Property Name="IDConsuptionPlace" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="ZipCode" Type="nvarchar(max)" Nullable="false" />
-  </EntityType>
-  <EntityType Name="Consuptions">
-    <Key>
-      <PropertyRef Name="IDConsuption" />
-    </Key>
-    <Property Name="IDConsuption" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="Amount" Type="real" Nullable="false" />
-    <Property Name="DayOffset" Type="int" Nullable="false" />
-    <Property Name="MeasurementSequence" Type="int" Nullable="false" />
-    <Property Name="MeasurementTime" Type="int" Nullable="false" />
-    <Property Name="IDDate" Type="bigint" Nullable="false" />
-    <Property Name="IDConsuptionPlace" Type="bigint" Nullable="false" />
-    <Property Name="source" Type="int" Nullable="true" />
-  </EntityType>
-  <EntityType Name="sysdiagrams">
-    <Key>
-      <PropertyRef Name="diagram_id" />
-    </Key>
-    <Property Name="name" Type="nvarchar" Nullable="false" MaxLength="128" />
-    <Property Name="principal_id" Type="int" Nullable="false" />
-    <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="version" Type="int" Nullable="true" />
-    <Property Name="definition" Type="varbinary(max)" Nullable="true" />
-  </EntityType>
-  <EntityType Name="Events">
-    <Key>
-      <PropertyRef Name="IDDate" />
-    </Key>
-    <Property Name="IDEvents" Type="int" Nullable="false" />
-    <Property Name="IDDate" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="eventName" Type="nchar" Nullable="true" MaxLength="200" />
-    <Property Name="weekday" Type="nchar" Nullable="true" MaxLength="20" />
-    <Property Name="eventType" Type="nchar" Nullable="true" MaxLength="30" />
-    <Property Name="eventDate" Type="datetime" Nullable="false" />
-  </EntityType>
-  <EntityType Name="weathers">
-    <Key>
-      <PropertyRef Name="idweather" />
-    </Key>
-    <Property Name="dt" Type="varchar" Nullable="true" MaxLength="50" />
-    <Property Name="atmosphericPressure" Type="smallint" Nullable="true" />
-    <Property Name="rainfall" Type="smallint" Nullable="true" />
-    <Property Name="windSpeed" Type="real" Nullable="true" />
-    <Property Name="windDirection" Type="real" Nullable="true" />
-    <Property Name="surfaceTemperature" Type="real" Nullable="true" />
-    <Property Name="relativeHumidity" Type="real" Nullable="true" />
-    <Property Name="solarFlux" Type="smallint" Nullable="true" />
-    <Property Name="battery" Type="real" Nullable="true" />
-    <Property Name="dtt" Type="datetime" Nullable="true" />
-    <Property Name="idweather" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
-  </EntityType>
-  <Association Name="FK_IDConsuptionPlace">
-    <End Role="ConsuptionPlaces" Type="SAMModel.Store.ConsuptionPlaces" Multiplicity="1" />
-    <End Role="Consuptions" Type="SAMModel.Store.Consuptions" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="ConsuptionPlaces">
-        <PropertyRef Name="IDConsuptionPlace" />
-      </Principal>
-      <Dependent Role="Consuptions">
-        <PropertyRef Name="IDConsuptionPlace" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-</Schema></edmx:StorageModels>
+    <Schema Namespace="SAMModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'SAM.dbo.ConsuptionModelDaily' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="ConsuptionModelDaily">
+          <Key>
+            <PropertyRef Name="MeasurementTime" />
+            <PropertyRef Name="IDDate" />
+            <PropertyRef Name="IDDistrict" />
+            <PropertyRef Name="source" />
+            <PropertyRef Name="Type" />
+          </Key>
+          <Property Name="Amount" Type="float" />
+          <Property Name="MeasurementTime" Type="int" Nullable="false" />
+          <Property Name="IDDate" Type="bigint" Nullable="false" />
+          <Property Name="IDDistrict" Type="int" Nullable="false" />
+          <Property Name="source" Type="int" Nullable="false" />
+          <Property Name="Type" Type="varchar" MaxLength="1" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'SAM.dbo.ConsuptionModelHourly' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="ConsuptionModelHourly">
+          <Key>
+            <PropertyRef Name="MeasurementTime" />
+            <PropertyRef Name="IDDate" />
+            <PropertyRef Name="IDDistrict" />
+            <PropertyRef Name="source" />
+            <PropertyRef Name="Type" />
+          </Key>
+          <Property Name="Amount" Type="float" />
+          <Property Name="MeasurementTime" Type="int" Nullable="false" />
+          <Property Name="IDDate" Type="bigint" Nullable="false" />
+          <Property Name="IDDistrict" Type="int" Nullable="false" />
+          <Property Name="source" Type="int" Nullable="false" />
+          <Property Name="Type" Type="varchar" MaxLength="1" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ConsuptionPlaces">
+          <Key>
+            <PropertyRef Name="IDConsuptionPlace" />
+          </Key>
+          <Property Name="IDConsuptionPlace" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ZipCode" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="CityName" Type="varchar" MaxLength="50" />
+          <Property Name="DistrictName" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Consuptions">
+          <Key>
+            <PropertyRef Name="IDConsuption" />
+          </Key>
+          <Property Name="IDConsuption" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Amount" Type="real" Nullable="false" />
+          <Property Name="DayOffset" Type="int" Nullable="false" />
+          <Property Name="MeasurementSequence" Type="int" Nullable="false" />
+          <Property Name="MeasurementTime" Type="int" Nullable="false" />
+          <Property Name="IDDate" Type="bigint" Nullable="false" />
+          <Property Name="IDConsuptionPlace" Type="bigint" Nullable="false" />
+          <Property Name="source" Type="int" />
+          <Property Name="Type" Type="varchar" MaxLength="2" />
+        </EntityType>
+        <EntityType Name="ConsuptionsDaily">
+          <Key>
+            <PropertyRef Name="IDConsuption" />
+          </Key>
+          <Property Name="IDConsuption" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Amount" Type="real" Nullable="false" />
+          <Property Name="DayOffset" Type="int" Nullable="false" />
+          <Property Name="MeasurementSequence" Type="int" Nullable="false" />
+          <Property Name="MeasurementTime" Type="int" Nullable="false" />
+          <Property Name="IDDate" Type="bigint" Nullable="false" />
+          <Property Name="IDConsuptionPlace" Type="bigint" Nullable="false" />
+          <Property Name="source" Type="int" />
+          <Property Name="Type" Type="varchar" MaxLength="2" />
+        </EntityType>
+        <EntityType Name="ConsuptionsHourly">
+          <Key>
+            <PropertyRef Name="IDConsuption" />
+          </Key>
+          <Property Name="IDConsuption" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Amount" Type="real" Nullable="false" />
+          <Property Name="DayOffset" Type="int" Nullable="false" />
+          <Property Name="MeasurementSequence" Type="int" Nullable="false" />
+          <Property Name="MeasurementTime" Type="int" Nullable="false" />
+          <Property Name="IDDate" Type="bigint" Nullable="false" />
+          <Property Name="IDConsuptionPlace" Type="bigint" Nullable="false" />
+          <Property Name="source" Type="int" />
+          <Property Name="Type" Type="varchar" MaxLength="2" />
+        </EntityType>
+        <EntityType Name="Events">
+          <Key>
+            <PropertyRef Name="IDDate" />
+          </Key>
+          <Property Name="IDEvents" Type="int" Nullable="false" />
+          <Property Name="IDDate" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="eventName" Type="nchar" MaxLength="200" />
+          <Property Name="weekday" Type="nchar" MaxLength="20" />
+          <Property Name="eventType" Type="nchar" MaxLength="30" />
+          <Property Name="eventDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PlaceWeather">
+          <Key>
+            <PropertyRef Name="IDDistrict" />
+          </Key>
+          <Property Name="DistrictName" Type="varchar" MaxLength="50" />
+          <Property Name="IDDistrict" Type="int" Nullable="false" />
+          <Property Name="IDLocation" Type="int" />
+        </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="principal_id" Type="int" Nullable="false" />
+          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="version" Type="int" />
+          <Property Name="definition" Type="varbinary(max)" />
+        </EntityType>
+        <EntityType Name="Weathers">
+          <Key>
+            <PropertyRef Name="IDweather" />
+          </Key>
+          <Property Name="IDDate" Type="bigint" Nullable="false" />
+          <Property Name="atmosphericPressure" Type="int" />
+          <Property Name="rainfall" Type="int" />
+          <Property Name="windSpeed" Type="int" />
+          <Property Name="surfaceTemperature" Type="int" />
+          <Property Name="solarShine" Type="int" />
+          <Property Name="relativeHumidity" Type="int" />
+          <Property Name="IDLocation" Type="int" Nullable="false" />
+          <Property Name="locationName" Type="nvarchar" MaxLength="40" />
+          <Property Name="MeasurementTime" Type="int" Nullable="false" />
+          <Property Name="dt" Type="datetime" />
+          <Property Name="IDweather" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+        </EntityType>
+        <EntityType Name="WeathersDaily">
+          <Key>
+            <PropertyRef Name="IDweather" />
+          </Key>
+          <Property Name="IDDate" Type="bigint" Nullable="false" />
+          <Property Name="atmosphericPressure" Type="int" />
+          <Property Name="rainfall" Type="int" />
+          <Property Name="windSpeed" Type="int" />
+          <Property Name="surfaceTemperature" Type="int" />
+          <Property Name="solarShine" Type="int" />
+          <Property Name="relativeHumidity" Type="int" />
+          <Property Name="IDLocation" Type="int" Nullable="false" />
+          <Property Name="locationName" Type="nvarchar" MaxLength="40" />
+          <Property Name="MeasurementTime" Type="int" Nullable="false" />
+          <Property Name="dt" Type="datetime" />
+          <Property Name="IDweather" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_IDConsuptionPlace">
+          <End Role="ConsuptionPlaces" Type="Self.ConsuptionPlaces" Multiplicity="1" />
+          <End Role="Consuptions" Type="Self.Consuptions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ConsuptionPlaces">
+              <PropertyRef Name="IDConsuptionPlace" />
+            </Principal>
+            <Dependent Role="Consuptions">
+              <PropertyRef Name="IDConsuptionPlace" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IDConsuptionPlace2">
+          <End Role="ConsuptionPlaces" Type="Self.ConsuptionPlaces" Multiplicity="1" />
+          <End Role="ConsuptionsHourly" Type="Self.ConsuptionsHourly" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ConsuptionPlaces">
+              <PropertyRef Name="IDConsuptionPlace" />
+            </Principal>
+            <Dependent Role="ConsuptionsHourly">
+              <PropertyRef Name="IDConsuptionPlace" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IDConsuptionPlace3">
+          <End Role="ConsuptionPlaces" Type="Self.ConsuptionPlaces" Multiplicity="1" />
+          <End Role="ConsuptionsDaily" Type="Self.ConsuptionsDaily" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ConsuptionPlaces">
+              <PropertyRef Name="IDConsuptionPlace" />
+            </Principal>
+            <Dependent Role="ConsuptionsDaily">
+              <PropertyRef Name="IDConsuptionPlace" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="SAMModelStoreContainer">
+          <EntitySet Name="ConsuptionPlaces" EntityType="Self.ConsuptionPlaces" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Consuptions" EntityType="Self.Consuptions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ConsuptionsDaily" EntityType="Self.ConsuptionsDaily" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ConsuptionsHourly" EntityType="Self.ConsuptionsHourly" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Events" EntityType="Self.Events" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PlaceWeather" EntityType="Self.PlaceWeather" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Weathers" EntityType="Self.Weathers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WeathersDaily" EntityType="Self.WeathersDaily" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ConsuptionModelDaily" EntityType="Self.ConsuptionModelDaily" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [ConsuptionModelDaily].[Amount] AS [Amount], 
+    [ConsuptionModelDaily].[MeasurementTime] AS [MeasurementTime], 
+    [ConsuptionModelDaily].[IDDate] AS [IDDate], 
+    [ConsuptionModelDaily].[IDDistrict] AS [IDDistrict], 
+    [ConsuptionModelDaily].[source] AS [source], 
+    [ConsuptionModelDaily].[Type] AS [Type]
+    FROM [dbo].[ConsuptionModelDaily] AS [ConsuptionModelDaily]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="ConsuptionModelHourly" EntityType="Self.ConsuptionModelHourly" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [ConsuptionModelHourly].[Amount] AS [Amount], 
+    [ConsuptionModelHourly].[MeasurementTime] AS [MeasurementTime], 
+    [ConsuptionModelHourly].[IDDate] AS [IDDate], 
+    [ConsuptionModelHourly].[IDDistrict] AS [IDDistrict], 
+    [ConsuptionModelHourly].[source] AS [source], 
+    [ConsuptionModelHourly].[Type] AS [Type]
+    FROM [dbo].[ConsuptionModelHourly] AS [ConsuptionModelHourly]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK_IDConsuptionPlace" Association="Self.FK_IDConsuptionPlace">
+            <End Role="ConsuptionPlaces" EntitySet="ConsuptionPlaces" />
+            <End Role="Consuptions" EntitySet="Consuptions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IDConsuptionPlace2" Association="Self.FK_IDConsuptionPlace2">
+            <End Role="ConsuptionPlaces" EntitySet="ConsuptionPlaces" />
+            <End Role="ConsuptionsHourly" EntitySet="ConsuptionsHourly" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IDConsuptionPlace3" Association="Self.FK_IDConsuptionPlace3">
+            <End Role="ConsuptionPlaces" EntitySet="ConsuptionPlaces" />
+            <End Role="ConsuptionsDaily" EntitySet="ConsuptionsDaily" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="SAMModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -96,6 +243,10 @@
           <Property Name="IDConsuptionPlace" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ZipCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="Consuptions" Relationship="Self.FK_IDConsuptionPlace" FromRole="ConsuptionPlaces" ToRole="Consuptions" />
+          <Property Name="CityName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="DistrictName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="ConsuptionsHourlies" Relationship="SAMModel.FK_IDConsuptionPlace2" FromRole="ConsuptionPlace" ToRole="ConsuptionsHourly" />
+          <NavigationProperty Name="ConsuptionsDailies" Relationship="SAMModel.FK_IDConsuptionPlace3" FromRole="ConsuptionPlace" ToRole="ConsuptionsDaily" />
         </EntityType>
         <EntityType Name="Consuption">
           <Key>
@@ -110,6 +261,7 @@
           <Property Name="IDConsuptionPlace" Type="Int64" Nullable="false" />
           <NavigationProperty Name="ConsuptionPlace" Relationship="Self.FK_IDConsuptionPlace" FromRole="Consuptions" ToRole="ConsuptionPlaces" />
           <Property Name="source" Type="Int32" />
+          <Property Name="Type" Type="String" MaxLength="2" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="sysdiagram">
           <Key>
@@ -142,7 +294,21 @@
             <End Role="Consuptions" EntitySet="Consuptions" />
           </AssociationSet>
           <EntitySet Name="Events" EntityType="SAMModel.Event" />
-          <EntitySet Name="weathers" EntityType="SAMModel.weather" />
+          <EntitySet Name="Weathers" EntityType="SAMModel.Weather" />
+          <EntitySet Name="PlaceWeathers" EntityType="SAMModel.PlaceWeather" />
+          <EntitySet Name="ConsuptionsDailies" EntityType="SAMModel.ConsuptionsDaily" />
+          <EntitySet Name="ConsuptionsHourlies" EntityType="SAMModel.ConsuptionsHourly" />
+          <EntitySet Name="WeathersDailies" EntityType="SAMModel.WeathersDaily" />
+          <EntitySet Name="ConsuptionModelDailies" EntityType="SAMModel.ConsuptionModelDaily" />
+          <EntitySet Name="ConsuptionModelHourlies" EntityType="SAMModel.ConsuptionModelHourly" />
+          <AssociationSet Name="FK_IDConsuptionPlace2" Association="SAMModel.FK_IDConsuptionPlace2">
+            <End Role="ConsuptionPlace" EntitySet="ConsuptionPlaces" />
+            <End Role="ConsuptionsHourly" EntitySet="ConsuptionsHourlies" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IDConsuptionPlace3" Association="SAMModel.FK_IDConsuptionPlace3">
+            <End Role="ConsuptionPlace" EntitySet="ConsuptionPlaces" />
+            <End Role="ConsuptionsDaily" EntitySet="ConsuptionsDailies" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Event">
           <Key>
@@ -153,24 +319,137 @@
           <Property Name="eventName" Type="String" MaxLength="200" Unicode="true" FixedLength="true" />
           <Property Name="weekday" Type="String" MaxLength="20" FixedLength="true" Unicode="true" />
           <Property Name="eventType" Type="String" MaxLength="30" FixedLength="true" Unicode="true" />
-          <Property Name="eventDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="eventDate" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
-        <EntityType Name="weather">
+        <EntityType Name="Weather">
           <Key>
-            <PropertyRef Name="idweather" />
+            <PropertyRef Name="IDDate" />
+            <PropertyRef Name="IDLocation" />
+            <PropertyRef Name="MeasurementTime" />
+            <PropertyRef Name="IDweather" />
           </Key>
-          <Property Name="dt" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="atmosphericPressure" Type="Int16" />
-          <Property Name="rainfall" Type="Int16" />
-          <Property Name="windSpeed" Type="Single" />
-          <Property Name="windDirection" Type="Single" />
-          <Property Name="surfaceTemperature" Type="Single" />
-          <Property Name="relativeHumidity" Type="Single" />
-          <Property Name="solarFlux" Type="Int16" />
-          <Property Name="battery" Type="Single" />
-          <Property Name="dtt" Type="DateTime" Precision="3" />
-          <Property Name="idweather" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IDDate" Type="Int64" Nullable="false" />
+          <Property Name="atmosphericPressure" Type="Int32" />
+          <Property Name="rainfall" Type="Int32" />
+          <Property Name="windSpeed" Type="Int32" />
+          <Property Name="surfaceTemperature" Type="Int32" />
+          <Property Name="solarShine" Type="Int32" />
+          <Property Name="relativeHumidity" Type="Int32" />
+          <Property Name="IDLocation" Type="Int32" Nullable="false" />
+          <Property Name="locationName" Type="String" MaxLength="40" FixedLength="false" Unicode="true" />
+          <Property Name="MeasurementTime" Type="Int32" Nullable="false" />
+          <Property Name="dt" Type="DateTime" Precision="3" />
+          <Property Name="IDweather" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
         </EntityType>
+        <EntityType Name="PlaceWeather">
+          <Key>
+            <PropertyRef Name="IDDistrict" />
+          </Key>
+          <Property Name="DistrictName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="IDDistrict" Type="Int32" Nullable="false" />
+          <Property Name="IDLocation" Type="Int32" />
+        </EntityType>
+        <EntityType Name="ConsuptionsDaily">
+          <Key>
+            <PropertyRef Name="IDConsuption" />
+          </Key>
+          <Property Name="IDConsuption" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Amount" Type="Single" Nullable="false" />
+          <Property Name="DayOffset" Type="Int32" Nullable="false" />
+          <Property Name="MeasurementSequence" Type="Int32" Nullable="false" />
+          <Property Name="MeasurementTime" Type="Int32" Nullable="false" />
+          <Property Name="IDDate" Type="Int64" Nullable="false" />
+          <Property Name="IDConsuptionPlace" Type="Int64" Nullable="false" />
+          <Property Name="source" Type="Int32" />
+          <Property Name="Type" Type="String" MaxLength="2" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="ConsuptionPlace" Relationship="SAMModel.FK_IDConsuptionPlace3" FromRole="ConsuptionsDaily" ToRole="ConsuptionPlace" />
+        </EntityType>
+        <EntityType Name="ConsuptionsHourly">
+          <Key>
+            <PropertyRef Name="IDConsuption" />
+          </Key>
+          <Property Name="IDConsuption" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Amount" Type="Single" Nullable="false" />
+          <Property Name="DayOffset" Type="Int32" Nullable="false" />
+          <Property Name="MeasurementSequence" Type="Int32" Nullable="false" />
+          <Property Name="MeasurementTime" Type="Int32" Nullable="false" />
+          <Property Name="IDDate" Type="Int64" Nullable="false" />
+          <Property Name="IDConsuptionPlace" Type="Int64" Nullable="false" />
+          <Property Name="source" Type="Int32" />
+          <Property Name="Type" Type="String" MaxLength="2" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="ConsuptionPlace" Relationship="SAMModel.FK_IDConsuptionPlace2" FromRole="ConsuptionsHourly" ToRole="ConsuptionPlace" />
+        </EntityType>
+        <EntityType Name="WeathersDaily">
+          <Key>
+            <PropertyRef Name="IDweather" />
+          </Key>
+          <Property Name="IDDate" Type="Int64" Nullable="false" />
+          <Property Name="atmosphericPressure" Type="Int32" />
+          <Property Name="rainfall" Type="Int32" />
+          <Property Name="windSpeed" Type="Int32" />
+          <Property Name="surfaceTemperature" Type="Int32" />
+          <Property Name="solarShine" Type="Int32" />
+          <Property Name="relativeHumidity" Type="Int32" />
+          <Property Name="IDLocation" Type="Int32" Nullable="false" />
+          <Property Name="locationName" Type="String" MaxLength="40" FixedLength="false" Unicode="true" />
+          <Property Name="MeasurementTime" Type="Int32" Nullable="false" />
+          <Property Name="dt" Type="DateTime" Precision="3" />
+          <Property Name="IDweather" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+        </EntityType>
+        <EntityType Name="ConsuptionModelDaily">
+          <Key>
+            <PropertyRef Name="MeasurementTime" />
+            <PropertyRef Name="IDDate" />
+            <PropertyRef Name="IDDistrict" />
+            <PropertyRef Name="source" />
+            <PropertyRef Name="Type" />
+          </Key>
+          <Property Name="Amount" Type="Double" />
+          <Property Name="MeasurementTime" Type="Int32" Nullable="false" />
+          <Property Name="IDDate" Type="Int64" Nullable="false" />
+          <Property Name="IDDistrict" Type="Int32" Nullable="false" />
+          <Property Name="source" Type="Int32" Nullable="false" />
+          <Property Name="Type" Type="String" Nullable="false" MaxLength="1" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="ConsuptionModelHourly">
+          <Key>
+            <PropertyRef Name="MeasurementTime" />
+            <PropertyRef Name="IDDate" />
+            <PropertyRef Name="IDDistrict" />
+            <PropertyRef Name="source" />
+            <PropertyRef Name="Type" />
+          </Key>
+          <Property Name="Amount" Type="Double" />
+          <Property Name="MeasurementTime" Type="Int32" Nullable="false" />
+          <Property Name="IDDate" Type="Int64" Nullable="false" />
+          <Property Name="IDDistrict" Type="Int32" Nullable="false" />
+          <Property Name="source" Type="Int32" Nullable="false" />
+          <Property Name="Type" Type="String" Nullable="false" MaxLength="1" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <Association Name="FK_IDConsuptionPlace2">
+          <End Type="SAMModel.ConsuptionPlace" Role="ConsuptionPlace" Multiplicity="1" />
+          <End Type="SAMModel.ConsuptionsHourly" Role="ConsuptionsHourly" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ConsuptionPlace">
+              <PropertyRef Name="IDConsuptionPlace" />
+            </Principal>
+            <Dependent Role="ConsuptionsHourly">
+              <PropertyRef Name="IDConsuptionPlace" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IDConsuptionPlace3">
+          <End Type="SAMModel.ConsuptionPlace" Role="ConsuptionPlace" Multiplicity="1" />
+          <End Type="SAMModel.ConsuptionsDaily" Role="ConsuptionsDaily" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ConsuptionPlace">
+              <PropertyRef Name="IDConsuptionPlace" />
+            </Principal>
+            <Dependent Role="ConsuptionsDaily">
+              <PropertyRef Name="IDConsuptionPlace" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -182,6 +461,8 @@
         <MappingFragment StoreEntitySet="ConsuptionPlaces">
           <ScalarProperty Name="IDConsuptionPlace" ColumnName="IDConsuptionPlace" />
           <ScalarProperty Name="ZipCode" ColumnName="ZipCode" />
+          <ScalarProperty Name="CityName" ColumnName="CityName" />
+          <ScalarProperty Name="DistrictName" ColumnName="DistrictName" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
@@ -196,6 +477,7 @@
           <ScalarProperty Name="IDDate" ColumnName="IDDate" />
           <ScalarProperty Name="IDConsuptionPlace" ColumnName="IDConsuptionPlace" />
           <ScalarProperty Name="source" ColumnName="source" />
+          <ScalarProperty Name="Type" ColumnName="Type" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
@@ -222,23 +504,105 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <EntitySetMapping Name="weathers">
-      <EntityTypeMapping TypeName="IsTypeOf(SAMModel.weather)">
-        <MappingFragment StoreEntitySet="weathers">
-          <ScalarProperty Name="idweather" ColumnName="idweather" />
-          <ScalarProperty Name="dt" ColumnName="dt" />
+    <EntitySetMapping Name="Weathers">
+      <EntityTypeMapping TypeName="IsTypeOf(SAMModel.Weather)">
+        <MappingFragment StoreEntitySet="Weathers">
+          <ScalarProperty Name="IDDate" ColumnName="IDDate" />
+          <ScalarProperty Name="IDLocation" ColumnName="IDLocation" />
+          <ScalarProperty Name="MeasurementTime" ColumnName="MeasurementTime" />
+          <ScalarProperty Name="IDweather" ColumnName="IDweather" />
           <ScalarProperty Name="atmosphericPressure" ColumnName="atmosphericPressure" />
           <ScalarProperty Name="rainfall" ColumnName="rainfall" />
           <ScalarProperty Name="windSpeed" ColumnName="windSpeed" />
-          <ScalarProperty Name="windDirection" ColumnName="windDirection" />
           <ScalarProperty Name="surfaceTemperature" ColumnName="surfaceTemperature" />
+          <ScalarProperty Name="solarShine" ColumnName="solarShine" />
           <ScalarProperty Name="relativeHumidity" ColumnName="relativeHumidity" />
-          <ScalarProperty Name="solarFlux" ColumnName="solarFlux" />
-          <ScalarProperty Name="battery" ColumnName="battery" />
-          <ScalarProperty Name="dtt" ColumnName="dtt" />
+          <ScalarProperty Name="locationName" ColumnName="locationName" />
+          <ScalarProperty Name="dt" ColumnName="dt" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
+          <EntitySetMapping Name="PlaceWeathers">
+            <EntityTypeMapping TypeName="SAMModel.PlaceWeather">
+              <MappingFragment StoreEntitySet="PlaceWeather">
+                <ScalarProperty Name="IDLocation" ColumnName="IDLocation" />
+                <ScalarProperty Name="IDDistrict" ColumnName="IDDistrict" />
+                <ScalarProperty Name="DistrictName" ColumnName="DistrictName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ConsuptionsDailies">
+            <EntityTypeMapping TypeName="SAMModel.ConsuptionsDaily">
+              <MappingFragment StoreEntitySet="ConsuptionsDaily">
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="source" ColumnName="source" />
+                <ScalarProperty Name="IDConsuptionPlace" ColumnName="IDConsuptionPlace" />
+                <ScalarProperty Name="IDDate" ColumnName="IDDate" />
+                <ScalarProperty Name="MeasurementTime" ColumnName="MeasurementTime" />
+                <ScalarProperty Name="MeasurementSequence" ColumnName="MeasurementSequence" />
+                <ScalarProperty Name="DayOffset" ColumnName="DayOffset" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="IDConsuption" ColumnName="IDConsuption" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ConsuptionsHourlies">
+            <EntityTypeMapping TypeName="SAMModel.ConsuptionsHourly">
+              <MappingFragment StoreEntitySet="ConsuptionsHourly">
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="source" ColumnName="source" />
+                <ScalarProperty Name="IDConsuptionPlace" ColumnName="IDConsuptionPlace" />
+                <ScalarProperty Name="IDDate" ColumnName="IDDate" />
+                <ScalarProperty Name="MeasurementTime" ColumnName="MeasurementTime" />
+                <ScalarProperty Name="MeasurementSequence" ColumnName="MeasurementSequence" />
+                <ScalarProperty Name="DayOffset" ColumnName="DayOffset" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="IDConsuption" ColumnName="IDConsuption" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WeathersDailies">
+            <EntityTypeMapping TypeName="SAMModel.WeathersDaily">
+              <MappingFragment StoreEntitySet="WeathersDaily">
+                <ScalarProperty Name="IDweather" ColumnName="IDweather" />
+                <ScalarProperty Name="dt" ColumnName="dt" />
+                <ScalarProperty Name="MeasurementTime" ColumnName="MeasurementTime" />
+                <ScalarProperty Name="locationName" ColumnName="locationName" />
+                <ScalarProperty Name="IDLocation" ColumnName="IDLocation" />
+                <ScalarProperty Name="relativeHumidity" ColumnName="relativeHumidity" />
+                <ScalarProperty Name="solarShine" ColumnName="solarShine" />
+                <ScalarProperty Name="surfaceTemperature" ColumnName="surfaceTemperature" />
+                <ScalarProperty Name="windSpeed" ColumnName="windSpeed" />
+                <ScalarProperty Name="rainfall" ColumnName="rainfall" />
+                <ScalarProperty Name="atmosphericPressure" ColumnName="atmosphericPressure" />
+                <ScalarProperty Name="IDDate" ColumnName="IDDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ConsuptionModelDailies">
+            <EntityTypeMapping TypeName="SAMModel.ConsuptionModelDaily">
+              <MappingFragment StoreEntitySet="ConsuptionModelDaily">
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="source" ColumnName="source" />
+                <ScalarProperty Name="IDDistrict" ColumnName="IDDistrict" />
+                <ScalarProperty Name="IDDate" ColumnName="IDDate" />
+                <ScalarProperty Name="MeasurementTime" ColumnName="MeasurementTime" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ConsuptionModelHourlies">
+            <EntityTypeMapping TypeName="SAMModel.ConsuptionModelHourly">
+              <MappingFragment StoreEntitySet="ConsuptionModelHourly">
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="source" ColumnName="source" />
+                <ScalarProperty Name="IDDistrict" ColumnName="IDDistrict" />
+                <ScalarProperty Name="IDDate" ColumnName="IDDate" />
+                <ScalarProperty Name="MeasurementTime" ColumnName="MeasurementTime" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
   </EntityContainerMapping>
 </Mapping></edmx:Mappings>
   </edmx:Runtime>

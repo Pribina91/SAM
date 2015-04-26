@@ -17,11 +17,17 @@ namespace VisualAnalytics.Models
         public ConsuptionPlace()
         {
             this.Consuptions = new HashSet<Consuption>();
+            this.ConsuptionsHourlies = new HashSet<ConsuptionsHourly>();
+            this.ConsuptionsDailies = new HashSet<ConsuptionsDaily>();
         }
     
         public long IDConsuptionPlace { get; set; }
         public string ZipCode { get; set; }
+        public string CityName { get; set; }
+        public string DistrictName { get; set; }
     
         public virtual ICollection<Consuption> Consuptions { get; set; }
+        public virtual ICollection<ConsuptionsHourly> ConsuptionsHourlies { get; set; }
+        public virtual ICollection<ConsuptionsDaily> ConsuptionsDailies { get; set; }
     }
 }

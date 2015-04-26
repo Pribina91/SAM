@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 11/26/2014 23:25:10
+-- Date Created: 04/13/2015 17:21:09
 -- Generated from EDMX file: C:\Workspace\SAM\SAM\VisualAnalytics\Models\SAMmodel.edmx
 -- --------------------------------------------------
 
@@ -37,8 +37,8 @@ GO
 IF OBJECT_ID(N'[dbo].[sysdiagrams]', 'U') IS NOT NULL
     DROP TABLE [dbo].[sysdiagrams];
 GO
-IF OBJECT_ID(N'[SAMModelStoreContainer].[weather]', 'U') IS NOT NULL
-    DROP TABLE [SAMModelStoreContainer].[weather];
+IF OBJECT_ID(N'[SAMModelStoreContainer].[Weathers]', 'U') IS NOT NULL
+    DROP TABLE [SAMModelStoreContainer].[Weathers];
 GO
 
 -- --------------------------------------------------
@@ -48,7 +48,9 @@ GO
 -- Creating table 'ConsuptionPlaces'
 CREATE TABLE [dbo].[ConsuptionPlaces] (
     [IDConsuptionPlace] bigint IDENTITY(1,1) NOT NULL,
-    [ZipCode] nvarchar(max)  NOT NULL
+    [ZipCode] nvarchar(max)  NOT NULL,
+    [CityName] varchar(50)  NULL,
+    [DistrictName] varchar(50)  NULL
 );
 GO
 
@@ -61,7 +63,8 @@ CREATE TABLE [dbo].[Consuptions] (
     [MeasurementTime] int  NOT NULL,
     [IDDate] bigint  NOT NULL,
     [IDConsuptionPlace] bigint  NOT NULL,
-    [source] int  NULL
+    [source] int  NULL,
+    [Type] varchar(2)  NULL
 );
 GO
 
@@ -86,19 +89,20 @@ CREATE TABLE [dbo].[Events] (
 );
 GO
 
--- Creating table 'weathers'
-CREATE TABLE [dbo].[weathers] (
-    [dt] varchar(50)  NULL,
-    [atmosphericPressure] smallint  NULL,
-    [rainfall] smallint  NULL,
-    [windSpeed] real  NULL,
-    [windDirection] real  NULL,
-    [surfaceTemperature] real  NULL,
-    [relativeHumidity] real  NULL,
-    [solarFlux] smallint  NULL,
-    [battery] real  NULL,
-    [dtt] datetime  NULL,
-    [idweather] bigint IDENTITY(1,1) NOT NULL
+-- Creating table 'Weathers'
+CREATE TABLE [dbo].[Weathers] (
+    [IDDate] bigint  NOT NULL,
+    [atmosphericPressure] int  NULL,
+    [rainfall] int  NULL,
+    [windSpeed] int  NULL,
+    [surfaceTemperature] int  NULL,
+    [solarShine] int  NULL,
+    [relativeHumidity] int  NULL,
+    [IDLocation] int  NOT NULL,
+    [locationName] nvarchar(40)  NULL,
+    [MeasurementTime] int  NOT NULL,
+    [dt] datetime  NULL,
+    [IDweather] int IDENTITY(1,1) NOT NULL
 );
 GO
 
@@ -130,10 +134,10 @@ ADD CONSTRAINT [PK_Events]
     PRIMARY KEY CLUSTERED ([IDDate] ASC);
 GO
 
--- Creating primary key on [idweather] in table 'weathers'
-ALTER TABLE [dbo].[weathers]
-ADD CONSTRAINT [PK_weathers]
-    PRIMARY KEY CLUSTERED ([idweather] ASC);
+-- Creating primary key on [IDDate], [IDLocation], [MeasurementTime], [IDweather] in table 'Weathers'
+ALTER TABLE [dbo].[Weathers]
+ADD CONSTRAINT [PK_Weathers]
+    PRIMARY KEY CLUSTERED ([IDDate], [IDLocation], [MeasurementTime], [IDweather] ASC);
 GO
 
 -- --------------------------------------------------
@@ -147,6 +151,7 @@ ADD CONSTRAINT [FK_IDConsuptionPlace]
     REFERENCES [dbo].[ConsuptionPlaces]
         ([IDConsuptionPlace])
     ON DELETE NO ACTION ON UPDATE NO ACTION;
+GO
 
 -- Creating non-clustered index for FOREIGN KEY 'FK_IDConsuptionPlace'
 CREATE INDEX [IX_FK_IDConsuptionPlace]

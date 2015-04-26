@@ -12,7 +12,7 @@ namespace VisualAnalytics.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Consuption
+    public partial class ConsuptionsHourly
     {
         public long IDConsuption { get; set; }
         public float Amount { get; set; }

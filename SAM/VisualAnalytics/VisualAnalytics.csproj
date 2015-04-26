@@ -212,6 +212,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ConsuptionController.cs" />
     <Compile Include="Controllers\Helpers\ArimaModel.cs" />
+    <Compile Include="Controllers\Helpers\Clustering.cs" />
     <Compile Include="Controllers\Helpers\FileLogger.cs" />
     <Compile Include="Controllers\Helpers\InputParser.cs" />
     <Compile Include="Controllers\Helpers\JSONhelper.cs" />
@@ -226,13 +227,28 @@
     <Compile Include="Models\Consuption.cs">
       <DependentUpon>SAMmodel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ConsuptionModelDaily.cs">
+      <DependentUpon>SAMmodel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ConsuptionModelHourly.cs">
+      <DependentUpon>SAMmodel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\ConsuptionPlace.cs">
+      <DependentUpon>SAMmodel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ConsuptionsDaily.cs">
+      <DependentUpon>SAMmodel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ConsuptionsHourly.cs">
       <DependentUpon>SAMmodel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Event.cs">
       <DependentUpon>SAMmodel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\PlaceWeather.cs">
+      <DependentUpon>SAMmodel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\SAMmodel.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -255,7 +271,10 @@
     <Compile Include="Models\TemporalModel\Elements\TemporalElement.cs" />
     <Compile Include="Models\TemporalModel\Elements\TemporalEvent.cs" />
     <Compile Include="Models\TemporalModel\TemporalElementStore.cs" />
-    <Compile Include="Models\weather.cs">
+    <Compile Include="Models\Weather.cs">
+      <DependentUpon>SAMmodel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\WeathersDaily.cs">
       <DependentUpon>SAMmodel.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -100,7 +100,7 @@ namespace VisualAnalytics.Controllers.Helpers
 				// Skip over header line.
 				parser.ReadLine();
 				parser.ReadLine();
-				int id = 0;
+			//	int id = 0;
 				while (!parser.EndOfData)
 				{
 					string[] fields = parser.ReadFields();
@@ -125,6 +125,47 @@ namespace VisualAnalytics.Controllers.Helpers
 
 						log.Debug("New Consuption:" + newc.IDConsuptionPlace.ToString() + "\t" + newc.Amount.ToString() + "\t" + newc.DayOffset.ToString() + "\t" + newc.MeasurementSequence.ToString());
 						db.Consuptions.Add(newc);
+
+
+					}
+					db.SaveChanges();
+
+				}
+				db.SaveChanges();
+			}
+
+		}
+		public void parseCSVConsumtionPlace(string filename)
+		{
+			using (TextFieldParser parser = new TextFieldParser(filename))
+			{
+				parser.CommentTokens = new string[] { "#" };
+				parser.SetDelimiters(new string[] { ";" });
+				parser.HasFieldsEnclosedInQuotes = false;
+
+				// Skip over header line.
+				parser.ReadLine();
+				parser.ReadLine();
+				//int id = 0;
+				while (!parser.EndOfData)
+				{
+					string[] fields = parser.ReadFields();
+
+					long dt = long.Parse(fields[2]) * 10000 + long.Parse(fields[1]) * 100 + long.Parse(fields[0]);
+					for (int k = 3; k < fields.Length - 4; k++)
+					{
+                        //ConsuptionDiagram newc = new ConsuptionPlace()
+                        //{
+
+
+                        //    //IDConsuption = ++,
+                        //    source = 2
+
+                        //};
+
+
+                        //log.Debug("New Consuption:" + newc.IDConsuptionPlace.ToString() + "\t" + newc.Amount.ToString() + "\t" + newc.DayOffset.ToString() + "\t" + newc.MeasurementSequence.ToString());
+                        //db.Consuptions.Add(newc);
 
 
 					}

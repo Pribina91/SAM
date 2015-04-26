@@ -4,13 +4,21 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="3a8720fcad4f46fa8c5b15400cc50ff6" Name="Diagram1">
-        <EntityTypeShape EntityType="SAMModel.ConsuptionPlace" Width="1.75" PointX="0.75" PointY="1.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="SAMModel.Consuption" Width="2.125" PointX="3.125" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="SAMModel.sysdiagram" Width="1.5" PointX="3.5" PointY="5.125" IsExpanded="true" />
+      <Diagram DiagramId="3a8720fcad4f46fa8c5b15400cc50ff6" Name="Diagram1" ZoomLevel="83">
+        <EntityTypeShape EntityType="SAMModel.ConsuptionPlace" Width="1.75" PointX="4.75" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="SAMModel.Consuption" Width="2.125" PointX="7.125" PointY="0.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="SAMModel.sysdiagram" Width="1.5" PointX="10.375" PointY="4.375" IsExpanded="true" />
         <AssociationConnector Association="SAMModel.FK_IDConsuptionPlace" ManuallyRouted="false" />
-        <EntityTypeShape EntityType="SAMModel.Event" Width="1.5" PointX="5.75" PointY="1" />
-        <EntityTypeShape EntityType="SAMModel.weather" Width="1.5" PointX="7.5" PointY="1" />
+        <EntityTypeShape EntityType="SAMModel.Event" Width="1.5" PointX="9.625" PointY="1.125" />
+        <EntityTypeShape EntityType="SAMModel.Weather" PointX="1" PointY="1.375" Width="1.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="SAMModel.PlaceWeather" Width="1.5" PointX="3" PointY="1.625" />
+        <EntityTypeShape EntityType="SAMModel.ConsuptionsDaily" Width="1.5" PointX="7.25" PointY="4" />
+        <EntityTypeShape EntityType="SAMModel.ConsuptionsHourly" Width="1.5" PointX="7.25" PointY="7.25" />
+        <EntityTypeShape EntityType="SAMModel.WeathersDaily" Width="1.75" PointX="1" PointY="4.875" />
+        <EntityTypeShape EntityType="SAMModel.ConsuptionModelDaily" Width="1.5" PointX="2.875" PointY="8.75" />
+        <EntityTypeShape EntityType="SAMModel.ConsuptionModelHourly" Width="1.5" PointX="0.75" PointY="8.75" />
+        <AssociationConnector Association="SAMModel.FK_IDConsuptionPlace2" />
+        <AssociationConnector Association="SAMModel.FK_IDConsuptionPlace3" ></AssociationConnector>
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

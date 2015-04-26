@@ -79,3 +79,21 @@
 2014-12-04 01:19:56,196 [26] DEBUG VisualAnalytics.Controllers.Helpers.Prediction - evaluateString:data <-fromJSON("http://localhost:25910/Home/getBigTable")
 2014-12-04 01:19:56,624 [34] DEBUG VisualAnalytics.Controllers.Helpers.Prediction - JSON:http://localhost:25910/Home/getBigTable
 2014-12-04 01:19:56,625 [34] DEBUG VisualAnalytics.Controllers.Helpers.Prediction - evaluateString:data <-fromJSON("http://localhost:25910/Home/getBigTable")
+2014-12-09 05:38:34,310 [8] DEBUG VisualAnalytics.Controllers.Helpers.Clustering - JSON:http://localhost:25910/Home/getBigTable
+2014-12-09 05:38:38,784 [8] DEBUG VisualAnalytics.Controllers.Helpers.Clustering - evaluateString:data <-fromJSON("http://localhost:25910/Home/getBigTable")
+2014-12-09 05:40:24,002 [6] DEBUG VisualAnalytics.Controllers.Helpers.Clustering - JSON:http://localhost:25910/Home/getBigTable
+2014-12-09 05:40:26,158 [6] DEBUG VisualAnalytics.Controllers.Helpers.Clustering - evaluateString:data <-fromJSON("http://localhost:25910/Home/getBigTable")
+2014-12-09 05:42:12,865 [6] DEBUG VisualAnalytics.Controllers.Helpers.Clustering - JSON:http://localhost:25910/Home/getBigTable
+2014-12-09 05:42:12,876 [6] DEBUG VisualAnalytics.Controllers.Helpers.Clustering - evaluateString:data <-fromJSON("http://localhost:25910/Home/getBigTable")
+2014-12-09 05:43:27,893 [6] DEBUG VisualAnalytics.Controllers.Helpers.Clustering - JSON:http://localhost:25910/Home/getBigTable
+2014-12-09 05:43:27,906 [6] DEBUG VisualAnalytics.Controllers.Helpers.Clustering - evaluateString:data <-fromJSON("http://localhost:25910/Home/getBigTable")
+2014-12-09 05:46:02,495 [8] DEBUG VisualAnalytics.Controllers.Helpers.Clustering - JSON:http://localhost:25910/Home/getBigTable
+2014-12-09 05:46:02,506 [8] DEBUG VisualAnalytics.Controllers.Helpers.Clustering - evaluateString:data <-fromJSON("http://localhost:25910/Home/getBigTable")
+2014-12-09 06:12:29,917 [11] DEBUG VisualAnalytics.Controllers.Helpers.Clustering - JSON:http://localhost:25910/Home/getBigTable
+2014-12-09 06:12:29,935 [11] DEBUG VisualAnalytics.Controllers.Helpers.Clustering - evaluateString:data <-fromJSON("http://localhost:25910/Home/getBigTable")
+2014-12-09 07:14:09,367 [6] DEBUG VisualAnalytics.Controllers.Helpers.Clustering - JSON:http://localhost:25910/Home/getBigTable
+2014-12-09 07:14:09,410 [6] DEBUG VisualAnalytics.Controllers.Helpers.Clustering - evaluateString:data <-fromJSON("http://localhost:25910/Home/getBigTable")
+2014-12-09 10:14:09,249 [9] DEBUG VisualAnalytics.Controllers.Helpers.Clustering - JSON:http://localhost:25910/Home/getBigTable
+2014-12-09 10:14:09,266 [9] DEBUG VisualAnalytics.Controllers.Helpers.Clustering - evaluateString:data <-fromJSON("http://localhost:25910/Home/getBigTable")
+2014-12-09 10:22:40,833 [9] DEBUG VisualAnalytics.Controllers.Helpers.Clustering - JSON:http://localhost:25910/Home/getBigTable
+2014-12-09 10:22:40,846 [9] DEBUG VisualAnalytics.Controllers.Helpers.Clustering - evaluateString:data <-fromJSON("http://localhost:25910/Home/getBigTable")

@@ -12,7 +12,7 @@ namespace VisualAnalytics.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Weather
+    public partial class WeathersDaily
     {
         public long IDDate { get; set; }
         public Nullable<int> atmosphericPressure { get; set; }
