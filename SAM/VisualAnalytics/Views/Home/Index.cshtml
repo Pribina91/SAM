@@ -1,22 +1,19 @@
 ﻿@{
     ViewBag.Title = "Home Page";
 }
-<div class="clusterBtn">
-    @Html.ActionLink("ccccluster", "cluster", "Home")
-</div>
-<button id="btn1" class="clusterBtn" onclick ='@Url.Action("cluster", "Home")'> clusteeer</button>
+
 <div id="lineGraph" style="width: 1000px"></div>
 
 <hr>
 <table>
     <tr>
-       
+
         <td>
             <div id="consuptionGraph" style="width: 900px; height: 400px"></div>
         </td>
         <td rowspan="6">
             <canvas id="spiralGraph" width="500" height="500"></canvas>
-        </td> 
+        </td>
     </tr>
     <tr>
         <td>
@@ -27,7 +24,6 @@
         <td>
             Space: <input id="b" type="text" value='0.8' />
         </td>
-
     </tr>
     <tr>
         <td>
@@ -41,11 +37,10 @@
     </tr>
     <tr>
         <td>
-            <button id="draw">Draw</button> 
-           <button id="selectBtn" onclick="selectHighlight()">select</button> 
+            <button id="draw">Draw</button>
+            <button id="selectBtn" onclick="selectHighlight()">select</button>
         </td>
     </tr>
-    
 </table>
 
 <div id="calendar_basic" style="width: 800px; height: 150px;"></div>
@@ -56,9 +51,6 @@
 <hr>
 <div id="weatherGraph" style="width: 900px; height: 350px;"></div>
 
-
-
-           
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript">
 
@@ -155,7 +147,6 @@
 
         //drawWeatherChart();
 
-
         ////CONSUPTION line chart
         //var jsonConsuption = $.ajax({
         //    url: "home/getConsuptions",
@@ -181,7 +172,6 @@
         //        dataTableConsuption.addRow([dtt, amt]);
         //        //}
         //    }
-
 
         //    //var dataConsuption = google.visualization.arrayToDataTable([
         //    //  ['Year', 'Sales', 'Expenses'],
@@ -219,12 +209,9 @@
         //}
         //drawConsuptionChart();
 
-
-
         // The selection handler.
         // Loop through all items in the selection and concatenate
         // a single message from all of them.
-
 
         //SPIRAL
 
@@ -241,8 +228,6 @@
         //    b = parseFloat($('#b').val());
         //    angl = parseFloat($('#angle').val());
         //    context.clearRect(0, 0, 300, 300);
-
-
 
         //    context.beginPath();
         //    context.rect(0, 0, context.canvas.width, context.canvas.width);
@@ -284,8 +269,6 @@
         //            clr = "#00" + col + '00';
         //        }
 
-
-
         //        //  var clr = "#00" + parseInt(color.toString()).toString(16) + '00';
         //        context.lineWidth = parseFloat($('#lineWidth').val());
         //        context.strokeStyle = clr;
@@ -295,8 +278,6 @@
         //        lastX = x;
         //        lastY = y;
         //    }
-
-
 
         //}
         //$('#draw').click(spiralGraphDraw());
@@ -309,7 +290,6 @@
         //        showRoller: true
         //    }
         //    );
-
 
         //CALENDAR chart
         //var jsonEvents = $.ajax({
@@ -346,8 +326,6 @@
         //        //}
         //    }
 
-
-
         //    var options1 = {
         //        title: "Calendar",
         //        height: 350,
@@ -366,63 +344,6 @@
         //}
 
         //drawCalendarChart()
-
-        ////CALENDAR Cluster chart
-        //var jsonCluster = $.ajax({
-        //    url: "home/getClusters",
-        //    dataType: "json",
-        //    async: false
-        //}).responseJSON;
-
-        //function drawCalendarClusterChart() {
-        //    var dataTableCalendar = new google.visualization.DataTable();
-        //    dataTableCalendar.addColumn({ type: 'datetime', id: 'Date' });
-        //   // dataTableCalendar.addColumn({ type: 'number', id: 'importance' });
-        //    dataTableCalendar.addColumn({ type: 'number', id: 'cluster' });
-
-        //    var chart1 = new google.visualization.Calendar(document.getElementById('calendar_cluster'));
-
-        //    for (var i = 0; i < jsonCluster.length; i++) {
-        //        var obj = jsonCluster[i];
-        //        //for (var key in obj) {
-        //        //var attrName = key;
-        //        //var attrValue = obj[key];
-        //        var dtt = getDateFromString(obj[1]);
-        //        var c = obj[0];
-        //        dataTableCalendar.addRow([dtt,255/c]);
-
-        //        var testDate = getDateFromString(selectedDate);
-        //        var a = +dtt;
-        //        var b = getDateFromString(selectedDate);
-        //        b = +b;
-        //        if (selectedDate && a === b) {
-        //            //var temp = chart1.getSelection();
-        //            //chart1.setSelection([{ 'row': i, 'column': null }]);
-        //        }
-
-        //        //}
-        //    }
-
-
-
-        //    var options1 = {
-        //        title: "Calendar",
-        //        height: 350,
-        //       // colorAxis: { minValue: 50, colors: ['#FF0000', '#FF0000'] },
-        //        calendar: {
-        //            cellColor: {
-        //                stroke: '#76a7fa',
-        //                strokeOpacity: 0.5,
-        //                strokeWidth: 1,
-        //            }
-        //        }
-        //    };
-
-        //    chart1.draw(dataTableCalendar, options1);
-        //    selectHighlight(chart1);
-        //}
-
-        //drawCalendarClusterChart()
 
         ////PIECHART
         //var oldData = google.visualization.arrayToDataTable([
@@ -511,7 +432,6 @@
         //    async: false
         //}).responseJSON;
 
-
         //for (var i = 0; i < jsonBigTable.length; i++) {
         //    var obj = jsonBigTable[i];
         //    var dtt = getDateFromString(obj["IdDate"]);
@@ -545,19 +465,10 @@
     }
 </script>
 
-
-
-
-
 <hr />
 <div id="pieChart" style="width: 1000px; height: 350px;"></div>
 <span id='piechart_diff' style="width: 1000px; height: 350px;"> </span>
 
 <hr />
 
-
 <div id="treemapGoogle" style="width: 1000px; height: 350px;">    </div>
-   
-
-
-
