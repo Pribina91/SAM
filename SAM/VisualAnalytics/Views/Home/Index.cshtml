@@ -147,67 +147,76 @@
 
         //drawWeatherChart();
 
-        ////CONSUPTION line chart
-        //var jsonConsuption = $.ajax({
-        //    url: "home/getConsuptions",
-        //    dataType: "json",
-        //    async: false
-        //}).responseJSON;
+        //CONSUPTION line chart
+        var jsonConsuption = $.ajax({
+            url: "Home/getDailyModelTable?Type=AVERAGE",
+            dataType: "json",
+            async: false
+        }).responseJSON;
 
-        ////jsonConsuption
-        ////var dataConsMatrix = [];
-        //function drawConsuptionChart() {
-        //    var dataTableConsuption = new google.visualization.DataTable();
-        //    dataTableConsuption.addColumn({ type: 'datetime', id: 'Date' });
-        //    dataTableConsuption.addColumn({ type: 'number', id: 'Amount' });
+        //jsonConsuption
+        //var dataConsMatrix = [];
+        function drawConsuptionChart() {
+            var dataTableConsuption = new google.visualization.DataTable();
+            dataTableConsuption.addColumn({ type: 'datetime', id: 'Date' });
+            dataTableConsuption.addColumn({ type: 'number', id: 'Amount', label: 'Average Model' });
 
-        //    for (var i = 0; i < jsonConsuption.length; i++) {
-        //        var obj = jsonConsuption[i];
-        //        //for (var key in obj) {
-        //        //var attrName = key;
-        //        //var attrValue = obj[key];
+            function createConsumptionDataTable() {
+                for (var i = 0; i < jsonConsuption.length; i++) {
+                    var obj = jsonConsuption[i];
+                    var dtt = getDateFromString(obj["IdDate"]);
+                    dataTableConsuption.addRow([dtt,0]);
+                }
 
-        //        var dtt = getDateFromString(obj["dt"]);
-        //        var amt = obj["amount"];
-        //        dataTableConsuption.addRow([dtt, amt]);
-        //        //}
-        //    }
+            }
 
-        //    //var dataConsuption = google.visualization.arrayToDataTable([
-        //    //  ['Year', 'Sales', 'Expenses'],
-        //    //  ['2004', 1000, 400],
-        //    //  ['2005', 1170, 460],
-        //    //  ['2006', 660, 1120],
-        //    //  ['2007', 1030, 540]
-        //    //]);
+            createConsumptionDataTable();
 
-        //    var optionsConsuption = {
-        //        title: 'Overal consuption',
-        //        curveType: 'function'
-        //    };
+            function addColumnData(attributeName, columnNumber) {
+                for (var i = 0; i < jsonConsuption.length; i++) {
+                    var obj = jsonConsuption[i];
+                    var amt = obj[attributeName];
+                    dataTableConsuption.setCell(i, columnNumber, amt);
+                }
 
-        //    var chartConsuption = new google.visualization.LineChart(document.getElementById('consuptionGraph'));
+            }
 
-        //    chartConsuption.draw(dataTableConsuption, optionsConsuption);
+            addColumnData("Amount",1);
 
-        //    var chartParameter = chartConsuption;
-        //    var dataTableParameter = dataTableConsuption;
+            //for (var i = 0; i < jsonConsuption.length; i++) {
+            //    var obj = jsonConsuption[i];
+            //    var dtt = getDateFromString(obj["IdDate"]);
+            //    var amt = obj["Amount"];
+            //    dataTableConsuption.addRow([dtt, amt]);
+            //}
 
-        //    function selectHandler() {
-        //        var selection = chartParameter.getSelection();
-        //        // .setSelection(table.getSelection());
-        //        var selectedRow = selection[0]["row"];
-        //        var selectedColumn = selection[0]["column"];
-        //        selectedData = selectedRow;// dataTableParameter.getValue(selectedRow, selectedColumn);
-        //        selectedDate = jsonConsuption[selectedRow]["dt"];
-        //        spiralGraphDraw();
-        //        drawCalendarChart();
-        //    }
+            var optionsConsuption = {
+                title: 'Overal consuption',
+                curveType: 'function'
+            };
 
-        //    google.visualization.events.addListener(chartConsuption, 'select', selectHandler);
+            var chartConsuption = new google.visualization.LineChart(document.getElementById('consuptionGraph'));
 
-        //}
-        //drawConsuptionChart();
+            chartConsuption.draw(dataTableConsuption, optionsConsuption);
+
+            var chartParameter = chartConsuption;
+            var dataTableParameter = dataTableConsuption;
+
+            function selectHandler() {
+                var selection = chartParameter.getSelection();
+                // .setSelection(table.getSelection());
+                var selectedRow = selection[0]["row"];
+                var selectedColumn = selection[0]["column"];
+                selectedData = selectedRow;// dataTableParameter.getValue(selectedRow, selectedColumn);
+                selectedDate = jsonConsuption[selectedRow]["IdDate"];
+                spiralGraphDraw();
+                //drawCalendarChart();
+            }
+
+            google.visualization.events.addListener(chartConsuption, 'select', selectHandler);
+
+        }
+        drawConsuptionChart();
 
         // The selection handler.
         // Loop through all items in the selection and concatenate
@@ -215,72 +224,72 @@
 
         //SPIRAL
 
-        //var c = document.getElementById('spiralGraph');
-        //var context = c.getContext("2d");
-        //var centerx = context.canvas.width / 2;
-        //var centery = context.canvas.height / 2;
+        var c = document.getElementById('spiralGraph');
+        var context = c.getContext("2d");
+        var centerx = context.canvas.width / 2;
+        var centery = context.canvas.height / 2;
 
-        //var maxAmount = Math.max.apply(Math, jsonConsuption.map(function (o) { return o.amount; }))
-        //var minAmount = Math.min.apply(Math, jsonConsuption.map(function (o) { return o.amount; }))
+        var maxAmount = Math.max.apply(Math, jsonConsuption.map(function (o) { return o.Amount; }));
+        var minAmount = Math.min.apply(Math, jsonConsuption.map(function (o) { return o.Amount; }));
 
-        //function spiralGraphDraw() {
-        //    a = parseFloat($('#a').val());
-        //    b = parseFloat($('#b').val());
-        //    angl = parseFloat($('#angle').val());
-        //    context.clearRect(0, 0, 300, 300);
+        function spiralGraphDraw() {
+            a = parseFloat($('#a').val());
+            b = parseFloat($('#b').val());
+            angl = parseFloat($('#angle').val());
+            context.clearRect(0, 0, 300, 300);
 
-        //    context.beginPath();
-        //    context.rect(0, 0, context.canvas.width, context.canvas.width);
-        //    context.fillStyle = 'black'
-        //    context.fill();
-        //    context.stroke();
+            context.beginPath();
+            context.rect(0, 0, context.canvas.width, context.canvas.width);
+            context.fillStyle = 'black'
+            context.fill();
+            context.stroke();
 
-        //    var lastX = centerx + (a + b * angl) * Math.cos(angl);
-        //    var lastY = centery + (a + b * angl) * Math.sin(angl);
+            var lastX = centerx + (a + b * angl) * Math.cos(angl);
+            var lastY = centery + (a + b * angl) * Math.sin(angl);
 
-        //    for (i = 0; i < jsonConsuption.length; i++) {
-        //        context.beginPath();
-        //        context.moveTo(lastX, lastY);
-        //        angle = angl * i;
-        //        x = centerx + (a + b * angle) * Math.cos(angle);
-        //        y = centery + (a + b * angle) * Math.sin(angle);
-        //        var color = ((jsonConsuption[i]["amount"] - minAmount) / (maxAmount - minAmount)) * 255;
-        //        var day = jsonConsuption[i]["dt"] % 100;
-        //        var clr = "";
-        //        if (selectedDate && selectedDate == jsonConsuption[i]["dt"]) {
-        //            context.lineWidth = (parseFloat($('#lineWidth').val())) + 3;
-        //            context.strokeStyle = 'yellow';
-        //            context.lineTo(x, y);
-        //            context.lineCap = 'square';
-        //            context.stroke();
-        //        }
-        //        if (day == 1) {
-        //            clr = '#FF0000';
+            for (i = 0; i < jsonConsuption.length; i++) {
+                context.beginPath();
+                context.moveTo(lastX, lastY);
+                angle = angl * i;
+                x = centerx + (a + b * angle) * Math.cos(angle);
+                y = centery + (a + b * angle) * Math.sin(angle);
+                var color = ((jsonConsuption[i]["Amount"] - minAmount) / (maxAmount - minAmount)) * 255;
+                var day = jsonConsuption[i]["IdDate"] % 100;
+                var clr = "";
+                if (selectedDate && selectedDate == jsonConsuption[i]["IdDate"]) {
+                    context.lineWidth = (parseFloat($('#lineWidth').val())) + 3;
+                    context.strokeStyle = 'yellow';
+                    context.lineTo(x, y);
+                    context.lineCap = 'square';
+                    context.stroke();
+                }
+                if (day == 1) {
+                    clr = '#FF0000';
 
-        //        }
-        //        else {
-        //            var col = parseInt(color.toString()).toString(16);
-        //            if (col.length == 1) {
-        //                col = "0" + col;
-        //            }
-        //            if (col.length > 2) {
-        //                col = "00";
-        //            }
-        //            clr = "#00" + col + '00';
-        //        }
+                }
+                else {
+                    var col = parseInt(color.toString()).toString(16);
+                    if (col.length == 1) {
+                        col = "0" + col;
+                    }
+                    if (col.length > 2) {
+                        col = "00";
+                    }
+                    clr = "#00" + col + '00';
+                }
 
-        //        //  var clr = "#00" + parseInt(color.toString()).toString(16) + '00';
-        //        context.lineWidth = parseFloat($('#lineWidth').val());
-        //        context.strokeStyle = clr;
-        //        context.lineTo(x, y);
-        //        context.lineCap = 'butt';
-        //        context.stroke();
-        //        lastX = x;
-        //        lastY = y;
-        //    }
+                //  var clr = "#00" + parseInt(color.toString()).toString(16) + '00';
+                context.lineWidth = parseFloat($('#lineWidth').val());
+                context.strokeStyle = clr;
+                context.lineTo(x, y);
+                context.lineCap = 'butt';
+                context.stroke();
+                lastX = x;
+                lastY = y;
+            }
 
-        //}
-        //$('#draw').click(spiralGraphDraw());
+        }
+        $('#draw').click(spiralGraphDraw());
 
         //g3 = new Dygraph(
         //    document.getElementById("lineGraph"),
@@ -298,52 +307,52 @@
         //    async: false
         //}).responseJSON;
 
-        //function drawCalendarChart() {
-        //    var dataTableCalendar = new google.visualization.DataTable();
-        //    dataTableCalendar.addColumn({ type: 'datetime', id: 'Date' });
-        //    dataTableCalendar.addColumn({ type: 'number', id: 'importance' });
+        function drawCalendarChart() {
+            var dataTableCalendar = new google.visualization.DataTable();
+            dataTableCalendar.addColumn({ type: 'datetime', id: 'Date' });
+            dataTableCalendar.addColumn({ type: 'number', id: 'importance' });
 
-        //    var chart1 = new google.visualization.Calendar(document.getElementById('calendar_basic'));
+            var chart1 = new google.visualization.Calendar(document.getElementById('calendar_basic'));
 
-        //    for (var i = 0; i < jsonEvents.length; i++) {
-        //        var obj = jsonEvents[i];
-        //        //for (var key in obj) {
-        //        //var attrName = key;
-        //        //var attrValue = obj[key];
-        //        var dtt = new Date(parseInt(obj["dt"].substr(6)));
-        //        var imp = obj["importance"];
-        //        dataTableCalendar.addRow([dtt, imp]);
+            for (var i = 0; i < jsonEvents.length; i++) {
+                var obj = jsonEvents[i];
+                //for (var key in obj) {
+                //var attrName = key;
+                //var attrValue = obj[key];
+                var dtt = new Date(parseInt(obj["IdDate"].substr(6)));
+                var imp = obj["importance"];
+                dataTableCalendar.addRow([dtt, imp]);
 
-        //        var testDate = getDateFromString(selectedDate);
-        //        var a = +dtt;
-        //        var b = getDateFromString(selectedDate);
-        //        b = +b;
-        //        if (selectedDate && a === b) {
-        //            //var temp = chart1.getSelection();
-        //            //chart1.setSelection([{ 'row': i, 'column': null }]);
-        //        }
+                var testDate = getDateFromString(selectedDate);
+                var a = +dtt;
+                var b = getDateFromString(selectedDate);
+                b = +b;
+                if (selectedDate && a === b) {
+                    //var temp = chart1.getSelection();
+                    //chart1.setSelection([{ 'row': i, 'column': null }]);
+                }
 
-        //        //}
-        //    }
+                //}
+            }
 
-        //    var options1 = {
-        //        title: "Calendar",
-        //        height: 350,
-        //        colorAxis: { minValue: 50, colors: ['#FF0000', '#FF0000'] },
-        //        calendar: {
-        //            cellColor: {
-        //                stroke: '#76a7fa',
-        //                strokeOpacity: 0.5,
-        //                strokeWidth: 1,
-        //            }
-        //        }
-        //    };
+            var options1 = {
+                title: "Calendar",
+                height: 350,
+                colorAxis: { minValue: 50, colors: ['#FF0000', '#FF0000'] },
+                calendar: {
+                    cellColor: {
+                        stroke: '#76a7fa',
+                        strokeOpacity: 0.5,
+                        strokeWidth: 1,
+                    }
+                }
+            };
 
-        //    chart1.draw(dataTableCalendar, options1);
-        //    selectHighlight(chart1);
-        //}
+            chart1.draw(dataTableCalendar, options1);
+            selectHighlight(chart1);
+        }
 
-        //drawCalendarChart()
+        drawCalendarChart();
 
         ////PIECHART
         //var oldData = google.visualization.arrayToDataTable([

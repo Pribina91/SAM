@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using VisualAnalytics.Controllers.Analytics;
 using VisualAnalytics.Controllers.Helpers;
 using VisualAnalytics.Models;
 
@@ -9,8 +10,8 @@ namespace VisualAnalytics.Controllers
 {
     public enum ModelType
     {
-        Average = 1,
-        Sum = 2
+        AVERAGE = 1,
+        SUM = 2
     };
 
     public class HomeController : Controller
@@ -42,9 +43,9 @@ namespace VisualAnalytics.Controllers
 
             //new InputParser().parseCSVBelgium(@"D:\Workspace\SamData\20141215_RAJA_ASFEU_OOM_0.txt");
 
-            getDailyAvgModelTable();
+            //getDailyAvgModelTable();
 
-            am.modelChange(modelJSON, "fit");
+            //am.modelChange(modelJSON, "fit");
 
             return View();
         }
@@ -209,15 +210,17 @@ namespace VisualAnalytics.Controllers
             return new ContentResult { Content = bigTable.ToJSON(), ContentType = "application/json" };
         }
 
-        public ContentResult getDailyModelTable(ModelType mt)
+        public ContentResult getDailyModelTable(string Type = "SUM")
         {
-            switch (mt)
+            ModelType modelTp = (ModelType)Enum.Parse(
+                                          typeof(ModelType), Type, true);
+            switch (modelTp)
             {
-                case ModelType.Average:
+                case ModelType.AVERAGE:
                     return getDailyAvgModelTable();
                     break;
 
-                case ModelType.Sum:
+                case ModelType.SUM:
                     return getDailySumModelTable();
                     break;
 

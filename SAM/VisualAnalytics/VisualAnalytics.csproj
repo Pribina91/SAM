@@ -215,7 +215,9 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\Analytics\Outliers.cs" />
+    <Compile Include="Controllers\Analytics\AnalyticsModule.cs" />
+    <Compile Include="Controllers\Analytics\Outlier.cs" />
+    <Compile Include="Controllers\Analytics\WeatherColumns.cs" />
     <Compile Include="Controllers\ConsuptionController.cs" />
     <Compile Include="Controllers\Helpers\ArimaModel.cs" />
     <Compile Include="Controllers\Helpers\Clustering.cs" />
@@ -223,7 +225,6 @@
     <Compile Include="Controllers\Helpers\InputParser.cs" />
     <Compile Include="Controllers\Helpers\JSONhelper.cs" />
     <Compile Include="Controllers\Helpers\Polynomial.cs" />
-    <Compile Include="Controllers\Helpers\AnalyticsModule.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

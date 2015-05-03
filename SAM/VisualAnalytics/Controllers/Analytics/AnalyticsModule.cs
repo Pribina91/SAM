@@ -178,7 +178,7 @@ namespace VisualAnalytics.Controllers.Analytics
             rEngine.Evaluate(evaluate);
         }
 
-        public List<> findOutliers(string fittedDataName)
+        public List<Outlier> findOutliers(string fittedDataName)
         {
             string evaluate;
 
@@ -189,7 +189,15 @@ namespace VisualAnalytics.Controllers.Analytics
             var pars = rEngine.Evaluate(evaluate);
 
             evaluate = string.Format("outliers <- locate.outliers(resid, pars)");
-            var outliers = rEngine.Evaluate(evaluate);
+            var outliers = rEngine.Evaluate(evaluate).AsList();
+
+            List<Outlier> retList = new List<Outlier>();
+            foreach (var outlier in outliers)
+            {
+                var outVector = outlier.AsVector();
+            }
+
+            return retList;
         }
 
         private static string GetRPath()
