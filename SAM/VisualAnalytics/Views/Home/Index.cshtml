@@ -102,121 +102,122 @@
         //    ['2007/08', 139, 1110, 621, 609.4],
         //    ['2008/09', 136, 691, 366, 569.6]
         //        ]);
-        var jsonWeather = $.ajax({
-            url: "home/getWeather",
-            dataType: "json",
-            async: false
-        }).responseJSON;
 
-        function drawWeatherChart() {
-            var weatherData = new google.visualization.DataTable();
-            weatherData.addColumn({ type: 'datetime', id: 'Date' });
-            weatherData.addColumn({ type: 'number', id: 'Temperature' });
-            weatherData.addColumn({ type: 'number', id: 'Humidity' });
-            // weatherData.addColumn({ type: 'number', id: 'Wind' });
-            weatherData.addColumn({ type: 'number', id: 'Rain' });
+        //var jsonWeather = $.ajax({
+        //    url: "home/getWeather",
+        //    dataType: "json",
+        //    async: false
+        //}).responseJSON;
 
-            for (var i = 0; i < jsonWeather.length; i++) {
-                var obj = jsonWeather[i];
-                //for (var key in obj) {
-                //var attrName = key;
-                //var attrValue = obj[key];
-                var y = new Date(parseInt(obj["dtt"].substr(6)));
-                var temperature = obj["temperature"];
-                var humidity = obj["humidity"];
-                //var wind = obj["wind"];
-                var rain = obj["rain"];
+        //function drawWeatherChart() {
+        //    var weatherData = new google.visualization.DataTable();
+        //    weatherData.addColumn({ type: 'datetime', id: 'Date' });
+        //    weatherData.addColumn({ type: 'number', id: 'Temperature' });
+        //    weatherData.addColumn({ type: 'number', id: 'Humidity' });
+        //    // weatherData.addColumn({ type: 'number', id: 'Wind' });
+        //    weatherData.addColumn({ type: 'number', id: 'Rain' });
 
-                weatherData.addRow([
-                    y
-                    , temperature
-                    , humidity
-                    //, wind
-                    , rain]);
-                //}
-            }
+        //    for (var i = 0; i < jsonWeather.length; i++) {
+        //        var obj = jsonWeather[i];
+        //        //for (var key in obj) {
+        //        //var attrName = key;
+        //        //var attrValue = obj[key];
+        //        var y = new Date(parseInt(obj["dtt"].substr(6)));
+        //        var temperature = obj["temperature"];
+        //        var humidity = obj["humidity"];
+        //        //var wind = obj["wind"];
+        //        var rain = obj["rain"];
 
-            var weatherOptions = {
-                title: 'Weather',
-                hAxis: { title: "Date" },
-                seriesType: "bars",
-                series: {
-                    2: { type: "bars" }
-                   , 0: { type: "line" }
-                },
-                legend: { position: 'bottom' }
+        //        weatherData.addRow([
+        //            y
+        //            , temperature
+        //            , humidity
+        //            //, wind
+        //            , rain]);
+        //        //}
+        //    }
 
-            };
+        //    var weatherOptions = {
+        //        title: 'Weather',
+        //        hAxis: { title: "Date" },
+        //        seriesType: "bars",
+        //        series: {
+        //            2: { type: "bars" }
+        //           , 0: { type: "line" }
+        //        },
+        //        legend: { position: 'bottom' }
 
-            var weatherChart = new google.visualization.ComboChart(document.getElementById('weatherGraph'));
-            weatherChart.draw(weatherData, weatherOptions);
-        }
+        //    };
 
-        drawWeatherChart();
+        //    var weatherChart = new google.visualization.ComboChart(document.getElementById('weatherGraph'));
+        //    weatherChart.draw(weatherData, weatherOptions);
+        //}
+
+        //drawWeatherChart();
 
 
         ////CONSUPTION line chart
-        var jsonConsuption = $.ajax({
-            url: "home/getConsuptions",
-            dataType: "json",
-            async: false
-        }).responseJSON;
+        //var jsonConsuption = $.ajax({
+        //    url: "home/getConsuptions",
+        //    dataType: "json",
+        //    async: false
+        //}).responseJSON;
 
-        //jsonConsuption
-        //var dataConsMatrix = [];
-        function drawConsuptionChart() {
-            var dataTableConsuption = new google.visualization.DataTable();
-            dataTableConsuption.addColumn({ type: 'datetime', id: 'Date' });
-            dataTableConsuption.addColumn({ type: 'number', id: 'Amount' });
+        ////jsonConsuption
+        ////var dataConsMatrix = [];
+        //function drawConsuptionChart() {
+        //    var dataTableConsuption = new google.visualization.DataTable();
+        //    dataTableConsuption.addColumn({ type: 'datetime', id: 'Date' });
+        //    dataTableConsuption.addColumn({ type: 'number', id: 'Amount' });
 
-            for (var i = 0; i < jsonConsuption.length; i++) {
-                var obj = jsonConsuption[i];
-                //for (var key in obj) {
-                //var attrName = key;
-                //var attrValue = obj[key];
+        //    for (var i = 0; i < jsonConsuption.length; i++) {
+        //        var obj = jsonConsuption[i];
+        //        //for (var key in obj) {
+        //        //var attrName = key;
+        //        //var attrValue = obj[key];
 
-                var dtt = getDateFromString(obj["dt"]);
-                var amt = obj["amount"];
-                dataTableConsuption.addRow([dtt, amt]);
-                //}
-            }
+        //        var dtt = getDateFromString(obj["dt"]);
+        //        var amt = obj["amount"];
+        //        dataTableConsuption.addRow([dtt, amt]);
+        //        //}
+        //    }
 
 
-            //var dataConsuption = google.visualization.arrayToDataTable([
-            //  ['Year', 'Sales', 'Expenses'],
-            //  ['2004', 1000, 400],
-            //  ['2005', 1170, 460],
-            //  ['2006', 660, 1120],
-            //  ['2007', 1030, 540]
-            //]);
+        //    //var dataConsuption = google.visualization.arrayToDataTable([
+        //    //  ['Year', 'Sales', 'Expenses'],
+        //    //  ['2004', 1000, 400],
+        //    //  ['2005', 1170, 460],
+        //    //  ['2006', 660, 1120],
+        //    //  ['2007', 1030, 540]
+        //    //]);
 
-            var optionsConsuption = {
-                title: 'Overal consuption',
-                curveType: 'function'
-            };
+        //    var optionsConsuption = {
+        //        title: 'Overal consuption',
+        //        curveType: 'function'
+        //    };
 
-            var chartConsuption = new google.visualization.LineChart(document.getElementById('consuptionGraph'));
+        //    var chartConsuption = new google.visualization.LineChart(document.getElementById('consuptionGraph'));
 
-            chartConsuption.draw(dataTableConsuption, optionsConsuption);
+        //    chartConsuption.draw(dataTableConsuption, optionsConsuption);
 
-            var chartParameter = chartConsuption;
-            var dataTableParameter = dataTableConsuption;
+        //    var chartParameter = chartConsuption;
+        //    var dataTableParameter = dataTableConsuption;
 
-            function selectHandler() {
-                var selection = chartParameter.getSelection();
-                // .setSelection(table.getSelection());
-                var selectedRow = selection[0]["row"];
-                var selectedColumn = selection[0]["column"];
-                selectedData = selectedRow;// dataTableParameter.getValue(selectedRow, selectedColumn);
-                selectedDate = jsonConsuption[selectedRow]["dt"];
-                spiralGraphDraw();
-                drawCalendarChart();
-            }
+        //    function selectHandler() {
+        //        var selection = chartParameter.getSelection();
+        //        // .setSelection(table.getSelection());
+        //        var selectedRow = selection[0]["row"];
+        //        var selectedColumn = selection[0]["column"];
+        //        selectedData = selectedRow;// dataTableParameter.getValue(selectedRow, selectedColumn);
+        //        selectedDate = jsonConsuption[selectedRow]["dt"];
+        //        spiralGraphDraw();
+        //        drawCalendarChart();
+        //    }
 
-            google.visualization.events.addListener(chartConsuption, 'select', selectHandler);
+        //    google.visualization.events.addListener(chartConsuption, 'select', selectHandler);
 
-        }
-        drawConsuptionChart();
+        //}
+        //drawConsuptionChart();
 
 
 
@@ -227,78 +228,78 @@
 
         //SPIRAL
 
-        var c = document.getElementById('spiralGraph');
-        var context = c.getContext("2d");
-        var centerx = context.canvas.width / 2;
-        var centery = context.canvas.height / 2;
+        //var c = document.getElementById('spiralGraph');
+        //var context = c.getContext("2d");
+        //var centerx = context.canvas.width / 2;
+        //var centery = context.canvas.height / 2;
 
-        var maxAmount = Math.max.apply(Math, jsonConsuption.map(function (o) { return o.amount; }))
-        var minAmount = Math.min.apply(Math, jsonConsuption.map(function (o) { return o.amount; }))
+        //var maxAmount = Math.max.apply(Math, jsonConsuption.map(function (o) { return o.amount; }))
+        //var minAmount = Math.min.apply(Math, jsonConsuption.map(function (o) { return o.amount; }))
 
-        function spiralGraphDraw() {
-            a = parseFloat($('#a').val());
-            b = parseFloat($('#b').val());
-            angl = parseFloat($('#angle').val());
-            context.clearRect(0, 0, 300, 300);
-
-
-
-            context.beginPath();
-            context.rect(0, 0, context.canvas.width, context.canvas.width);
-            context.fillStyle = 'black'
-            context.fill();
-            context.stroke();
-
-            var lastX = centerx + (a + b * angl) * Math.cos(angl);
-            var lastY = centery + (a + b * angl) * Math.sin(angl);
-
-            for (i = 0; i < jsonConsuption.length; i++) {
-                context.beginPath();
-                context.moveTo(lastX, lastY);
-                angle = angl * i;
-                x = centerx + (a + b * angle) * Math.cos(angle);
-                y = centery + (a + b * angle) * Math.sin(angle);
-                var color = ((jsonConsuption[i]["amount"] - minAmount) / (maxAmount - minAmount)) * 255;
-                var day = jsonConsuption[i]["dt"] % 100;
-                var clr = "";
-                if (selectedDate && selectedDate == jsonConsuption[i]["dt"]) {
-                    context.lineWidth = (parseFloat($('#lineWidth').val())) + 3;
-                    context.strokeStyle = 'yellow';
-                    context.lineTo(x, y);
-                    context.lineCap = 'square';
-                    context.stroke();
-                }
-                if (day == 1) {
-                    clr = '#FF0000';
-
-                }
-                else {
-                    var col = parseInt(color.toString()).toString(16);
-                    if (col.length == 1) {
-                        col = "0" + col;
-                    }
-                    if (col.length > 2) {
-                        col = "00";
-                    }
-                    clr = "#00" + col + '00';
-                }
+        //function spiralGraphDraw() {
+        //    a = parseFloat($('#a').val());
+        //    b = parseFloat($('#b').val());
+        //    angl = parseFloat($('#angle').val());
+        //    context.clearRect(0, 0, 300, 300);
 
 
 
-                //  var clr = "#00" + parseInt(color.toString()).toString(16) + '00';
-                context.lineWidth = parseFloat($('#lineWidth').val());
-                context.strokeStyle = clr;
-                context.lineTo(x, y);
-                context.lineCap = 'butt';
-                context.stroke();
-                lastX = x;
-                lastY = y;
-            }
+        //    context.beginPath();
+        //    context.rect(0, 0, context.canvas.width, context.canvas.width);
+        //    context.fillStyle = 'black'
+        //    context.fill();
+        //    context.stroke();
+
+        //    var lastX = centerx + (a + b * angl) * Math.cos(angl);
+        //    var lastY = centery + (a + b * angl) * Math.sin(angl);
+
+        //    for (i = 0; i < jsonConsuption.length; i++) {
+        //        context.beginPath();
+        //        context.moveTo(lastX, lastY);
+        //        angle = angl * i;
+        //        x = centerx + (a + b * angle) * Math.cos(angle);
+        //        y = centery + (a + b * angle) * Math.sin(angle);
+        //        var color = ((jsonConsuption[i]["amount"] - minAmount) / (maxAmount - minAmount)) * 255;
+        //        var day = jsonConsuption[i]["dt"] % 100;
+        //        var clr = "";
+        //        if (selectedDate && selectedDate == jsonConsuption[i]["dt"]) {
+        //            context.lineWidth = (parseFloat($('#lineWidth').val())) + 3;
+        //            context.strokeStyle = 'yellow';
+        //            context.lineTo(x, y);
+        //            context.lineCap = 'square';
+        //            context.stroke();
+        //        }
+        //        if (day == 1) {
+        //            clr = '#FF0000';
+
+        //        }
+        //        else {
+        //            var col = parseInt(color.toString()).toString(16);
+        //            if (col.length == 1) {
+        //                col = "0" + col;
+        //            }
+        //            if (col.length > 2) {
+        //                col = "00";
+        //            }
+        //            clr = "#00" + col + '00';
+        //        }
 
 
 
-        }
-        $('#draw').click(spiralGraphDraw());
+        //        //  var clr = "#00" + parseInt(color.toString()).toString(16) + '00';
+        //        context.lineWidth = parseFloat($('#lineWidth').val());
+        //        context.strokeStyle = clr;
+        //        context.lineTo(x, y);
+        //        context.lineCap = 'butt';
+        //        context.stroke();
+        //        lastX = x;
+        //        lastY = y;
+        //    }
+
+
+
+        //}
+        //$('#draw').click(spiralGraphDraw());
 
         //g3 = new Dygraph(
         //    document.getElementById("lineGraph"),
@@ -311,235 +312,235 @@
 
 
         //CALENDAR chart
-        var jsonEvents = $.ajax({
-            url: "home/getEvents",
-            dataType: "json",
-            async: false
-        }).responseJSON;
+        //var jsonEvents = $.ajax({
+        //    url: "home/getEvents",
+        //    dataType: "json",
+        //    async: false
+        //}).responseJSON;
 
-        function drawCalendarChart() {
-            var dataTableCalendar = new google.visualization.DataTable();
-            dataTableCalendar.addColumn({ type: 'datetime', id: 'Date' });
-            dataTableCalendar.addColumn({ type: 'number', id: 'importance' });
+        //function drawCalendarChart() {
+        //    var dataTableCalendar = new google.visualization.DataTable();
+        //    dataTableCalendar.addColumn({ type: 'datetime', id: 'Date' });
+        //    dataTableCalendar.addColumn({ type: 'number', id: 'importance' });
 
-            var chart1 = new google.visualization.Calendar(document.getElementById('calendar_basic'));
+        //    var chart1 = new google.visualization.Calendar(document.getElementById('calendar_basic'));
 
-            for (var i = 0; i < jsonEvents.length; i++) {
-                var obj = jsonEvents[i];
-                //for (var key in obj) {
-                //var attrName = key;
-                //var attrValue = obj[key];
-                var dtt = new Date(parseInt(obj["dt"].substr(6)));
-                var imp = obj["importance"];
-                dataTableCalendar.addRow([dtt, imp]);
+        //    for (var i = 0; i < jsonEvents.length; i++) {
+        //        var obj = jsonEvents[i];
+        //        //for (var key in obj) {
+        //        //var attrName = key;
+        //        //var attrValue = obj[key];
+        //        var dtt = new Date(parseInt(obj["dt"].substr(6)));
+        //        var imp = obj["importance"];
+        //        dataTableCalendar.addRow([dtt, imp]);
 
-                var testDate = getDateFromString(selectedDate);
-                var a = +dtt;
-                var b = getDateFromString(selectedDate);
-                b = +b;
-                if (selectedDate && a === b) {
-                    //var temp = chart1.getSelection();
-                    //chart1.setSelection([{ 'row': i, 'column': null }]);
-                }
+        //        var testDate = getDateFromString(selectedDate);
+        //        var a = +dtt;
+        //        var b = getDateFromString(selectedDate);
+        //        b = +b;
+        //        if (selectedDate && a === b) {
+        //            //var temp = chart1.getSelection();
+        //            //chart1.setSelection([{ 'row': i, 'column': null }]);
+        //        }
 
-                //}
-            }
-
-
-
-            var options1 = {
-                title: "Calendar",
-                height: 350,
-                colorAxis: { minValue: 50, colors: ['#FF0000', '#FF0000'] },
-                calendar: {
-                    cellColor: {
-                        stroke: '#76a7fa',
-                        strokeOpacity: 0.5,
-                        strokeWidth: 1,
-                    }
-                }
-            };
-
-            chart1.draw(dataTableCalendar, options1);
-            selectHighlight(chart1);
-        }
-
-        drawCalendarChart()
-
-        //CALENDAR Cluster chart
-        var jsonCluster = $.ajax({
-            url: "home/getClusters",
-            dataType: "json",
-            async: false
-        }).responseJSON;
-
-        function drawCalendarClusterChart() {
-            var dataTableCalendar = new google.visualization.DataTable();
-            dataTableCalendar.addColumn({ type: 'datetime', id: 'Date' });
-           // dataTableCalendar.addColumn({ type: 'number', id: 'importance' });
-            dataTableCalendar.addColumn({ type: 'number', id: 'cluster' });
-
-            var chart1 = new google.visualization.Calendar(document.getElementById('calendar_cluster'));
-
-            for (var i = 0; i < jsonCluster.length; i++) {
-                var obj = jsonCluster[i];
-                //for (var key in obj) {
-                //var attrName = key;
-                //var attrValue = obj[key];
-                var dtt = getDateFromString(obj[1]);
-                var c = obj[0];
-                dataTableCalendar.addRow([dtt,255/c]);
-
-                var testDate = getDateFromString(selectedDate);
-                var a = +dtt;
-                var b = getDateFromString(selectedDate);
-                b = +b;
-                if (selectedDate && a === b) {
-                    //var temp = chart1.getSelection();
-                    //chart1.setSelection([{ 'row': i, 'column': null }]);
-                }
-
-                //}
-            }
+        //        //}
+        //    }
 
 
 
-            var options1 = {
-                title: "Calendar",
-                height: 350,
-               // colorAxis: { minValue: 50, colors: ['#FF0000', '#FF0000'] },
-                calendar: {
-                    cellColor: {
-                        stroke: '#76a7fa',
-                        strokeOpacity: 0.5,
-                        strokeWidth: 1,
-                    }
-                }
-            };
+        //    var options1 = {
+        //        title: "Calendar",
+        //        height: 350,
+        //        colorAxis: { minValue: 50, colors: ['#FF0000', '#FF0000'] },
+        //        calendar: {
+        //            cellColor: {
+        //                stroke: '#76a7fa',
+        //                strokeOpacity: 0.5,
+        //                strokeWidth: 1,
+        //            }
+        //        }
+        //    };
 
-            chart1.draw(dataTableCalendar, options1);
-            selectHighlight(chart1);
-        }
+        //    chart1.draw(dataTableCalendar, options1);
+        //    selectHighlight(chart1);
+        //}
 
-        drawCalendarClusterChart()
+        //drawCalendarChart()
 
-        //PIECHART
-        var oldData = google.visualization.arrayToDataTable([
-              ['Major', 'Degrees'],
-              ['Business', 256070], ['Education', 108034],
-              ['Social Sciences & History', 127101], ['Health', 81863],
-              ['Psychology', 74194]]);
+        ////CALENDAR Cluster chart
+        //var jsonCluster = $.ajax({
+        //    url: "home/getClusters",
+        //    dataType: "json",
+        //    async: false
+        //}).responseJSON;
 
-        var newData = google.visualization.arrayToDataTable([
-          ['Major', 'Degrees'],
-          ['Business', 358293], ['Education', 101265],
-          ['Social Sciences & History', 172780], ['Health', 129634],
-          ['Psychology', 97216]]);
+        //function drawCalendarClusterChart() {
+        //    var dataTableCalendar = new google.visualization.DataTable();
+        //    dataTableCalendar.addColumn({ type: 'datetime', id: 'Date' });
+        //   // dataTableCalendar.addColumn({ type: 'number', id: 'importance' });
+        //    dataTableCalendar.addColumn({ type: 'number', id: 'cluster' });
 
-        var options2 = { pieSliceText: 'none' };
+        //    var chart1 = new google.visualization.Calendar(document.getElementById('calendar_cluster'));
 
-        //var chartBefore = new google.visualization.PieChart(document.getElementById('piechart_before'));
-        //var chartAfter = new google.visualization.PieChart(document.getElementById('piechart_after'));
-        var chartDiff = new google.visualization.PieChart(document.getElementById('piechart_diff'));
+        //    for (var i = 0; i < jsonCluster.length; i++) {
+        //        var obj = jsonCluster[i];
+        //        //for (var key in obj) {
+        //        //var attrName = key;
+        //        //var attrValue = obj[key];
+        //        var dtt = getDateFromString(obj[1]);
+        //        var c = obj[0];
+        //        dataTableCalendar.addRow([dtt,255/c]);
 
-        //chartBefore.draw(oldData, options);
-        // chartAfter.draw(newData, options);
+        //        var testDate = getDateFromString(selectedDate);
+        //        var a = +dtt;
+        //        var b = getDateFromString(selectedDate);
+        //        b = +b;
+        //        if (selectedDate && a === b) {
+        //            //var temp = chart1.getSelection();
+        //            //chart1.setSelection([{ 'row': i, 'column': null }]);
+        //        }
 
-        var diffData2 = chartDiff.computeDiff(oldData, newData);
-        chartDiff.draw(diffData2, options2);
-
-        //TREECHART
-        var data3 = google.visualization.arrayToDataTable([
-             ['Location', 'Parent', 'Market trade volume (size)', 'Market increase/decrease (color)'],
-             ['Global', null, 0, 0],
-             ['America', 'Global', 0, 0],
-             ['Europe', 'Global', 0, 0],
-             ['Asia', 'Global', 0, 0],
-             ['Australia', 'Global', 0, 0],
-             ['Africa', 'Global', 0, 0],
-             ['Brazil', 'America', 11, 10],
-             ['USA', 'America', 52, 31],
-             ['Mexico', 'America', 24, 12],
-             ['Canada', 'America', 16, -23],
-             ['France', 'Europe', 42, -11],
-             ['Germany', 'Europe', 31, -2],
-             ['Sweden', 'Europe', 22, -13],
-             ['Italy', 'Europe', 17, 4],
-             ['UK', 'Europe', 21, -5],
-             ['China', 'Asia', 36, 4],
-             ['Japan', 'Asia', 20, -12],
-             ['India', 'Asia', 40, 63],
-             ['Laos', 'Asia', 4, 34],
-             ['Mongolia', 'Asia', 1, -5],
-             ['Israel', 'Asia', 12, 24],
-             ['Iran', 'Asia', 18, 13],
-             ['Pakistan', 'Asia', 11, -52],
-             ['Egypt', 'Africa', 21, 0],
-             ['S. Africa', 'Africa', 30, 43],
-             ['Sudan', 'Africa', 12, 2],
-             ['Congo', 'Africa', 10, 12],
-             ['Zaire', 'Africa', 8, 10]
-        ]);
-
-        tree = new google.visualization.TreeMap(document.getElementById('treemapGoogle'));
-
-        tree.draw(data3, {
-            minColor: '#f00',
-            midColor: '#ddd',
-            maxColor: '#0d0',
-            headerHeight: 15,
-            fontColor: 'black',
-            showScale: true
-        });
-
-        var dataMotion = new google.visualization.DataTable();
-
-        dataMotion.addColumn('string', 'Cluster');
-        dataMotion.addColumn('date', 'Date');
-        dataMotion.addColumn('number', 'Amount');
-        dataMotion.addColumn('number', 'Temperature');
-        dataMotion.addColumn('number', 'Rainfall');
-        dataMotion.addColumn('number', 'Wind Speed');
-        dataMotion.addColumn('number', 'Wind Direction');
-        dataMotion.addColumn('number', 'Humidity');
-        dataMotion.addColumn('number', 'Solar Flux');
-
-        var jsonBigTable = $.ajax({
-            url: "home/getBigTable",
-            dataType: "json",
-            async: false
-        }).responseJSON;
+        //        //}
+        //    }
 
 
-        for (var i = 0; i < jsonBigTable.length; i++) {
-            var obj = jsonBigTable[i];
-            var dtt = getDateFromString(obj["IdDate"]);
-            var imp = obj["importance"];
 
-            dataMotion.addRow(["test"
-                                ,getDateFromString(obj["IdDate"])
-                                ,obj["Amount"]
-                                ,obj["Temperature"]
-                                ,obj["Rain"]
-                                ,obj["WindSpeed"]
-                                ,obj["WindDirection"]
-                                ,obj["Humidity"]
-                                ,obj["Solar"]
-                            ]);
-        }
+        //    var options1 = {
+        //        title: "Calendar",
+        //        height: 350,
+        //       // colorAxis: { minValue: 50, colors: ['#FF0000', '#FF0000'] },
+        //        calendar: {
+        //            cellColor: {
+        //                stroke: '#76a7fa',
+        //                strokeOpacity: 0.5,
+        //                strokeWidth: 1,
+        //            }
+        //        }
+        //    };
 
-        //dataMotion.addRows([
-        //  ['Apples', new Date(1988, 0, 1), 1000, 300, 'East'],
-        //  ['Oranges', new Date(1988, 0, 1), 1150, 200, 'West'],
-        //  ['Bananas', new Date(1988, 0, 1), 300, 250, 'West'],
-        //  ['Apples', new Date(1989, 6, 1), 1200, 400, 'East'],
-        //  ['Oranges', new Date(1989, 6, 1), 750, 150, 'West'],
-        //  ['Bananas', new Date(1989, 6, 1), 788, 617, 'West']
+        //    chart1.draw(dataTableCalendar, options1);
+        //    selectHighlight(chart1);
+        //}
+
+        //drawCalendarClusterChart()
+
+        ////PIECHART
+        //var oldData = google.visualization.arrayToDataTable([
+        //      ['Major', 'Degrees'],
+        //      ['Business', 256070], ['Education', 108034],
+        //      ['Social Sciences & History', 127101], ['Health', 81863],
+        //      ['Psychology', 74194]]);
+
+        //var newData = google.visualization.arrayToDataTable([
+        //  ['Major', 'Degrees'],
+        //  ['Business', 358293], ['Education', 101265],
+        //  ['Social Sciences & History', 172780], ['Health', 129634],
+        //  ['Psychology', 97216]]);
+
+        //var options2 = { pieSliceText: 'none' };
+
+        ////var chartBefore = new google.visualization.PieChart(document.getElementById('piechart_before'));
+        ////var chartAfter = new google.visualization.PieChart(document.getElementById('piechart_after'));
+        //var chartDiff = new google.visualization.PieChart(document.getElementById('piechart_diff'));
+
+        ////chartBefore.draw(oldData, options);
+        //// chartAfter.draw(newData, options);
+
+        //var diffData2 = chartDiff.computeDiff(oldData, newData);
+        //chartDiff.draw(diffData2, options2);
+
+        ////TREECHART
+        //var data3 = google.visualization.arrayToDataTable([
+        //     ['Location', 'Parent', 'Market trade volume (size)', 'Market increase/decrease (color)'],
+        //     ['Global', null, 0, 0],
+        //     ['America', 'Global', 0, 0],
+        //     ['Europe', 'Global', 0, 0],
+        //     ['Asia', 'Global', 0, 0],
+        //     ['Australia', 'Global', 0, 0],
+        //     ['Africa', 'Global', 0, 0],
+        //     ['Brazil', 'America', 11, 10],
+        //     ['USA', 'America', 52, 31],
+        //     ['Mexico', 'America', 24, 12],
+        //     ['Canada', 'America', 16, -23],
+        //     ['France', 'Europe', 42, -11],
+        //     ['Germany', 'Europe', 31, -2],
+        //     ['Sweden', 'Europe', 22, -13],
+        //     ['Italy', 'Europe', 17, 4],
+        //     ['UK', 'Europe', 21, -5],
+        //     ['China', 'Asia', 36, 4],
+        //     ['Japan', 'Asia', 20, -12],
+        //     ['India', 'Asia', 40, 63],
+        //     ['Laos', 'Asia', 4, 34],
+        //     ['Mongolia', 'Asia', 1, -5],
+        //     ['Israel', 'Asia', 12, 24],
+        //     ['Iran', 'Asia', 18, 13],
+        //     ['Pakistan', 'Asia', 11, -52],
+        //     ['Egypt', 'Africa', 21, 0],
+        //     ['S. Africa', 'Africa', 30, 43],
+        //     ['Sudan', 'Africa', 12, 2],
+        //     ['Congo', 'Africa', 10, 12],
+        //     ['Zaire', 'Africa', 8, 10]
         //]);
 
-        var chartMotion = new google.visualization.MotionChart(document.getElementById('chartMotion'));
+        //tree = new google.visualization.TreeMap(document.getElementById('treemapGoogle'));
 
-        chartMotion.draw(dataMotion, { width: 600, height: 300 });
+        //tree.draw(data3, {
+        //    minColor: '#f00',
+        //    midColor: '#ddd',
+        //    maxColor: '#0d0',
+        //    headerHeight: 15,
+        //    fontColor: 'black',
+        //    showScale: true
+        //});
+
+        //var dataMotion = new google.visualization.DataTable();
+
+        //dataMotion.addColumn('string', 'Cluster');
+        //dataMotion.addColumn('date', 'Date');
+        //dataMotion.addColumn('number', 'Amount');
+        //dataMotion.addColumn('number', 'Temperature');
+        //dataMotion.addColumn('number', 'Rainfall');
+        //dataMotion.addColumn('number', 'Wind Speed');
+        //dataMotion.addColumn('number', 'Wind Direction');
+        //dataMotion.addColumn('number', 'Humidity');
+        //dataMotion.addColumn('number', 'Solar Flux');
+
+        //var jsonBigTable = $.ajax({
+        //    url: "home/getBigTable",
+        //    dataType: "json",
+        //    async: false
+        //}).responseJSON;
+
+
+        //for (var i = 0; i < jsonBigTable.length; i++) {
+        //    var obj = jsonBigTable[i];
+        //    var dtt = getDateFromString(obj["IdDate"]);
+        //    var imp = obj["importance"];
+
+        //    dataMotion.addRow(["test"
+        //                        ,getDateFromString(obj["IdDate"])
+        //                        ,obj["Amount"]
+        //                        ,obj["Temperature"]
+        //                        ,obj["Rain"]
+        //                        ,obj["WindSpeed"]
+        //                        ,obj["WindDirection"]
+        //                        ,obj["Humidity"]
+        //                        ,obj["Solar"]
+        //                    ]);
+        //}
+
+        ////dataMotion.addRows([
+        ////  ['Apples', new Date(1988, 0, 1), 1000, 300, 'East'],
+        ////  ['Oranges', new Date(1988, 0, 1), 1150, 200, 'West'],
+        ////  ['Bananas', new Date(1988, 0, 1), 300, 250, 'West'],
+        ////  ['Apples', new Date(1989, 6, 1), 1200, 400, 'East'],
+        ////  ['Oranges', new Date(1989, 6, 1), 750, 150, 'West'],
+        ////  ['Bananas', new Date(1989, 6, 1), 788, 617, 'West']
+        ////]);
+
+        //var chartMotion = new google.visualization.MotionChart(document.getElementById('chartMotion'));
+
+        //chartMotion.draw(dataMotion, { width: 600, height: 300 });
 
     }
 </script>

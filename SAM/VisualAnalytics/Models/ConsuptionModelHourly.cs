@@ -20,5 +20,6 @@ namespace VisualAnalytics.Models
         public int IDDistrict { get; set; }
         public int source { get; set; }
         public string Type { get; set; }
+        public int IDConsuption { get; set; }
     }
 }

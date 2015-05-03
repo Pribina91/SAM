@@ -5,15 +5,9 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="SAMModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-        <!--Errors Found During Generation:
-warning 6002: The table/view 'SAM.dbo.ConsuptionModelDaily' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="ConsuptionModelDaily">
           <Key>
-            <PropertyRef Name="MeasurementTime" />
-            <PropertyRef Name="IDDate" />
-            <PropertyRef Name="IDDistrict" />
-            <PropertyRef Name="source" />
-            <PropertyRef Name="Type" />
+            <PropertyRef Name="IDConsuption" />
           </Key>
           <Property Name="Amount" Type="float" />
           <Property Name="MeasurementTime" Type="int" Nullable="false" />
@@ -21,16 +15,11 @@ warning 6002: The table/view 'SAM.dbo.ConsuptionModelDaily' does not have a prim
           <Property Name="IDDistrict" Type="int" Nullable="false" />
           <Property Name="source" Type="int" Nullable="false" />
           <Property Name="Type" Type="varchar" MaxLength="1" Nullable="false" />
+          <Property Name="IDConsuption" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
         </EntityType>
-        <!--Errors Found During Generation:
-warning 6002: The table/view 'SAM.dbo.ConsuptionModelHourly' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="ConsuptionModelHourly">
           <Key>
-            <PropertyRef Name="MeasurementTime" />
-            <PropertyRef Name="IDDate" />
-            <PropertyRef Name="IDDistrict" />
-            <PropertyRef Name="source" />
-            <PropertyRef Name="Type" />
+            <PropertyRef Name="IDConsuption" />
           </Key>
           <Property Name="Amount" Type="float" />
           <Property Name="MeasurementTime" Type="int" Nullable="false" />
@@ -38,6 +27,7 @@ warning 6002: The table/view 'SAM.dbo.ConsuptionModelHourly' does not have a pri
           <Property Name="IDDistrict" Type="int" Nullable="false" />
           <Property Name="source" Type="int" Nullable="false" />
           <Property Name="Type" Type="varchar" MaxLength="1" Nullable="false" />
+          <Property Name="IDConsuption" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
         </EntityType>
         <EntityType Name="ConsuptionPlaces">
           <Key>
@@ -107,7 +97,7 @@ warning 6002: The table/view 'SAM.dbo.ConsuptionModelHourly' does not have a pri
           </Key>
           <Property Name="DistrictName" Type="varchar" MaxLength="50" />
           <Property Name="IDDistrict" Type="int" Nullable="false" />
-          <Property Name="IDLocation" Type="int" />
+          <Property Name="IDLocation" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="sysdiagrams">
           <Key>
@@ -190,6 +180,8 @@ warning 6002: The table/view 'SAM.dbo.ConsuptionModelHourly' does not have a pri
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="SAMModelStoreContainer">
+          <EntitySet Name="ConsuptionModelDaily" EntityType="Self.ConsuptionModelDaily" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ConsuptionModelHourly" EntityType="Self.ConsuptionModelHourly" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ConsuptionPlaces" EntityType="Self.ConsuptionPlaces" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Consuptions" EntityType="Self.Consuptions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ConsuptionsDaily" EntityType="Self.ConsuptionsDaily" Schema="dbo" store:Type="Tables" />
@@ -199,26 +191,6 @@ warning 6002: The table/view 'SAM.dbo.ConsuptionModelHourly' does not have a pri
           <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Weathers" EntityType="Self.Weathers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WeathersDaily" EntityType="Self.WeathersDaily" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="ConsuptionModelDaily" EntityType="Self.ConsuptionModelDaily" store:Type="Tables" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [ConsuptionModelDaily].[Amount] AS [Amount], 
-    [ConsuptionModelDaily].[MeasurementTime] AS [MeasurementTime], 
-    [ConsuptionModelDaily].[IDDate] AS [IDDate], 
-    [ConsuptionModelDaily].[IDDistrict] AS [IDDistrict], 
-    [ConsuptionModelDaily].[source] AS [source], 
-    [ConsuptionModelDaily].[Type] AS [Type]
-    FROM [dbo].[ConsuptionModelDaily] AS [ConsuptionModelDaily]</DefiningQuery>
-          </EntitySet>
-          <EntitySet Name="ConsuptionModelHourly" EntityType="Self.ConsuptionModelHourly" store:Type="Tables" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [ConsuptionModelHourly].[Amount] AS [Amount], 
-    [ConsuptionModelHourly].[MeasurementTime] AS [MeasurementTime], 
-    [ConsuptionModelHourly].[IDDate] AS [IDDate], 
-    [ConsuptionModelHourly].[IDDistrict] AS [IDDistrict], 
-    [ConsuptionModelHourly].[source] AS [source], 
-    [ConsuptionModelHourly].[Type] AS [Type]
-    FROM [dbo].[ConsuptionModelHourly] AS [ConsuptionModelHourly]</DefiningQuery>
-          </EntitySet>
           <AssociationSet Name="FK_IDConsuptionPlace" Association="Self.FK_IDConsuptionPlace">
             <End Role="ConsuptionPlaces" EntitySet="ConsuptionPlaces" />
             <End Role="Consuptions" EntitySet="Consuptions" />
@@ -323,9 +295,6 @@ warning 6002: The table/view 'SAM.dbo.ConsuptionModelHourly' does not have a pri
         </EntityType>
         <EntityType Name="Weather">
           <Key>
-            <PropertyRef Name="IDDate" />
-            <PropertyRef Name="IDLocation" />
-            <PropertyRef Name="MeasurementTime" />
             <PropertyRef Name="IDweather" />
           </Key>
           <Property Name="IDDate" Type="Int64" Nullable="false" />
@@ -347,7 +316,7 @@ warning 6002: The table/view 'SAM.dbo.ConsuptionModelHourly' does not have a pri
           </Key>
           <Property Name="DistrictName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="IDDistrict" Type="Int32" Nullable="false" />
-          <Property Name="IDLocation" Type="Int32" />
+          <Property Name="IDLocation" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="ConsuptionsDaily">
           <Key>
@@ -398,11 +367,7 @@ warning 6002: The table/view 'SAM.dbo.ConsuptionModelHourly' does not have a pri
         </EntityType>
         <EntityType Name="ConsuptionModelDaily">
           <Key>
-            <PropertyRef Name="MeasurementTime" />
-            <PropertyRef Name="IDDate" />
-            <PropertyRef Name="IDDistrict" />
-            <PropertyRef Name="source" />
-            <PropertyRef Name="Type" />
+            <PropertyRef Name="IDConsuption" />
           </Key>
           <Property Name="Amount" Type="Double" />
           <Property Name="MeasurementTime" Type="Int32" Nullable="false" />
@@ -410,14 +375,11 @@ warning 6002: The table/view 'SAM.dbo.ConsuptionModelHourly' does not have a pri
           <Property Name="IDDistrict" Type="Int32" Nullable="false" />
           <Property Name="source" Type="Int32" Nullable="false" />
           <Property Name="Type" Type="String" Nullable="false" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="IDConsuption" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
         </EntityType>
         <EntityType Name="ConsuptionModelHourly">
           <Key>
-            <PropertyRef Name="MeasurementTime" />
-            <PropertyRef Name="IDDate" />
-            <PropertyRef Name="IDDistrict" />
-            <PropertyRef Name="source" />
-            <PropertyRef Name="Type" />
+            <PropertyRef Name="IDConsuption" />
           </Key>
           <Property Name="Amount" Type="Double" />
           <Property Name="MeasurementTime" Type="Int32" Nullable="false" />
@@ -425,6 +387,7 @@ warning 6002: The table/view 'SAM.dbo.ConsuptionModelHourly' does not have a pri
           <Property Name="IDDistrict" Type="Int32" Nullable="false" />
           <Property Name="source" Type="Int32" Nullable="false" />
           <Property Name="Type" Type="String" Nullable="false" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="IDConsuption" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
         </EntityType>
         <Association Name="FK_IDConsuptionPlace2">
           <End Type="SAMModel.ConsuptionPlace" Role="ConsuptionPlace" Multiplicity="1" />
@@ -582,6 +545,7 @@ warning 6002: The table/view 'SAM.dbo.ConsuptionModelHourly' does not have a pri
           <EntitySetMapping Name="ConsuptionModelDailies">
             <EntityTypeMapping TypeName="SAMModel.ConsuptionModelDaily">
               <MappingFragment StoreEntitySet="ConsuptionModelDaily">
+                <ScalarProperty Name="IDConsuption" ColumnName="IDConsuption" />
                 <ScalarProperty Name="Type" ColumnName="Type" />
                 <ScalarProperty Name="source" ColumnName="source" />
                 <ScalarProperty Name="IDDistrict" ColumnName="IDDistrict" />
@@ -594,6 +558,7 @@ warning 6002: The table/view 'SAM.dbo.ConsuptionModelHourly' does not have a pri
           <EntitySetMapping Name="ConsuptionModelHourlies">
             <EntityTypeMapping TypeName="SAMModel.ConsuptionModelHourly">
               <MappingFragment StoreEntitySet="ConsuptionModelHourly">
+                <ScalarProperty Name="IDConsuption" ColumnName="IDConsuption" />
                 <ScalarProperty Name="Type" ColumnName="Type" />
                 <ScalarProperty Name="source" ColumnName="source" />
                 <ScalarProperty Name="IDDistrict" ColumnName="IDDistrict" />

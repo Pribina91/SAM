@@ -16,6 +16,6 @@ namespace VisualAnalytics.Models
     {
         public string DistrictName { get; set; }
         public int IDDistrict { get; set; }
-        public Nullable<int> IDLocation { get; set; }
+        public int IDLocation { get; set; }
     }
 }

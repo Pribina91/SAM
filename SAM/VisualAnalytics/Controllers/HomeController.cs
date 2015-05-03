@@ -129,7 +129,125 @@ namespace VisualAnalytics.Controllers
 					.OrderBy(order => order.IdDate);
 			return new ContentResult { Content = bigTable.ToJSON(), ContentType = "application/json" };				
 		}
-		public ContentResult getClusters()
+        public ContentResult getDailyPlaceTable()
+        {
+            var bigTable =
+                from c in db.ConsuptionsDailies
+                join cp in db.ConsuptionPlaces on new {c.IDConsuptionPlace} equals new {cp.IDConsuptionPlace}
+                join pw in db.PlaceWeathers on new {cp.DistrictName} equals new {pw.DistrictName}
+                join w in db.WeathersDailies on new {n1 = c.IDDate,  n3 = pw.IDLocation} equals
+                    new {n1 = w.IDDate, n3 = w.IDLocation}
+                where c.IDConsuptionPlace == 1622 //CP from 62 district
+                && c.IDDate >= 20140401 
+                select new
+                {
+                    Amount = c.Amount,
+                    cp.IDConsuptionPlace,
+                    CityName = cp.CityName,
+                    cp.DistrictName,
+                    pw.IDLocation,
+                    IdDate = c.IDDate,
+                    MeasurementTime = c.MeasurementTime,
+                    Temperature = w.surfaceTemperature,
+                    Rain = w.rainfall,
+                    WindSpeed = w.windSpeed,
+                    Humidity = w.relativeHumidity,
+                    Solar = w.solarShine,
+                    Pressure = w.atmosphericPressure
+                };
+
+            bigTable = bigTable.OrderBy(a => a.IDConsuptionPlace).ThenBy(a => a.IdDate);
+                         
+                /*db.ConsuptionsDailies
+                    .AsEnumerable()
+                    .Join(db.ConsuptionPlaces, c => c.IDConsuptionPlace, cp => cp.IDConsuptionPlace, (c, cp) => new { consumption = c, consumptionPlace = cp })
+                    .Join(db.PlaceWeathers, consumptionPlace => consumptionPlace. )
+                    .Join(db.Weathers
+                        .Where(x => x.dt < new DateTime(2014, 04, 01))
+                        .AsEnumerable().GroupBy(gr => makeDateId(gr.dt))
+                        .Select(grW => new
+                        {
+                            iddate = grW.Key,
+                            Temperature = grW.Average(n => n.surfaceTemperature),
+                            Rain = grW.Average(n => n.rainfall),
+                            WindSpeed = grW.Average(n => n.windSpeed),
+                            Humidity = grW.Average(n => n.relativeHumidity),
+                            Solar = grW.Average(n => n.solarShine)
+                        })
+                        .OrderBy(orderW => orderW.iddate)
+                        , c => c.dt, w => w.iddate, (c, w) => new { Consup = c, weat = w })
+
+                    .Select(a => new
+                    {
+                        Amount = a.Consup.amount,
+                        IdDate = a.Consup.dt,
+                        Temperature = a.weat.Temperature,
+                        Rain = a.weat.Rain,
+                        WindSpeed = a.weat.WindSpeed,
+                        Humidity = a.weat.Humidity,
+                        Solar = a.weat.Solar
+                    }
+                    )
+                    .OrderBy(order => order.IdDate);*/
+
+            return new ContentResult { Content = bigTable.ToJSON(), ContentType = "application/json" };
+        }
+        public ContentResult getDailyAvgModelTable()
+        {
+            var bigTable =
+                from c in db.ConsuptionModelDailies
+                join pw in db.PlaceWeathers on new { c.IDDistrict } equals new { pw.IDDistrict }
+                join w in db.WeathersDailies on new { n1 = c.IDDate, n3 = pw.IDLocation } equals
+                    new { n1 = w.IDDate, n3 = w.IDLocation }
+                where c.Type == "A" && c.IDDate >= 20140401 && c.IDDistrict == 62
+                select new
+                {
+                    Amount = c.Amount,
+                    pw.IDDistrict,
+                    pw.IDLocation,
+                    IdDate = c.IDDate,
+                    MeasurementTime = c.MeasurementTime,
+                    Temperature = w.surfaceTemperature,
+                    Rain = w.rainfall,
+                    WindSpeed = w.windSpeed,
+                    Humidity = w.relativeHumidity,
+                    Solar = w.solarShine,
+                    Pressure = w.atmosphericPressure
+                };
+
+            bigTable = bigTable.OrderBy(a => a.IDDistrict).ThenBy(a => a.IdDate).Where(a => a.IDDistrict == 62);
+
+            return new ContentResult { Content = bigTable.ToJSON(), ContentType = "application/json" };
+        }
+	    public ContentResult getDailySumModelTable()
+	    {
+	        var bigTable =
+	            from c in db.ConsuptionModelDailies
+	            join pw in db.PlaceWeathers on new {c.IDDistrict} equals new {pw.IDDistrict}
+	            join w in db.WeathersDailies on new {n1 = c.IDDate, n3 = pw.IDLocation} equals
+	                new {n1 = w.IDDate, n3 = w.IDLocation}
+                where c.Type == "S" && c.IDDate >= 20140401 && c.IDDistrict == 62
+	            select new
+	            {
+	                Amount = c.Amount,
+	                pw.IDDistrict,
+	                pw.IDLocation,
+	                IdDate = c.IDDate,
+	                MeasurementTime = c.MeasurementTime,
+	                Temperature = w.surfaceTemperature,
+	                Rain = w.rainfall,
+	                WindSpeed = w.windSpeed,
+	                Humidity = w.relativeHumidity,
+	                Solar = w.solarShine,
+                    Pressure = w.atmosphericPressure
+	            };
+
+            bigTable = bigTable.OrderBy(a => a.IDDistrict).ThenBy(a => a.IdDate).Where(a => a.IDDistrict == 62);
+
+            return new ContentResult { Content = bigTable.ToJSON(), ContentType = "application/json" };
+	    }
+
+	    public ContentResult getClusters()
 		{
 			//if(ViewData["clusters"])
 			var JSONCluster = ViewData["clusters"];
