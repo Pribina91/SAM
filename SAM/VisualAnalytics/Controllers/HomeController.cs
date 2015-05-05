@@ -45,8 +45,14 @@ namespace VisualAnalytics.Controllers
 
             //getDailyAvgModelTable();
 
-            //am.modelChange(modelJSON, "fit");
-
+            //WeatherColumns allTrue = new WeatherColumns(new byte[] { 1, 1, 1, 1, 1, 1 });
+            //am.modelChange(getDailyAvgModelTable().Content, "fit", allTrue);
+            //string place = getDailyPlaceTable().Content;
+            //am.fitSeriesToModel(place, "fit", "dailyDataPlace", allTrue);
+            //List<Outlier> outliers = new List<Outlier>();
+            //outliers = am.findOutliers("dailyDataPlace", allTrue);
+            //WeatherColumns nonerue = new WeatherColumns(new byte[] { 0, 0, 0, 0, 0, 1 });
+            //am.FindLocalProperties(place, "fit", allTrue, outliers);
             return View();
         }
 
@@ -164,7 +170,7 @@ namespace VisualAnalytics.Controllers
                 join w in db.WeathersDailies on new { n1 = c.IDDate, n3 = pw.IDLocation } equals
                     new { n1 = w.IDDate, n3 = w.IDLocation }
                 where c.IDConsuptionPlace == 1622 //CP from 62 district
-                      && c.IDDate >= 20140401
+                //&& c.IDDate >= 20140401
                 select new
                 {
                     Amount = c.Amount,
@@ -183,7 +189,7 @@ namespace VisualAnalytics.Controllers
                 };
 
             bigTable = bigTable.OrderBy(a => a.IDConsuptionPlace).ThenBy(a => a.IdDate);
-
+            int x = bigTable.Count();
             modelJSON = bigTable.ToJSON();
 
             //    bigTable.Select(a => new
@@ -253,7 +259,7 @@ namespace VisualAnalytics.Controllers
                 };
 
             bigTable = bigTable.OrderBy(a => a.IDDistrict).ThenBy(a => a.IdDate).Where(a => a.IDDistrict == 62);
-
+            int x = bigTable.Count();
             modelJSON = bigTable.ToJSON();
             //modelJSON = bigTable.Select(a => new
             //{
@@ -285,7 +291,7 @@ namespace VisualAnalytics.Controllers
                 join pw in db.PlaceWeathers on new { c.IDDistrict } equals new { pw.IDDistrict }
                 join w in db.WeathersDailies on new { n1 = c.IDDate, n3 = pw.IDLocation } equals
                     new { n1 = w.IDDate, n3 = w.IDLocation }
-                where c.Type == "S" && c.IDDate >= 20140401 && c.IDDistrict == idDistrict
+                where c.Type == "S" && c.IDDistrict == idDistrict
                 select new
                 {
                     Amount = c.Amount,

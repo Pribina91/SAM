@@ -226,6 +226,7 @@
     <Compile Include="Controllers\Helpers\JSONhelper.cs" />
     <Compile Include="Controllers\Helpers\Polynomial.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\PlaceWeathersController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -1390,6 +1391,11 @@
     <Content Include="Views\Consuption\Details.cshtml" />
     <Content Include="Views\Consuption\Edit.cshtml" />
     <Content Include="Views\Consuption\Index.cshtml" />
+    <Content Include="Views\PlaceWeathers\Create.cshtml" />
+    <Content Include="Views\PlaceWeathers\Delete.cshtml" />
+    <Content Include="Views\PlaceWeathers\Details.cshtml" />
+    <Content Include="Views\PlaceWeathers\Edit.cshtml" />
+    <Content Include="Views\PlaceWeathers\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

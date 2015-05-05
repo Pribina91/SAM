@@ -1,0 +1,64 @@
+﻿@model IEnumerable<VisualAnalytics.Models.PlaceWeather>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<table class="table">
+    <tr>
+        <th> idLocation </th>
+        <th>locationName</th>
+    </tr>
+    <tr><td> 1	</td> <td>Kamenica nad Cirochou   </td>   </tr>
+    <tr><td> 2	</td> <td>Telgart                 </td>   </tr>
+    <tr><td> 3	</td> <td>Bolkovce                </td>   </tr>
+    <tr><td> 4	</td> <td>Prievidza               </td>   </tr>
+    <tr><td> 5	</td> <td>Kuchyna                 </td>   </tr>
+    <tr><td> 6	</td> <td>Nitra                   </td>   </tr>
+    <tr><td> 7	</td> <td>Liesek                  </td>   </tr>
+    <tr><td> 8	</td> <td>Jaslovske Bohunice      </td>   </tr>
+    <tr><td> 9	</td> <td>Poprad                  </td>   </tr>
+    <tr><td> 10 </td><td>Lomnicky stit            </td>  </tr>
+    <tr><td> 11 </td><td>Bratislava               </td>  </tr>
+    <tr><td> 12 </td><td>Hurbanovo                </td>  </tr>
+    <tr><td> 13 </td><td>Strbske pleso            </td>  </tr>
+    <tr><td> 14 </td><td>Mochovce                 </td>  </tr>
+    <tr><td> 15 </td><td>Milhostov                </td>  </tr>
+    <tr><td> 16 </td><td>Tisinec                  </td>  </tr>
+    <tr><td> 17 </td><td>Sliac                    </td>  </tr>
+    <tr><td> 18 </td><td>Kosice                   </td>  </tr>
+    <tr><td> 19 </td><td>Dudince                  </td>  </tr>
+    <tr><td> 20 </td><td>Piestany                 </td>  </tr>
+    <tr><td> 21 </td><td>Dolny Hricov             </td>  </tr>
+</table>
+
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.DistrictName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IDLocation)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.DistrictName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IDLocation)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.IDDistrict }) |
+                @Html.ActionLink("Details", "Details", new { id = item.IDDistrict }) |
+             </td>
+        </tr>
+    }
+</table>

@@ -5,25 +5,27 @@ namespace VisualAnalytics.Controllers.Analytics
 {
     public class WeatherColumns
     {
-        public bool presure;
         public bool rain;
         public bool windSpeed;
         public bool temperature;
         public bool solar;
         public bool humitdity;
+        public bool pressure;
 
-        private bool[] boolArray;
-
-        public bool[] BoolArray
+        public WeatherColumns(byte[] bitArray)
         {
-            get
-            {
-                bool[] a = new bool[6];
-                a[0] = presure;
-                a[1] = rain;
+            rain = Convert.ToBoolean(bitArray[0]);
+            windSpeed = Convert.ToBoolean(bitArray[1]);
+            temperature = Convert.ToBoolean(bitArray[2]);
+            solar = Convert.ToBoolean(bitArray[3]);
+            humitdity = Convert.ToBoolean(bitArray[4]);
+            pressure = Convert.ToBoolean(bitArray[5]);
+        }
 
-                return a;
-            }
+        public override string ToString()
+        {
+            return string.Format("{0}{1}{2}{3}{4}{5}", Convert.ToInt32(rain), Convert.ToInt32(windSpeed), Convert.ToInt32(temperature), Convert.ToInt32(solar), Convert.ToInt32(humitdity), Convert.ToInt32(pressure));
+            //return base.ToString();
         }
     }
 }

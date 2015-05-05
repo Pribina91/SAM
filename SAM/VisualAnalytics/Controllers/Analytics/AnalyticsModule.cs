@@ -15,7 +15,7 @@ namespace VisualAnalytics.Controllers.Analytics
 
         private REngine rEngine;
 
-        public void modelChange(string JSONmodelWithWeather, string modelName)
+        public void modelChange(string JSONmodelWithWeather, string modelName, WeatherColumns wc)
         {
             this.Init();
             //
@@ -30,7 +30,7 @@ namespace VisualAnalytics.Controllers.Analytics
             //log.Debug("evaluateString:" + evaluate);
             //rEngine.Evaluate(evaluate);
 
-            CreateWeatherMatrix(modelData, true, true, true, true, true, true);
+            CreateWeatherMatrix(modelData, wc);
 
             //log.Debug(engine.Evaluate("data"));
             //engine.Evaluate("data <- predata[,1]");
@@ -164,21 +164,29 @@ namespace VisualAnalytics.Controllers.Analytics
             //Console.ReadLine();
         }
 
-        public void fitSeriesToModel(string JSONdataWithWeather, string modelName, string fittedDataName)
+        public void fitSeriesToModel(string JSONdataWithWeather, string modelName, string fittedDataName, WeatherColumns weatherColumns)
         {
             string evaluate;
             const string fittingDataName = "dataName";
-
+            SymbolicExpression result;
             evaluate = string.Format("{0} <-fromJSON(\'{1}\')", fittingDataName, JSONdataWithWeather);
-            rEngine.Evaluate(evaluate);
+            result = rEngine.Evaluate(evaluate);
 
-            CreateWeatherMatrix(fittingDataName, true, true, true, true, true, true);
+            CreateWeatherMatrix(fittingDataName, weatherColumns);
 
-            evaluate = string.Format("{0} <- Arima({1}$Amount,model={2},xreg = {3})", fittedDataName, fittingDataName, modelName, WEATHERMATRIX);
-            rEngine.Evaluate(evaluate);
+            evaluate = "fit";
+            result = rEngine.Evaluate(evaluate).AsList();
+
+            //var temp = result.as
+
+            result = rEngine.Evaluate(fittingDataName + "$Amount").AsList();
+
+            evaluate = string.Format("{0} <- forecast::Arima({1}$Amount,xreg = {2},model={3})", fittedDataName, fittingDataName, WEATHERMATRIX, modelName);
+            //evaluate = string.Format("{0} <- forecast::Arima({1}$Amount,xreg = {2})", fittedDataName, fittingDataName, WEATHERMATRIX, modelName);
+            result = rEngine.Evaluate(evaluate);
         }
 
-        public List<Outlier> findOutliers(string fittedDataName)
+        public List<Outlier> findOutliers(string fittedDataName, WeatherColumns wc)
         {
             string evaluate;
 
@@ -192,12 +200,44 @@ namespace VisualAnalytics.Controllers.Analytics
             var outliers = rEngine.Evaluate(evaluate).AsList();
 
             List<Outlier> retList = new List<Outlier>();
-            foreach (var outlier in outliers)
+
+            for (int i = 0; i < outliers[0].AsList().Length; i++)
             {
-                var outVector = outlier.AsVector();
+                Outlier o = new Outlier();
+                o.seriesNumber = (int)outliers[1].AsVector()[i];
+                o.weatherDependency.Add(wc);
+                o.outlierness.Add((double)outliers[2].AsVector()[i]);
+                o.tStats.Add((double)outliers[3].AsVector()[i]);
+
+                retList.Add(o);
+                //outliers[0].AsVector().ToArray()[i];//type
             }
 
+            //foreach (var outlierColumn in outliers)
+            //{
+            //    var outVector = outlierColumn.AsDataFrame();
+            //    var outVector2 = outlierColumn.AsList();
+            //    var outVector3 = outlierColumn.AsVector();
+            //    var outVector4 = outlierColumn.AsVector();
+            //}
+
             return retList;
+        }
+
+        public void FindLocalProperties(string JSONdataWithWeather, string modelName, WeatherColumns weatherColumns, List<Outlier> outlierList)
+        {
+            string fittedDataName = modelName + weatherColumns.ToString();
+            fitSeriesToModel(JSONdataWithWeather, modelName, fittedDataName, weatherColumns);
+
+            //HashSet<int> oulierSet = new HashSet<int>();
+
+            List<Outlier> returnList = findOutliers(fittedDataName, weatherColumns);
+            foreach (Outlier o in returnList)
+            {
+                outlierList.Single(x => x.seriesNumber.Equals(o.seriesNumber)).weatherDependency.Add(o.weatherDependency.First());
+                outlierList.Single(x => x.seriesNumber.Equals(o.seriesNumber)).outlierness.Add(o.outlierness.First());
+                outlierList.Single(x => x.seriesNumber.Equals(o.seriesNumber)).tStats.Add(o.tStats.First());
+            }
         }
 
         private static string GetRPath()
@@ -221,42 +261,38 @@ namespace VisualAnalytics.Controllers.Analytics
         /// Creates the weather matrix. One bool neccessary!
         /// </summary>
         /// <param name="weatherSource">The weather source evaluated in Engine</param>
-        /// <param name="presure">if set to <c>true</c> [presure].</param>
-        /// <param name="rain">if set to <c>true</c> [rain].</param>
-        /// <param name="windSpeed">if set to <c>true</c> [wind speed].</param>
-        /// <param name="temperature">if set to <c>true</c> [temperature].</param>
-        /// <param name="solar">if set to <c>true</c> [solar].</param>
-        /// <param name="humitdity">if set to <c>true</c> [humitdity].</param>
-        private void CreateWeatherMatrix(string weatherSource, bool presure, bool rain, bool windSpeed, bool temperature, bool solar, bool humitdity)
+        /// <param name="wc">The wc.</param>
+        /// <exception cref="System.Exception">No column chosen</exception>
+        private void CreateWeatherMatrix(string weatherSource, WeatherColumns wc)
         {
             string weatherMatrixString = WEATHERMATRIX + " <- matrix(c(";
             int cols = 0;
-            if (presure)
+            if (wc.pressure)
             {
                 weatherMatrixString += weatherSource + "$Pressure,";
                 cols++;
             }
-            if (rain)
+            if (wc.rain)
             {
                 weatherMatrixString += weatherSource + "$Rain,";
                 cols++;
             }
-            if (windSpeed)
+            if (wc.windSpeed)
             {
                 weatherMatrixString += weatherSource + "$WindSpeed,";
                 cols++;
             }
-            if (temperature)
+            if (wc.temperature)
             {
                 weatherMatrixString += weatherSource + "$Temperature,";
                 cols++;
             }
-            if (solar)
+            if (wc.solar)
             {
                 weatherMatrixString += weatherSource + "$Solar,";
                 cols++;
             }
-            if (humitdity)
+            if (wc.humitdity)
             {
                 weatherMatrixString += weatherSource + "$Humidity,";
                 cols++;
@@ -303,6 +339,7 @@ namespace VisualAnalytics.Controllers.Analytics
             //rEngine.Evaluate("install.packages(\"jsonlite\")");
 
             rEngine.Evaluate("library(jsonlite)");
+            rEngine.Evaluate("library(tsoutliers)");
         }
     }
 }
