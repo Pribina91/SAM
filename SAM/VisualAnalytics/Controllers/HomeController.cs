@@ -71,18 +71,20 @@ namespace VisualAnalytics.Controllers
             return View();
         }
 
-        public JsonResult getEvents()
+        public ContentResult getEvents()
         {
             List<Event> events = db.Events.ToList();
 
-            var ev = events.Select(x =>
-                new JsonEvent() { dt = x.eventDate, importance = 50 }
-                )
-                .OrderBy(x => x.dt);
-            ;
+            var ev = events
+                //.Where(e=>e.eventType.Equals())
+                .Select(x => new
+                {
+                    IDDate = x.IDDate,
+                    importance = 50
+                })
+                    .OrderBy(x => x.IDDate);
 
-            var jsonData = Json(ev, JsonRequestBehavior.AllowGet);
-            return jsonData;
+            return new ContentResult { Content = ev.ToJSON(), ContentType = "application/json" };
         }
 
         public ContentResult getConsuptions()

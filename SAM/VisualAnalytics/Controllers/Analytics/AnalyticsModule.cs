@@ -183,11 +183,13 @@ namespace VisualAnalytics.Controllers.Analytics
             var fittedValuesList = resultList["residuals"].AsNumeric().ToList();
 
             var sourceDates = rEngine.Evaluate("sourceDates <- " + fittingDataName + "$IDDate").AsList();
+            var sourceAmounts =
+                rEngine.Evaluate("sourceDates <- " + fittingDataName + "$Amount").AsList();
             List<Consuption> retList = new List<Consuption>();
             for (int i = 0; i < fittedValuesList.Count; i++)
             {
                 Consuption c = new Consuption();
-                c.Amount = (float)fittedValuesList[i];
+                c.Amount = (float)fittedValuesList[i] + (float)sourceAmounts.AsNumeric().ElementAt(i);
                 c.IDDate = sourceDates.AsInteger().ElementAt(i);
                 retList.Add(c);
             }

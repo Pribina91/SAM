@@ -5,8 +5,11 @@
 @*<div id="lineGraph" style="width: 1000px"></div>*@
 
 <hr>
-<div id="comboGraph" style="width: 800px; height: 400px; display: block"></div>
-<div id="consuptionGraph" style="width: 800px; height: 400px; display: inline-block"></div>
+<div style="display: inline-block">
+    <div id="comboGraph" style="width: 800px; height: 400px; display: block"></div>
+    <div id="consuptionGraph" style="width: 800px; height: 400px; display: block"></div>
+</div>
+
 
 <table id="spiralGraphTable" style="display: inline-block">
     <tr>
@@ -42,7 +45,7 @@
     </tr>
 </table>
 
-<div id="calendar_basic" style="width: 800px; height: 150px;"></div>
+<div id="calendar_basic" style="width: 1300px; height: 150px; display: block"></div>
 <hr>
 <div id="calendar_cluster" style="width: 800px; height: 150px;"></div>
 <hr>
@@ -174,19 +177,19 @@
 
         //CONSUPTION line chart
         var jsonConsuption = $.ajax({
-            url: "Home/getFittedModelTable?Type=AVERAGE",
+            url: "Home/getDailyPlaceTable?Type=SUM",
             dataType: "json",
             async: false
         }).responseJSON;
 
-        var jsonConsuptionModelSum = $.ajax({
-            url: "Home/getDailyModelTable?Type=SUM&idDistrict=62",
-            dataType: "json",
-            async: false
-        }).responseJSON;
+        //var jsonConsuptionModelSum = $.ajax({
+        //    url: "Home/getDailyModelTable?Type=SUM&idDistrict=62",
+        //    dataType: "json",
+        //    async: false
+        //}).responseJSON;
 
         var jsonConsuptionModelAverage = $.ajax({
-            url: "Home/getDailyModelTable?Type=AVERAGE&idDistrict=62",
+            url: "Home/getFittedModelTable?Type=SUM&idDistrict=62",
             dataType: "json",
             async: false
         }).responseJSON;
@@ -233,7 +236,7 @@
         function drawConsuptionChart(jsonConsuption) {
             var dataTableConsuption = new google.visualization.DataTable();
             dataTableConsuption.addColumn({ type: 'datetime', id: 'Date' });
-            dataTableConsuption.addColumn({ type: 'number', id: 'avgAmount', label: 'Average Model' });
+            dataTableConsuption.addColumn({ type: 'number', id: 'avgAmount', label: 'ConsumptionPlace' });
 
             createConsumptionDataTable(jsonConsuption, dataTableConsuption, 2);
             addColumnData(jsonConsuption, dataTableConsuption, "Amount", 1);
@@ -375,7 +378,7 @@
                 //for (var key in obj) {
                 //var attrName = key;
                 //var attrValue = obj[key];
-                var dtt = new Date(parseInt(obj["IDDate"].substr(6)));
+                var dtt = getDateFromString(obj["IDDate"]);
                 var imp = obj["importance"];
                 dataTableCalendar.addRow([dtt, imp]);
 

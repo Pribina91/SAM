@@ -14,19 +14,20 @@ namespace VisualAnalytics.Controllers
         // GET: PlaceWeathers
         public ActionResult Index()
         {
-            var weatherDistinct = db.WeathersDailies.Select(daily => new { IDLocation = daily.IDLocation, locationName = daily.locationName }).Distinct();
-            var result = from w in weatherDistinct
-                         join pw in db.PlaceWeathers on new { w.IDLocation } equals new { pw.IDLocation }
-                         select
-            new PlaceWeather()
-            {
-                IDLocation = pw.IDLocation,
-                //w.locationName,//TODO add
-                DistrictName = pw.DistrictName,
-                IDDistrict = pw.IDDistrict,
-            };
+            //    var weatherDistinct = db.WeathersDailies.Select(daily => new { IDLocation = daily.IDLocation, locationName = daily.locationName }).Distinct();
+            //    var result = from w in weatherDistinct
+            //                 join pw in db.PlaceWeathers on new { w.IDLocation } equals new { pw.IDLocation }
+            //                 select
+            //    new PlaceWeather()
+            //    {
+            //        IDLocation = pw.IDLocation,
+            //        //w.locationName,//TODO add
+            //        DistrictName = pw.DistrictName,
+            //        IDDistrict = pw.IDDistrict,
+            //    };
 
-            return View(result.ToList());
+            //    return View(result.ToList());
+            return View(db.PlaceWeathers.ToList());
         }
 
         // GET: PlaceWeathers/Details/5
@@ -36,6 +37,7 @@ namespace VisualAnalytics.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             PlaceWeather placeWeather = db.PlaceWeathers.Find(id);
             if (placeWeather == null)
             {
