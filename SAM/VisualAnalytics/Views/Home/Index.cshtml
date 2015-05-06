@@ -2,19 +2,17 @@
     ViewBag.Title = "Home Page";
 }
 
-<div id="lineGraph" style="width: 1000px"></div>
+@*<div id="lineGraph" style="width: 1000px"></div>*@
 
 <hr>
-<table>
-    <tr>
+<div id="comboGraph" style="width: 800px; height: 400px; display: block"></div>
+<div id="consuptionGraph" style="width: 800px; height: 400px; display: inline-block"></div>
 
+<table id="spiralGraphTable" style="display: inline-block">
+    <tr>
         <td>
-            <div id="consuptionGraph" style="width: 900px; height: 400px"></div>
-        </td>
-        <td rowspan="6">
             <canvas id="spiralGraph" width="500" height="500"></canvas>
         </td>
-    </tr>
     <tr>
         <td>
             Begin offset:<input id="a" type="text" value='5' />
@@ -38,8 +36,9 @@
     <tr>
         <td>
             <button id="draw">Draw</button>
-            <button id="selectBtn" onclick="selectHighlight()">select</button>
+            <button id="selectBtn" onclick=" selectHighlight() ">select</button>
         </td>
+    </tr>
     </tr>
 </table>
 
@@ -69,6 +68,7 @@
     var chartParameter;
     var dataTableParameter;
     var selectedDate;
+
     function getDateFromString(stringDate) {
         if (stringDate) {
             stringDate = stringDate.toString();
@@ -80,6 +80,31 @@
 
         }
         return null;
+
+    }
+    function createConsumptionDataTable(consData, dataTable, columnCount) {
+        for (var i = 0; i < consData.length; i++) {
+            var obj = consData[i];
+            var dtt = getDateFromString(obj["IDDate"]);
+            if (columnCount == 2) {
+                dataTable.addRow([dtt, 0]);
+            }
+            else if (columnCount == 3) {
+                dataTable.addRow([dtt, 0, 0]);
+            }
+            else if (columnCount == 4) {
+                dataTable.addRow([dtt, 0, 0, 4]);
+            }
+
+        }
+
+    }
+    function addColumnData(consData, dataTable, jsonAttributeName, columnNumber) {
+        for (var i = 0; i < consData.length; i++) {
+            var obj = consData[i];
+            var amt = obj[jsonAttributeName];
+            dataTable.setCell(i, columnNumber, amt);
+        }
 
     }
 
@@ -149,43 +174,73 @@
 
         //CONSUPTION line chart
         var jsonConsuption = $.ajax({
-            url: "Home/getDailyModelTable?Type=AVERAGE",
+            url: "Home/getFittedModelTable?Type=AVERAGE",
             dataType: "json",
             async: false
         }).responseJSON;
 
+        var jsonConsuptionModelSum = $.ajax({
+            url: "Home/getDailyModelTable?Type=SUM&idDistrict=62",
+            dataType: "json",
+            async: false
+        }).responseJSON;
+
+        var jsonConsuptionModelAverage = $.ajax({
+            url: "Home/getDailyModelTable?Type=AVERAGE&idDistrict=62",
+            dataType: "json",
+            async: false
+        }).responseJSON;
+
+        function drawComboVisualization() {
+            // Some raw data (not necessarily accurate)
+            var dataTableCombo = new google.visualization.DataTable();
+            dataTableCombo.addColumn({ type: 'datetime', id: 'Date' });
+            dataTableCombo.addColumn({ type: 'number', id: 'AvgAmount', label: 'District Model' });
+            //dataTableCombo.addColumn({ type: 'number', id: 'SumAmount', label: 'Sum Model' });
+            dataTableCombo.addColumn({ type: 'number', id: 'placeAmount', label: 'Place Consumtion' });
+            //TODO add outlier column
+
+            createConsumptionDataTable(jsonConsuptionModelAverage, dataTableCombo, 3);
+            addColumnData(jsonConsuptionModelAverage, dataTableCombo, "Amount", 1);
+            // addColumnData(jsonConsuptionModelSum, dataTableCombo, "Amount", 2);
+            addColumnData(jsonConsuption, dataTableCombo, "Amount", 2);
+
+            /*[
+          ['Month', 'Bolivia', 'Ecuador', 'Madagascar', 'Papua New Guinea', 'Rwanda', 'Average'],
+          ['2004/05', 165, 938, 522, 998, 450, 614.6],
+          ['2005/06', 135, 1120, 599, 1268, 288, 682],
+          ['2006/07', 157, 1167, 587, 807, 397, 623],
+          ['2007/08', 139, 1110, 615, 968, 215, 609.4],
+          ['2008/09', 136, 691, 629, 1026, 366, 569.6]
+        ]);*/
+
+            var options = {
+                title: 'Consumtion compared to district models',
+                vAxis: { title: "Amount" },
+                hAxis: { title: "Date" },
+                seriesType: "line",
+                //series: { 5: { type: "line" } }
+            };
+
+            var chart = new google.visualization.ComboChart(document.getElementById('comboGraph'));
+            chart.draw(dataTableCombo, options);
+        }
+
+        drawComboVisualization();
+
         //jsonConsuption
         //var dataConsMatrix = [];
-        function drawConsuptionChart() {
+        function drawConsuptionChart(jsonConsuption) {
             var dataTableConsuption = new google.visualization.DataTable();
             dataTableConsuption.addColumn({ type: 'datetime', id: 'Date' });
-            dataTableConsuption.addColumn({ type: 'number', id: 'Amount', label: 'Average Model' });
+            dataTableConsuption.addColumn({ type: 'number', id: 'avgAmount', label: 'Average Model' });
 
-            function createConsumptionDataTable() {
-                for (var i = 0; i < jsonConsuption.length; i++) {
-                    var obj = jsonConsuption[i];
-                    var dtt = getDateFromString(obj["IdDate"]);
-                    dataTableConsuption.addRow([dtt,0]);
-                }
-
-            }
-
-            createConsumptionDataTable();
-
-            function addColumnData(attributeName, columnNumber) {
-                for (var i = 0; i < jsonConsuption.length; i++) {
-                    var obj = jsonConsuption[i];
-                    var amt = obj[attributeName];
-                    dataTableConsuption.setCell(i, columnNumber, amt);
-                }
-
-            }
-
-            addColumnData("Amount",1);
+            createConsumptionDataTable(jsonConsuption, dataTableConsuption, 2);
+            addColumnData(jsonConsuption, dataTableConsuption, "Amount", 1);
 
             //for (var i = 0; i < jsonConsuption.length; i++) {
             //    var obj = jsonConsuption[i];
-            //    var dtt = getDateFromString(obj["IdDate"]);
+            //    var dtt = getDateFromString(obj["IDDate"]);
             //    var amt = obj["Amount"];
             //    dataTableConsuption.addRow([dtt, amt]);
             //}
@@ -207,8 +262,8 @@
                 // .setSelection(table.getSelection());
                 var selectedRow = selection[0]["row"];
                 var selectedColumn = selection[0]["column"];
-                selectedData = selectedRow;// dataTableParameter.getValue(selectedRow, selectedColumn);
-                selectedDate = jsonConsuption[selectedRow]["IdDate"];
+                selectedData = selectedRow; // dataTableParameter.getValue(selectedRow, selectedColumn);
+                selectedDate = jsonConsuption[selectedRow]["IDDate"];
                 spiralGraphDraw();
                 //drawCalendarChart();
             }
@@ -216,7 +271,8 @@
             google.visualization.events.addListener(chartConsuption, 'select', selectHandler);
 
         }
-        drawConsuptionChart();
+
+        drawConsuptionChart(jsonConsuption);
 
         // The selection handler.
         // Loop through all items in the selection and concatenate
@@ -254,9 +310,9 @@
                 x = centerx + (a + b * angle) * Math.cos(angle);
                 y = centery + (a + b * angle) * Math.sin(angle);
                 var color = ((jsonConsuption[i]["Amount"] - minAmount) / (maxAmount - minAmount)) * 255;
-                var day = jsonConsuption[i]["IdDate"] % 100;
+                var day = jsonConsuption[i]["IDDate"] % 100;
                 var clr = "";
-                if (selectedDate && selectedDate == jsonConsuption[i]["IdDate"]) {
+                if (selectedDate && selectedDate == jsonConsuption[i]["IDDate"]) {
                     context.lineWidth = (parseFloat($('#lineWidth').val())) + 3;
                     context.strokeStyle = 'yellow';
                     context.lineTo(x, y);
@@ -266,8 +322,7 @@
                 if (day == 1) {
                     clr = '#FF0000';
 
-                }
-                else {
+                } else {
                     var col = parseInt(color.toString()).toString(16);
                     if (col.length == 1) {
                         col = "0" + col;
@@ -289,6 +344,7 @@
             }
 
         }
+
         $('#draw').click(spiralGraphDraw());
 
         //g3 = new Dygraph(
@@ -301,11 +357,11 @@
         //    );
 
         //CALENDAR chart
-        //var jsonEvents = $.ajax({
-        //    url: "home/getEvents",
-        //    dataType: "json",
-        //    async: false
-        //}).responseJSON;
+        var jsonEvents = $.ajax({
+            url: "home/getEvents",
+            dataType: "json",
+            async: false
+        }).responseJSON;
 
         function drawCalendarChart() {
             var dataTableCalendar = new google.visualization.DataTable();
@@ -319,7 +375,7 @@
                 //for (var key in obj) {
                 //var attrName = key;
                 //var attrValue = obj[key];
-                var dtt = new Date(parseInt(obj["IdDate"].substr(6)));
+                var dtt = new Date(parseInt(obj["IDDate"].substr(6)));
                 var imp = obj["importance"];
                 dataTableCalendar.addRow([dtt, imp]);
 
@@ -443,11 +499,11 @@
 
         //for (var i = 0; i < jsonBigTable.length; i++) {
         //    var obj = jsonBigTable[i];
-        //    var dtt = getDateFromString(obj["IdDate"]);
+        //    var dtt = getDateFromString(obj["IDDate"]);
         //    var imp = obj["importance"];
 
         //    dataMotion.addRow(["test"
-        //                        ,getDateFromString(obj["IdDate"])
+        //                        ,getDateFromString(obj["IDDate"])
         //                        ,obj["Amount"]
         //                        ,obj["Temperature"]
         //                        ,obj["Rain"]
@@ -480,4 +536,4 @@
 
 <hr />
 
-<div id="treemapGoogle" style="width: 1000px; height: 350px;">    </div>
+<div id="treemapGoogle" style="width: 1000px; height: 350px;"> </div>

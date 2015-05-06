@@ -5,6 +5,7 @@ using Microsoft.Win32;
 using RDotNet;
 using VisualAnalytics.Controllers.Helpers;
 using VisualAnalytics.Controllers.Helpers.Arima;
+using VisualAnalytics.Models;
 
 namespace VisualAnalytics.Controllers.Analytics
 {
@@ -164,26 +165,34 @@ namespace VisualAnalytics.Controllers.Analytics
             //Console.ReadLine();
         }
 
-        public void fitSeriesToModel(string JSONdataWithWeather, string modelName, string fittedDataName, WeatherColumns weatherColumns)
+        public List<Consuption> fitSeriesToModel(string JSONdataWithWeather, string modelName, string fittedDataName, WeatherColumns weatherColumns)
         {
             string evaluate;
             const string fittingDataName = "dataName";
-            SymbolicExpression result;
+
             evaluate = string.Format("{0} <-fromJSON(\'{1}\')", fittingDataName, JSONdataWithWeather);
-            result = rEngine.Evaluate(evaluate);
+            var sourceData = rEngine.Evaluate(evaluate);
 
             CreateWeatherMatrix(fittingDataName, weatherColumns);
 
-            evaluate = "fit";
-            result = rEngine.Evaluate(evaluate).AsList();
-
-            //var temp = result.as
-
-            result = rEngine.Evaluate(fittingDataName + "$Amount").AsList();
-
             evaluate = string.Format("{0} <- forecast::Arima({1}$Amount,xreg = {2},model={3})", fittedDataName, fittingDataName, WEATHERMATRIX, modelName);
             //evaluate = string.Format("{0} <- forecast::Arima({1}$Amount,xreg = {2})", fittedDataName, fittingDataName, WEATHERMATRIX, modelName);
-            result = rEngine.Evaluate(evaluate);
+            var result = rEngine.Evaluate(evaluate);
+
+            GenericVector resultList = result.AsList();
+            var fittedValuesList = resultList["residuals"].AsNumeric().ToList();
+
+            var sourceDates = rEngine.Evaluate("sourceDates <- " + fittingDataName + "$IDDate").AsList();
+            List<Consuption> retList = new List<Consuption>();
+            for (int i = 0; i < fittedValuesList.Count; i++)
+            {
+                Consuption c = new Consuption();
+                c.Amount = (float)fittedValuesList[i];
+                c.IDDate = sourceDates.AsInteger().ElementAt(i);
+                retList.Add(c);
+            }
+            return retList;
+            //List<double> returnList = result.AsList();
         }
 
         public List<Outlier> findOutliers(string fittedDataName, WeatherColumns wc)
@@ -299,7 +308,9 @@ namespace VisualAnalytics.Controllers.Analytics
             }
             if (cols == 0)
             {
-                throw new Exception("No column chosen");
+                log.Debug("weatherMatrixString: NULL");
+                rEngine.Evaluate(WEATHERMATRIX + "<-NULL");
+                return;
             }
 
             weatherMatrixString = weatherMatrixString.Remove(weatherMatrixString.Length - 1, 1);

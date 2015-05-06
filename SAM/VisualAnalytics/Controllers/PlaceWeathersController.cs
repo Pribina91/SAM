@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using VisualAnalytics.Models;
 
@@ -17,7 +14,19 @@ namespace VisualAnalytics.Controllers
         // GET: PlaceWeathers
         public ActionResult Index()
         {
-            return View(db.PlaceWeathers.ToList());
+            var weatherDistinct = db.WeathersDailies.Select(daily => new { IDLocation = daily.IDLocation, locationName = daily.locationName }).Distinct();
+            var result = from w in weatherDistinct
+                         join pw in db.PlaceWeathers on new { w.IDLocation } equals new { pw.IDLocation }
+                         select
+            new PlaceWeather()
+            {
+                IDLocation = pw.IDLocation,
+                //w.locationName,//TODO add
+                DistrictName = pw.DistrictName,
+                IDDistrict = pw.IDDistrict,
+            };
+
+            return View(result.ToList());
         }
 
         // GET: PlaceWeathers/Details/5
@@ -42,7 +51,7 @@ namespace VisualAnalytics.Controllers
         }
 
         // POST: PlaceWeathers/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -74,7 +83,7 @@ namespace VisualAnalytics.Controllers
         }
 
         // POST: PlaceWeathers/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]

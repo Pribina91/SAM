@@ -46,11 +46,12 @@ namespace VisualAnalytics.Controllers
             //getDailyAvgModelTable();
 
             //WeatherColumns allTrue = new WeatherColumns(new byte[] { 1, 1, 1, 1, 1, 1 });
-            //am.modelChange(getDailyAvgModelTable().Content, "fit", allTrue);
+            //am.modelChange(getDailyAvgModelTable().Content, "fit_avg", allTrue);
             //string place = getDailyPlaceTable().Content;
-            //am.fitSeriesToModel(place, "fit", "dailyDataPlace", allTrue);
+            //am.fitSeriesToModel(place, "fit_avg", "dailyDataPlace", allTrue);
             //List<Outlier> outliers = new List<Outlier>();
             //outliers = am.findOutliers("dailyDataPlace", allTrue);
+            ////
             //WeatherColumns nonerue = new WeatherColumns(new byte[] { 0, 0, 0, 0, 0, 1 });
             //am.FindLocalProperties(place, "fit", allTrue, outliers);
             return View();
@@ -149,7 +150,7 @@ namespace VisualAnalytics.Controllers
         //            .Select(a => new
         //                {
         //                    Amount = a.Consup.amount,
-        //                    IdDate = a.Consup.dt,
+        //                    IDDate = a.Consup.dt,
         //                    Temperature = a.weat.Temperature,
         //                    Rain = a.weat.Rain,
         //                    WindSpeed = a.weat.WindSpeed,
@@ -157,7 +158,7 @@ namespace VisualAnalytics.Controllers
         //                    Solar = a.weat.Solar
         //                }
         //            )
-        //            .OrderBy(order => order.IdDate);
+        //            .OrderBy(order => order.IDDate);
         //    return new ContentResult { Content = bigTable.ToJSON(), ContentType = "application/json" };
         //}
 
@@ -178,7 +179,7 @@ namespace VisualAnalytics.Controllers
                     CityName = cp.CityName,
                     cp.DistrictName,
                     pw.IDLocation,
-                    IdDate = c.IDDate,
+                    IDDate = c.IDDate,
                     MeasurementTime = c.MeasurementTime,
                     Temperature = w.surfaceTemperature,
                     Rain = w.rainfall,
@@ -188,14 +189,14 @@ namespace VisualAnalytics.Controllers
                     Pressure = w.atmosphericPressure
                 };
 
-            bigTable = bigTable.OrderBy(a => a.IDConsuptionPlace).ThenBy(a => a.IdDate);
+            bigTable = bigTable.OrderBy(a => a.IDConsuptionPlace).ThenBy(a => a.IDDate);
             int x = bigTable.Count();
             modelJSON = bigTable.ToJSON();
 
             //    bigTable.Select(a => new
             //{
             //    a.Amount,
-            //    a.IdDate,
+            //    a.IDDate,
             //    a.IDLocation,
             //    a.IDConsuptionPlace
             //}
@@ -209,25 +210,68 @@ namespace VisualAnalytics.Controllers
             //    a.Humidity,
             //    a.Solar,
             //    a.Pressure,
-            //    a.IdDate,
+            //    a.IDDate,
             //    a.IDLocation
             //}).ToJSON();
 
             return new ContentResult { Content = bigTable.ToJSON(), ContentType = "application/json" };
         }
 
-        public ContentResult getDailyModelTable(string Type = "SUM")
+        public ContentResult getFittedModelTable(string Type = "SUM", int idDistrict = 62, string weatherDependency = "000000")
+        {
+            byte[] bytes = new byte[6];
+            var chArray = weatherDependency.ToCharArray();
+            for (int i = 0; i < 6; i++)
+            {
+                bytes[i] = BitConverter.GetBytes(int.Parse(chArray[i].ToString()))[0];
+            }
+            //bytes = BitConverter.GetBytes(int.Parse(weatherDependency));
+            WeatherColumns wd = new WeatherColumns(bytes);
+
+            ModelType modelTp = (ModelType)Enum.Parse(
+                                          typeof(ModelType), Type, true);
+            switch (modelTp)
+            {
+                case ModelType.AVERAGE:
+                    {
+                        am.modelChange(getDailyAvgModelTable().Content, "fit_avg", wd);
+                        var returnValue = am.fitSeriesToModel(getDailyPlaceTable().Content, "fit_avg", "dailyDataPlace", wd);
+
+                        return new ContentResult { Content = returnValue.ToJSON(), ContentType = "application/json" };
+                    }
+                    break;
+
+                case ModelType.SUM:
+                    {
+                        am.modelChange(getDailySumModelTable().Content, "fit_sum", wd);
+                        var returnValue = am.fitSeriesToModel(getDailyPlaceTable().Content, "fit_sum", "dailyDataPlace", wd);
+
+                        return new ContentResult { Content = returnValue.ToJSON(), ContentType = "application/json" };
+                    }
+                    break;
+
+                default:
+                    throw new Exception("Bad type");
+            }
+
+            //string place = getDailyPlaceTable().Content;
+            //am.fitSeriesToModel(place, "fit_avg", "dailyDataPlace", allTrue);
+            //List<Outlier> outliers = new List<Outlier>();
+            //outliers = am.findOutliers("dailyDataPlace", allTrue);
+        }
+
+        public ContentResult getDailyModelTable(string Type = "SUM", int idDistrict = 62)
         {
             ModelType modelTp = (ModelType)Enum.Parse(
                                           typeof(ModelType), Type, true);
             switch (modelTp)
             {
                 case ModelType.AVERAGE:
-                    return getDailyAvgModelTable();
+                    return getDailyAvgModelTable(idDistrict);
                     break;
 
                 case ModelType.SUM:
-                    return getDailySumModelTable();
+                    return getDailySumModelTable(idDistrict);
                     break;
 
                 default:
@@ -237,79 +281,43 @@ namespace VisualAnalytics.Controllers
 
         public ContentResult getDailyAvgModelTable(int idDistrict = 62)
         {
-            var bigTable =
-                from c in db.ConsuptionModelDailies
-                join pw in db.PlaceWeathers on new { c.IDDistrict } equals new { pw.IDDistrict }
-                join w in db.WeathersDailies on new { n1 = c.IDDate, n3 = pw.IDLocation } equals
-                    new { n1 = w.IDDate, n3 = w.IDLocation }
-                where c.Type == "A" && c.IDDistrict == idDistrict
-                select new
-                {
-                    Amount = c.Amount,
-                    pw.IDDistrict,
-                    pw.IDLocation,
-                    IdDate = c.IDDate,
-                    MeasurementTime = c.MeasurementTime,
-                    Temperature = w.surfaceTemperature,
-                    Rain = w.rainfall,
-                    WindSpeed = w.windSpeed,
-                    Humidity = w.relativeHumidity,
-                    Solar = w.solarShine,
-                    Pressure = w.atmosphericPressure
-                };
-
-            bigTable = bigTable.OrderBy(a => a.IDDistrict).ThenBy(a => a.IdDate).Where(a => a.IDDistrict == 62);
-            int x = bigTable.Count();
+            var bigTable = BigDailyModelTable(idDistrict, "A");
             modelJSON = bigTable.ToJSON();
-            //modelJSON = bigTable.Select(a => new
-            //{
-            //    a.Amount,
-            //    a.IdDate,
-            //    a.IDLocation,
-            //}
-            //    ).ToJSON();
-
-            //weatherJSON = bigTable.Select(a => new
-            //{
-            //    a.Temperature,
-            //    a.Rain,
-            //    a.WindSpeed,
-            //    a.Humidity,
-            //    a.Solar,
-            //    a.Pressure,
-            //    a.IdDate,
-            //    a.IDLocation
-            //}).private ToJSON();
 
             return new ContentResult { Content = bigTable.ToJSON(), ContentType = "application/json" };
         }
 
         public ContentResult getDailySumModelTable(int idDistrict = 62)
         {
-            var bigTable =
-                from c in db.ConsuptionModelDailies
-                join pw in db.PlaceWeathers on new { c.IDDistrict } equals new { pw.IDDistrict }
-                join w in db.WeathersDailies on new { n1 = c.IDDate, n3 = pw.IDLocation } equals
-                    new { n1 = w.IDDate, n3 = w.IDLocation }
-                where c.Type == "S" && c.IDDistrict == idDistrict
-                select new
-                {
-                    Amount = c.Amount,
-                    pw.IDDistrict,
-                    pw.IDLocation,
-                    IdDate = c.IDDate,
-                    MeasurementTime = c.MeasurementTime,
-                    Temperature = w.surfaceTemperature,
-                    Rain = w.rainfall,
-                    WindSpeed = w.windSpeed,
-                    Humidity = w.relativeHumidity,
-                    Solar = w.solarShine,
-                    Pressure = w.atmosphericPressure
-                };
-
-            bigTable = bigTable.OrderBy(a => a.IDDistrict).ThenBy(a => a.IdDate).Where(a => a.IDDistrict == 62);
+            var bigTable = BigDailyModelTable(idDistrict, "S");
+            modelJSON = bigTable.ToJSON();
 
             return new ContentResult { Content = bigTable.ToJSON(), ContentType = "application/json" };
+        }
+
+        private IQueryable BigDailyModelTable(int idDistrict, string type)
+        {
+            var ret = from c in db.ConsuptionModelDailies
+                      join pw in db.PlaceWeathers on new { c.IDDistrict } equals new { pw.IDDistrict }
+                      join w in db.WeathersDailies on new { n1 = c.IDDate, n3 = pw.IDLocation } equals
+                          new { n1 = w.IDDate, n3 = w.IDLocation }
+                      where c.Type == type && c.IDDistrict == idDistrict
+                      select new
+                      {
+                          Amount = c.Amount,
+                          pw.IDDistrict,
+                          pw.IDLocation,
+                          IDDate = c.IDDate,
+                          MeasurementTime = c.MeasurementTime,
+                          Temperature = w.surfaceTemperature,
+                          Rain = w.rainfall,
+                          WindSpeed = w.windSpeed,
+                          Humidity = w.relativeHumidity,
+                          Solar = w.solarShine,
+                          Pressure = w.atmosphericPressure
+                      };
+            ret = ret.OrderBy(a => a.IDDistrict).ThenBy(a => a.IDDate);
+            return ret;
         }
 
         private long makeDateId(DateTime? dt)
