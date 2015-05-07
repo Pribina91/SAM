@@ -216,6 +216,8 @@ namespace VisualAnalytics.Controllers.Analytics
             {
                 Outlier o = new Outlier();
                 o.seriesNumber = (int)outliers[1].AsVector()[i];
+                var date = rEngine.Evaluate(fittedDataName).AsList();
+                // o.IDDate = date.
                 o.weatherDependency.Add(wc);
                 o.outlierness.Add((double)outliers[2].AsVector()[i]);
                 o.tStats.Add((double)outliers[3].AsVector()[i]);
@@ -235,20 +237,45 @@ namespace VisualAnalytics.Controllers.Analytics
             return retList;
         }
 
-        public void FindLocalProperties(string JSONdataWithWeather, string modelName, WeatherColumns weatherColumns, List<Outlier> outlierList)
+        public List<Outlier> FindLocalProperties(string JSONdataWithWeather, string modelName, WeatherColumns weatherColumns, List<Outlier> outlierList)
         {
-            string fittedDataName = modelName + weatherColumns.ToString();
-            fitSeriesToModel(JSONdataWithWeather, modelName, fittedDataName, weatherColumns);
-
-            //HashSet<int> oulierSet = new HashSet<int>();
-
-            List<Outlier> returnList = findOutliers(fittedDataName, weatherColumns);
-            foreach (Outlier o in returnList)
+            if (outlierList == null)
             {
-                outlierList.Single(x => x.seriesNumber.Equals(o.seriesNumber)).weatherDependency.Add(o.weatherDependency.First());
-                outlierList.Single(x => x.seriesNumber.Equals(o.seriesNumber)).outlierness.Add(o.outlierness.First());
-                outlierList.Single(x => x.seriesNumber.Equals(o.seriesNumber)).tStats.Add(o.tStats.First());
+                throw new Exception("outlierList not defined");
             }
+
+            if (weatherColumns.temperature == true)
+            {
+                WeatherColumns wc = new WeatherColumns() { temperature = true };
+                outlierList = ExploreDefinedProperty(JSONdataWithWeather, modelName, outlierList, wc);
+            }
+            if (weatherColumns.solar == true)
+            {
+                WeatherColumns wc = new WeatherColumns() { solar = true };
+                outlierList = ExploreDefinedProperty(JSONdataWithWeather, modelName, outlierList, wc);
+            }
+            if (weatherColumns.pressure == true)
+            {
+                WeatherColumns wc = new WeatherColumns() { pressure = true };
+                outlierList = ExploreDefinedProperty(JSONdataWithWeather, modelName, outlierList, wc);
+            }
+            if (weatherColumns.rain == true)
+            {
+                WeatherColumns wc = new WeatherColumns() { rain = true };
+                outlierList = ExploreDefinedProperty(JSONdataWithWeather, modelName, outlierList, wc);
+            }
+            if (weatherColumns.windSpeed == true)
+            {
+                WeatherColumns wc = new WeatherColumns() { windSpeed = true };
+                outlierList = ExploreDefinedProperty(JSONdataWithWeather, modelName, outlierList, wc);
+            }
+            if (weatherColumns.humitdity == true)
+            {
+                WeatherColumns wc = new WeatherColumns() { humitdity = true };
+                outlierList = ExploreDefinedProperty(JSONdataWithWeather, modelName, outlierList, wc);
+            }
+
+            return outlierList;
         }
 
         private static string GetRPath()
@@ -266,6 +293,30 @@ namespace VisualAnalytics.Controllers.Analytics
             }
             Version currentVersion = new Version((string)r.GetValue("Current Version"));
             return (string)r.GetValue("InstallPath") + @"\bin\i386";
+        }
+
+        private List<Outlier> ExploreDefinedProperty(string JSONdataWithWeather, string JSONmodelWithWeather, List<Outlier> outlierList, WeatherColumns wc)
+        {
+            string fittedDataName = "feature_data_" + wc.ToString(); ;
+            string fittingModelName = "feature_model_" + wc.ToString();
+
+            modelChange(JSONmodelWithWeather, fittingModelName, wc);
+
+            fitSeriesToModel(JSONdataWithWeather, fittingModelName, fittedDataName, wc);
+
+            //HashSet<int> oulierSet = new HashSet<int>();
+
+            List<Outlier> returnList = findOutliers(fittedDataName, wc);
+            foreach (Outlier o in returnList)
+            {
+                if (!outlierList.Exists(x => x.seriesNumber.Equals(o.seriesNumber)))
+                {
+                    continue;
+                }
+                outlierList.Single(x => x.seriesNumber.Equals(o.seriesNumber))
+                    .Add(o.weatherDependency.First(), o.outlierness.First(), o.tStats.First());
+            }
+            return outlierList;
         }
 
         /// <summary>

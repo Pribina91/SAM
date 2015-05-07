@@ -22,6 +22,11 @@ namespace VisualAnalytics.Controllers.Analytics
             pressure = Convert.ToBoolean(bitArray[5]);
         }
 
+        public WeatherColumns()
+        {
+            //throw new NotImplementedException();
+        }
+
         public override string ToString()
         {
             return string.Format("{0}{1}{2}{3}{4}{5}", Convert.ToInt32(rain), Convert.ToInt32(windSpeed), Convert.ToInt32(temperature), Convert.ToInt32(solar), Convert.ToInt32(humitdity), Convert.ToInt32(pressure));

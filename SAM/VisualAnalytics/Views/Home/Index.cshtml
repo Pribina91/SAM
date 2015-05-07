@@ -5,11 +5,14 @@
 @*<div id="lineGraph" style="width: 1000px"></div>*@
 
 <hr>
-<div style="display: inline-block">
+<div style="display: inline-block;">
+    @*<div id="radioButtons" style="display: block">
+            <input id="Radio1" type="radio" title="SUM" value="SUM" />
+            <input id="Radio2" type="radio" title="AVERAGE" value="AVERAGE" />
+        </div>*@
     <div id="comboGraph" style="width: 800px; height: 400px; display: block"></div>
     <div id="consuptionGraph" style="width: 800px; height: 400px; display: block"></div>
 </div>
-
 
 <table id="spiralGraphTable" style="display: inline-block">
     <tr>
@@ -44,15 +47,12 @@
     </tr>
     </tr>
 </table>
+<div id="pieChart"></div>
+<div id="calendar_basic" style="width: 1300px; height: 150px; display: block;"></div>
+<hr>
+<p>Weekday analysis</p>
 
-<div id="calendar_basic" style="width: 1300px; height: 150px; display: block"></div>
-<hr>
-<div id="calendar_cluster" style="width: 800px; height: 150px;"></div>
-<hr>
-<div id="chartMotion"></div>
-<hr>
-<div id="weatherGraph" style="width: 900px; height: 350px;"></div>
-
+<div id="chartMotion" style="display: block"></div>
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript">
 
@@ -96,7 +96,13 @@
                 dataTable.addRow([dtt, 0, 0]);
             }
             else if (columnCount == 4) {
-                dataTable.addRow([dtt, 0, 0, 4]);
+                dataTable.addRow([dtt, 0, 0, 0]);
+            }
+            else if (columnCount == 5) {
+                dataTable.addRow([dtt, 0, 0, 0, 0]);
+            }
+            else if (columnCount == 6) {//motion
+                dataTable.addRow([dtt, 0, 0, 0, 0, 0]);
             }
 
         }
@@ -194,9 +200,16 @@
             async: false
         }).responseJSON;
 
+        var jsonOutliers = $.ajax({
+            url: "Home/getBiggestOutliers?Type=SUM&weatherDependency=000000&IDConsuptionPlace=1622",
+            dataType: "json",
+            async: false
+        }).responseJSON;
+
         function drawComboVisualization() {
             // Some raw data (not necessarily accurate)
             var dataTableCombo = new google.visualization.DataTable();
+
             dataTableCombo.addColumn({ type: 'datetime', id: 'Date' });
             dataTableCombo.addColumn({ type: 'number', id: 'AvgAmount', label: 'District Model' });
             //dataTableCombo.addColumn({ type: 'number', id: 'SumAmount', label: 'Sum Model' });
@@ -208,6 +221,13 @@
             // addColumnData(jsonConsuptionModelSum, dataTableCombo, "Amount", 2);
             addColumnData(jsonConsuption, dataTableCombo, "Amount", 2);
 
+            function addOutlier(JsonData, outlierLimit) {
+                for (var i = 0; i < outlierLimit; i++) {
+
+                }
+            }
+
+            addOutlier(jsonOutliers, 5);
             /*[
           ['Month', 'Bolivia', 'Ecuador', 'Madagascar', 'Papua New Guinea', 'Rwanda', 'Average'],
           ['2004/05', 165, 938, 522, 998, 450, 614.6],
@@ -268,6 +288,7 @@
                 selectedData = selectedRow; // dataTableParameter.getValue(selectedRow, selectedColumn);
                 selectedDate = jsonConsuption[selectedRow]["IDDate"];
                 spiralGraphDraw();
+                drawPieChart(selectedDate);
                 //drawCalendarChart();
             }
 
@@ -396,8 +417,8 @@
 
             var options1 = {
                 title: "Calendar",
-                height: 350,
-                colorAxis: { minValue: 50, colors: ['#FF0000', '#FF0000'] },
+                height: 150,
+                colorAxis: { minValue: 0, colors: ['#000000', '#FF0000'] },
                 calendar: {
                     cellColor: {
                         stroke: '#76a7fa',
@@ -414,85 +435,43 @@
         drawCalendarChart();
 
         ////PIECHART
-        //var oldData = google.visualization.arrayToDataTable([
-        //      ['Major', 'Degrees'],
-        //      ['Business', 256070], ['Education', 108034],
-        //      ['Social Sciences & History', 127101], ['Health', 81863],
-        //      ['Psychology', 74194]]);
 
-        //var newData = google.visualization.arrayToDataTable([
-        //  ['Major', 'Degrees'],
-        //  ['Business', 358293], ['Education', 101265],
-        //  ['Social Sciences & History', 172780], ['Health', 129634],
-        //  ['Psychology', 97216]]);
+        function drawPieChart(selDate) {
+            var pieDataTable = new google.visualization.DataTable();
+            pieDataTable.addColumn({ type: 'string', id: 'Feature' });
+            pieDataTable.addColumn({ type: 'number', id: 'outlierness' });
 
-        //var options2 = { pieSliceText: 'none' };
+            for (var i = 0; i < jsonOutliers.length; i++) {
+                var obj = jsonOutliers[i];
+                //for (var key in obj) {
+                //var attrName = key;
+                //var attrValue = obj[key];
+                var order = obj["seriesNumber"];
+                var IDDate = jsonConsuption[order]["IDDate"];
+                if (IDDate == selDate) {
+                    
+                    var outliernessList = obj["outlierness"];
+                    for (var i = 0; i < outliernessList.length; i++) {
+                        var str = toString(obj["weatherDependency"][i][0]);
+                        pieDataTable.addRow([toString(i), outliernessList[i]]);
+                    }
+                    break;
 
-        ////var chartBefore = new google.visualization.PieChart(document.getElementById('piechart_before'));
-        ////var chartAfter = new google.visualization.PieChart(document.getElementById('piechart_after'));
-        //var chartDiff = new google.visualization.PieChart(document.getElementById('piechart_diff'));
+                }
 
-        ////chartBefore.draw(oldData, options);
-        //// chartAfter.draw(newData, options);
+            }
+            var pieChartOulier = new google.visualization.PieChart(document.getElementById('pieChart'));
+            var pieOptions = {};
+            pieChartOulier.draw(pieDataTable, pieOptions);
+        }
 
-        //var diffData2 = chartDiff.computeDiff(oldData, newData);
-        //chartDiff.draw(diffData2, options2);
-
-        ////TREECHART
-        //var data3 = google.visualization.arrayToDataTable([
-        //     ['Location', 'Parent', 'Market trade volume (size)', 'Market increase/decrease (color)'],
-        //     ['Global', null, 0, 0],
-        //     ['America', 'Global', 0, 0],
-        //     ['Europe', 'Global', 0, 0],
-        //     ['Asia', 'Global', 0, 0],
-        //     ['Australia', 'Global', 0, 0],
-        //     ['Africa', 'Global', 0, 0],
-        //     ['Brazil', 'America', 11, 10],
-        //     ['USA', 'America', 52, 31],
-        //     ['Mexico', 'America', 24, 12],
-        //     ['Canada', 'America', 16, -23],
-        //     ['France', 'Europe', 42, -11],
-        //     ['Germany', 'Europe', 31, -2],
-        //     ['Sweden', 'Europe', 22, -13],
-        //     ['Italy', 'Europe', 17, 4],
-        //     ['UK', 'Europe', 21, -5],
-        //     ['China', 'Asia', 36, 4],
-        //     ['Japan', 'Asia', 20, -12],
-        //     ['India', 'Asia', 40, 63],
-        //     ['Laos', 'Asia', 4, 34],
-        //     ['Mongolia', 'Asia', 1, -5],
-        //     ['Israel', 'Asia', 12, 24],
-        //     ['Iran', 'Asia', 18, 13],
-        //     ['Pakistan', 'Asia', 11, -52],
-        //     ['Egypt', 'Africa', 21, 0],
-        //     ['S. Africa', 'Africa', 30, 43],
-        //     ['Sudan', 'Africa', 12, 2],
-        //     ['Congo', 'Africa', 10, 12],
-        //     ['Zaire', 'Africa', 8, 10]
-        //]);
-
-        //tree = new google.visualization.TreeMap(document.getElementById('treemapGoogle'));
-
-        //tree.draw(data3, {
-        //    minColor: '#f00',
-        //    midColor: '#ddd',
-        //    maxColor: '#0d0',
-        //    headerHeight: 15,
-        //    fontColor: 'black',
-        //    showScale: true
-        //});
-
-        //var dataMotion = new google.visualization.DataTable();
-
-        //dataMotion.addColumn('string', 'Cluster');
-        //dataMotion.addColumn('date', 'Date');
-        //dataMotion.addColumn('number', 'Amount');
-        //dataMotion.addColumn('number', 'Temperature');
-        //dataMotion.addColumn('number', 'Rainfall');
-        //dataMotion.addColumn('number', 'Wind Speed');
-        //dataMotion.addColumn('number', 'Wind Direction');
-        //dataMotion.addColumn('number', 'Humidity');
-        //dataMotion.addColumn('number', 'Solar Flux');
+        var dataMotion = new google.visualization.DataTable();
+        dataMotion.addColumn('string', 'WeekDay');
+        dataMotion.addColumn('date', 'Date');
+        dataMotion.addColumn('number', 'Amount');
+        dataMotion.addColumn('number', 'Temperature');
+        dataMotion.addColumn('number', 'Rainfall');
+        dataMotion.addColumn('number', 'Solar Flux');
 
         //var jsonBigTable = $.ajax({
         //    url: "home/getBigTable",
@@ -500,43 +479,33 @@
         //    async: false
         //}).responseJSON;
 
-        //for (var i = 0; i < jsonBigTable.length; i++) {
-        //    var obj = jsonBigTable[i];
-        //    var dtt = getDateFromString(obj["IDDate"]);
-        //    var imp = obj["importance"];
+        var weekday = new Array(7);
+        weekday[0] = "Sunday";
+        weekday[1] = "Monday";
+        weekday[2] = "Tuesday";
+        weekday[3] = "Wednesday";
+        weekday[4] = "Thursday";
+        weekday[5] = "Friday";
+        weekday[6] = "Saturday";
 
-        //    dataMotion.addRow(["test"
-        //                        ,getDateFromString(obj["IDDate"])
-        //                        ,obj["Amount"]
-        //                        ,obj["Temperature"]
-        //                        ,obj["Rain"]
-        //                        ,obj["WindSpeed"]
-        //                        ,obj["WindDirection"]
-        //                        ,obj["Humidity"]
-        //                        ,obj["Solar"]
-        //                    ]);
-        //}
+        ;
 
-        ////dataMotion.addRows([
-        ////  ['Apples', new Date(1988, 0, 1), 1000, 300, 'East'],
-        ////  ['Oranges', new Date(1988, 0, 1), 1150, 200, 'West'],
-        ////  ['Bananas', new Date(1988, 0, 1), 300, 250, 'West'],
-        ////  ['Apples', new Date(1989, 6, 1), 1200, 400, 'East'],
-        ////  ['Oranges', new Date(1989, 6, 1), 750, 150, 'West'],
-        ////  ['Bananas', new Date(1989, 6, 1), 788, 617, 'West']
-        ////]);
+        for (var i = 0; i < jsonConsuption.length; i++) {
+            var obj = jsonConsuption[i];
+            var dtt = getDateFromString(obj["IDDate"]);
+            dataMotion.addRow([weekday[dtt.getDay()], dtt, 0, 0, 0, 0]);
+        }
 
-        //var chartMotion = new google.visualization.MotionChart(document.getElementById('chartMotion'));
+        addColumnData(jsonConsuption, dataMotion, "Amount", 2);
+        addColumnData(jsonConsuption, dataMotion, "Temperature", 3);
+        addColumnData(jsonConsuption, dataMotion, "Rain", 4);
+        addColumnData(jsonConsuption, dataMotion, "Solar", 5);
 
-        //chartMotion.draw(dataMotion, { width: 600, height: 300 });
+        var chartMotion = new google.visualization.MotionChart(document.getElementById('chartMotion'));
+
+        chartMotion.draw(dataMotion, { width: 1000, height: 500 });
 
     }
 </script>
 
 <hr />
-<div id="pieChart" style="width: 1000px; height: 350px;"></div>
-<span id='piechart_diff' style="width: 1000px; height: 350px;"> </span>
-
-<hr />
-
-<div id="treemapGoogle" style="width: 1000px; height: 350px;"> </div>

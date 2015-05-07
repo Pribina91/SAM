@@ -225,6 +225,7 @@
     <Compile Include="Controllers\Helpers\InputParser.cs" />
     <Compile Include="Controllers\Helpers\JSONhelper.cs" />
     <Compile Include="Controllers\Helpers\Polynomial.cs" />
+    <Compile Include="Controllers\Helpers\WeatherColumnConversion.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PlaceWeathersController.cs" />
     <Compile Include="Global.asax.cs">

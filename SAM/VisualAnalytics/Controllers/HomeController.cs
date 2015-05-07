@@ -25,6 +25,7 @@ namespace VisualAnalytics.Controllers
         private SAMcontext db = new SAMcontext();
         private AnalyticsModule am = new AnalyticsModule();
 
+        private IOrderedEnumerable<Outlier> outliersList;
         private string modelJSON
         {
             get { return (string)ViewData[MODEL_JSON]; }
@@ -46,27 +47,46 @@ namespace VisualAnalytics.Controllers
             //getDailyAvgModelTable();
 
             //WeatherColumns allTrue = new WeatherColumns(new byte[] { 1, 1, 1, 1, 1, 1 });
-            //am.modelChange(getDailyAvgModelTable().Content, "fit_avg", allTrue);
-            //string place = getDailyPlaceTable().Content;
-            //am.fitSeriesToModel(place, "fit_avg", "dailyDataPlace", allTrue);
+            //string modelJson = getDailyAvgModelTable().Content;
+            //am.modelChange(modelJson, "fit_avg", allTrue);
+            //string placeJson = getDailyPlaceTable().Content;
+            //am.fitSeriesToModel(placeJson, "fit_avg", "dailyDataPlace", allTrue);
             //List<Outlier> outliers = new List<Outlier>();
+            ////WeatherColumns nonerue = new WeatherColumns(new byte[] { 0, 0, 0, 0, 1, 1 });
             //outliers = am.findOutliers("dailyDataPlace", allTrue);
+            //outliers = am.FindLocalProperties(placeJson, modelJson, allTrue, outliers);
+            //outliersList = outliers;
             ////
             //WeatherColumns nonerue = new WeatherColumns(new byte[] { 0, 0, 0, 0, 0, 1 });
             //am.FindLocalProperties(place, "fit", allTrue, outliers);
             return View();
         }
 
+        public ActionResult getBiggestOutliers(string model = "SUM", string weatherDependency = "000000", int IDConsuptionPlace = 1622)
+        {
+            const string MODEL_FIT = "model_fit";
+            const string DATA_PLACE = "data_place";
+
+            WeatherColumns wd = WeatherColumnConversion.stringToWeatherColumn(weatherDependency);
+
+            string modelJson = getDailyModelTable(model).Content;
+
+            am.modelChange(modelJson, MODEL_FIT, wd);
+            string placeJson = getDailyPlaceTable(IDConsuptionPlace).Content;
+
+            am.fitSeriesToModel(placeJson, MODEL_FIT, DATA_PLACE, wd);
+            List<Outlier> outliers = new List<Outlier>();
+            //WeatherColumns nonerue = new WeatherColumns(new byte[] { 0, 0, 0, 0, 1, 1 });
+            outliers = am.findOutliers(DATA_PLACE, wd);
+            outliers = am.FindLocalProperties(placeJson, modelJson, wd, outliers);
+            outliersList = outliers.OrderBy(o => o.outlierness.Max());
+
+            return new ContentResult { Content = outliersList.ToJSON(), ContentType = "application/json" };
+        }
+
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
 
             return View();
         }
@@ -80,37 +100,37 @@ namespace VisualAnalytics.Controllers
                 .Select(x => new
                 {
                     IDDate = x.IDDate,
-                    importance = 50
+                    importance = int.Parse(x.eventType)
                 })
                     .OrderBy(x => x.IDDate);
 
             return new ContentResult { Content = ev.ToJSON(), ContentType = "application/json" };
         }
 
-        public ContentResult getConsuptions()
-        {
-            var consuptions = db.Consuptions.Where(x => x.source == 2);
+        //public ContentResult getConsuptions()
+        //{
+        //    var consuptions = db.Consuptions.Where(x => x.source == 2);
 
-            var ev = //consuptions.First();
-                consuptions
-                //.Where(x => x.source == 2 && x.MeasurementSequence == 10)
-                //.Where(x => x.source == 2 )
-                    .GroupBy(ce => ce.IDDate)
-                    .Select(a => new
-                    {
-                        amount = a.Sum(c => c.Amount),
-                        dt = a.Key
-                        //,measureOffset = a.MeasurementSequence
-                    })
-                    .OrderBy(x => x.dt)
-                //.ThenBy(x => x.measureOffset)
-                ;
+        //    var ev = //consuptions.First();
+        //        consuptions
+        //        //.Where(x => x.source == 2 && x.MeasurementSequence == 10)
+        //        //.Where(x => x.source == 2 )
+        //            .GroupBy(ce => ce.IDDate)
+        //            .Select(a => new
+        //            {
+        //                amount = a.Sum(c => c.Amount),
+        //                dt = a.Key
+        //                //,measureOffset = a.MeasurementSequence
+        //            })
+        //            .OrderBy(x => x.dt)
+        //        //.ThenBy(x => x.measureOffset)
+        //        ;
 
-            //var jsonData = Json(ev, JsonRequestBehavior.AllowGet);
-            var json2 = ev.ToList().ToJSON();
-            return new ContentResult { Content = json2, ContentType = "application/json" };
-            ;
-        }
+        //    //var jsonData = Json(ev, JsonRequestBehavior.AllowGet);
+        //    var json2 = ev.ToList().ToJSON();
+        //    return new ContentResult { Content = json2, ContentType = "application/json" };
+        //    ;
+        //}
 
         //public ContentResult getWeather()
         //{
@@ -164,7 +184,7 @@ namespace VisualAnalytics.Controllers
         //    return new ContentResult { Content = bigTable.ToJSON(), ContentType = "application/json" };
         //}
 
-        public ContentResult getDailyPlaceTable()
+        public ContentResult getDailyPlaceTable(int IDConsuptionPlace = 1622)
         {
             var bigTable =
                 from c in db.ConsuptionsDailies
@@ -172,7 +192,7 @@ namespace VisualAnalytics.Controllers
                 join pw in db.PlaceWeathers on new { cp.DistrictName } equals new { pw.DistrictName }
                 join w in db.WeathersDailies on new { n1 = c.IDDate, n3 = pw.IDLocation } equals
                     new { n1 = w.IDDate, n3 = w.IDLocation }
-                where c.IDConsuptionPlace == 1622 //CP from 62 district
+                where c.IDConsuptionPlace == IDConsuptionPlace //CP from 62 district
                 //&& c.IDDate >= 20140401
                 select new
                 {
@@ -221,14 +241,7 @@ namespace VisualAnalytics.Controllers
 
         public ContentResult getFittedModelTable(string Type = "SUM", int idDistrict = 62, string weatherDependency = "000000")
         {
-            byte[] bytes = new byte[6];
-            var chArray = weatherDependency.ToCharArray();
-            for (int i = 0; i < 6; i++)
-            {
-                bytes[i] = BitConverter.GetBytes(int.Parse(chArray[i].ToString()))[0];
-            }
-            //bytes = BitConverter.GetBytes(int.Parse(weatherDependency));
-            WeatherColumns wd = new WeatherColumns(bytes);
+            WeatherColumns wd = WeatherColumnConversion.stringToWeatherColumn(weatherDependency);
 
             ModelType modelTp = (ModelType)Enum.Parse(
                                           typeof(ModelType), Type, true);
