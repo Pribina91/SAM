@@ -288,6 +288,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Controllers\TreeMapController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -1397,6 +1398,7 @@
     <Content Include="Views\PlaceWeathers\Details.cshtml" />
     <Content Include="Views\PlaceWeathers\Edit.cshtml" />
     <Content Include="Views\PlaceWeathers\Index.cshtml" />
+    <Content Include="Views\TreeMap\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

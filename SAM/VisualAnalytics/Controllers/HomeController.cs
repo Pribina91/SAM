@@ -107,6 +107,28 @@ namespace VisualAnalytics.Controllers
             return new ContentResult { Content = ev.ToJSON(), ContentType = "application/json" };
         }
 
+        public ContentResult getForecast(string model = "SUM", string weatherDependency = "000000", int IDConsuptionPlace = 1622, int lenght = 5, int startIDDate = 20141201)
+        {
+            const string MODEL_FIT = "model_fit";
+            const string DATA_PLACE = "data_place";
+
+            WeatherColumns wd = WeatherColumnConversion.stringToWeatherColumn(weatherDependency);
+
+            string modelJson = getDailyModelTable(model, endIDDate: startIDDate).Content; // start date of forcast is end date of series
+            am.modelChange(modelJson, MODEL_FIT, wd);
+
+            string placeJson = getDailyPlaceTable(IDConsuptionPlace, endIDDate: startIDDate).Content;
+
+            am.fitSeriesToModel(placeJson, MODEL_FIT, DATA_PLACE, wd);
+            List<Outlier> outliers = new List<Outlier>();
+            //WeatherColumns nonerue = new WeatherColumns(new byte[] { 0, 0, 0, 0, 1, 1 });
+            outliers = am.findOutliers(DATA_PLACE, wd);
+            outliers = am.FindLocalProperties(placeJson, modelJson, wd, outliers);
+            outliersList = outliers.OrderBy(o => o.outlierness.Max());
+
+            return new ContentResult { Content = outliersList.ToJSON(), ContentType = "application/json" };
+        }
+
         //public ContentResult getConsuptions()
         //{
         //    var consuptions = db.Consuptions.Where(x => x.source == 2);
@@ -184,7 +206,7 @@ namespace VisualAnalytics.Controllers
         //    return new ContentResult { Content = bigTable.ToJSON(), ContentType = "application/json" };
         //}
 
-        public ContentResult getDailyPlaceTable(int IDConsuptionPlace = 1622)
+        public ContentResult getDailyPlaceTable(int IDConsuptionPlace = 1622, int startIDDate = 20140101, int endIDDate = 20150101)
         {
             var bigTable =
                 from c in db.ConsuptionsDailies
@@ -193,6 +215,8 @@ namespace VisualAnalytics.Controllers
                 join w in db.WeathersDailies on new { n1 = c.IDDate, n3 = pw.IDLocation } equals
                     new { n1 = w.IDDate, n3 = w.IDLocation }
                 where c.IDConsuptionPlace == IDConsuptionPlace //CP from 62 district
+                    && c.IDDate >= startIDDate
+                    && c.IDDate <= endIDDate
                 //&& c.IDDate >= 20140401
                 select new
                 {
@@ -249,7 +273,7 @@ namespace VisualAnalytics.Controllers
             {
                 case ModelType.AVERAGE:
                     {
-                        am.modelChange(getDailyAvgModelTable().Content, "fit_avg", wd);
+                        am.modelChange(getDailyModelTable(Type, idDistrict).Content, "fit_avg", wd);
                         var returnValue = am.fitSeriesToModel(getDailyPlaceTable().Content, "fit_avg", "dailyDataPlace", wd);
 
                         return new ContentResult { Content = returnValue.ToJSON(), ContentType = "application/json" };
@@ -258,7 +282,7 @@ namespace VisualAnalytics.Controllers
 
                 case ModelType.SUM:
                     {
-                        am.modelChange(getDailySumModelTable().Content, "fit_sum", wd);
+                        am.modelChange(getDailyModelTable(Type, idDistrict).Content, "fit_sum", wd);
                         var returnValue = am.fitSeriesToModel(getDailyPlaceTable().Content, "fit_sum", "dailyDataPlace", wd);
 
                         return new ContentResult { Content = returnValue.ToJSON(), ContentType = "application/json" };
@@ -275,18 +299,18 @@ namespace VisualAnalytics.Controllers
             //outliers = am.findOutliers("dailyDataPlace", allTrue);
         }
 
-        public ContentResult getDailyModelTable(string Type = "SUM", int idDistrict = 62)
+        public ContentResult getDailyModelTable(string Type = "SUM", int idDistrict = 62, int startIDDate = 20140101, int endIDDate = 20150101)
         {
             ModelType modelTp = (ModelType)Enum.Parse(
                                           typeof(ModelType), Type, true);
             switch (modelTp)
             {
                 case ModelType.AVERAGE:
-                    return getDailyAvgModelTable(idDistrict);
+                    return getDailyAvgModelTable(startIDDate, endIDDate, idDistrict);
                     break;
 
                 case ModelType.SUM:
-                    return getDailySumModelTable(idDistrict);
+                    return getDailySumModelTable(startIDDate, endIDDate, idDistrict);
                     break;
 
                 default:
@@ -294,32 +318,36 @@ namespace VisualAnalytics.Controllers
             }
         }
 
-        public ContentResult getDailyAvgModelTable(int idDistrict = 62)
+        public ContentResult getDailyAvgModelTable(int startIDDate, int endIDDate, int idDistrict = 62)
         {
-            var bigTable = BigDailyModelTable(idDistrict, "A");
+            var bigTable = BigDailyModelTable(idDistrict, "A", startIDDate, endIDDate);
             modelJSON = bigTable.ToJSON();
 
             return new ContentResult { Content = bigTable.ToJSON(), ContentType = "application/json" };
         }
 
-        public ContentResult getDailySumModelTable(int idDistrict = 62)
+        public ContentResult getDailySumModelTable(int startIDDate, int endIDDate, int idDistrict = 62)
         {
-            var bigTable = BigDailyModelTable(idDistrict, "S");
+            var bigTable = BigDailyModelTable(idDistrict, "S", startIDDate, endIDDate);
             modelJSON = bigTable.ToJSON();
 
             return new ContentResult { Content = bigTable.ToJSON(), ContentType = "application/json" };
         }
 
-        private IQueryable BigDailyModelTable(int idDistrict, string type)
+        private IQueryable BigDailyModelTable(int idDistrict, string type, int startIDDate, int endIDDate)
         {
             var ret = from c in db.ConsuptionModelDailies
                       join pw in db.PlaceWeathers on new { c.IDDistrict } equals new { pw.IDDistrict }
                       join w in db.WeathersDailies on new { n1 = c.IDDate, n3 = pw.IDLocation } equals
                           new { n1 = w.IDDate, n3 = w.IDLocation }
-                      where c.Type == type && c.IDDistrict == idDistrict
+                      where c.Type == type
+                        && c.IDDistrict == idDistrict
+                        && c.IDDate >= startIDDate
+                        && c.IDDate <= endIDDate
                       select new
                       {
                           Amount = c.Amount,
+                          pw.DistrictName,
                           pw.IDDistrict,
                           pw.IDLocation,
                           IDDate = c.IDDate,
