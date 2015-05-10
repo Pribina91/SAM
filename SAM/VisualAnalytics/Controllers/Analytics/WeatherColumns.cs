@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace VisualAnalytics.Controllers.Analytics
 {
-    public class WeatherColumns
+    public class WeatherColumns : IEquatable<WeatherColumns>
     {
         public bool rain;
         public bool windSpeed;
@@ -31,6 +31,19 @@ namespace VisualAnalytics.Controllers.Analytics
         {
             return string.Format("{0}{1}{2}{3}{4}{5}", Convert.ToInt32(rain), Convert.ToInt32(windSpeed), Convert.ToInt32(temperature), Convert.ToInt32(solar), Convert.ToInt32(humitdity), Convert.ToInt32(pressure));
             //return base.ToString();
+        }
+
+        public bool Equals(WeatherColumns other)
+        {
+            if (other == null) return false;
+
+            return (this.rain.Equals(other.rain)
+                    && this.windSpeed.Equals(other.windSpeed)
+                    && this.temperature.Equals(other.temperature)
+                    && this.solar.Equals(other.solar)
+                    && this.humitdity.Equals(other.humitdity)
+                    && this.pressure.Equals(other.pressure)
+                    );
         }
     }
 }

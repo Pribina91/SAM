@@ -10,8 +10,8 @@
             <input id="Radio1" type="radio" title="SUM" value="SUM" />
             <input id="Radio2" type="radio" title="AVERAGE" value="AVERAGE" />
         </div>*@
-    <div id="comboGraph" style="width: 800px; height: 400px; display: block"></div>
-    <div id="consuptionGraph" style="width: 800px; height: 400px; display: block"></div>
+    <div id="comboGraph" style="width: 800px; height: 600px; display: block"></div>
+    <div id="WeatherLineGraph" style="width: 800px; height: 400px; display: block"></div>
 </div>
 
 <table id="spiralGraphTable" style="display: inline-block">
@@ -201,7 +201,7 @@
         }).responseJSON;
 
         var jsonOutliers = $.ajax({
-            url: "Home/getBiggestOutliers?Type=SUM&weatherDependency=000000&IDConsuptionPlace=1622",
+            url: "Home/getBiggestOutliers?Type=SUM&weatherDependency=001100&IDConsuptionPlace=1622",
             dataType: "json",
             async: false
         }).responseJSON;
@@ -228,14 +228,6 @@
             }
 
             addOutlier(jsonOutliers, 5);
-            /*[
-          ['Month', 'Bolivia', 'Ecuador', 'Madagascar', 'Papua New Guinea', 'Rwanda', 'Average'],
-          ['2004/05', 165, 938, 522, 998, 450, 614.6],
-          ['2005/06', 135, 1120, 599, 1268, 288, 682],
-          ['2006/07', 157, 1167, 587, 807, 397, 623],
-          ['2007/08', 139, 1110, 615, 968, 215, 609.4],
-          ['2008/09', 136, 691, 629, 1026, 366, 569.6]
-        ]);*/
 
             var options = {
                 title: 'Consumtion compared to district models',
@@ -247,20 +239,43 @@
 
             var chart = new google.visualization.ComboChart(document.getElementById('comboGraph'));
             chart.draw(dataTableCombo, options);
+
+            var chartParameter = chart;
+
+            function selectHandler() {
+                var selection = chartParameter.getSelection();
+                // .setSelection(table.getSelection());
+                var selectedRow = selection[0]["row"];
+                var selectedColumn = selection[0]["column"];
+                selectedData = selectedRow; // dataTableParameter.getValue(selectedRow, selectedColumn);
+                selectedDate = jsonConsuption[selectedRow]["IDDate"];
+                spiralGraphDraw();
+                drawPieChart(selectedDate);
+                //drawCalendarChart();
+            }
+
+            google.visualization.events.addListener(chart, 'select', selectHandler);
         }
 
         drawComboVisualization();
 
         //jsonConsuption
-        //var dataConsMatrix = [];
-        function drawConsuptionChart(jsonConsuption) {
+        var dataConsMatrix = [];
+        function drawWeatherLineChart(jsonConsuption) {
             var dataTableConsuption = new google.visualization.DataTable();
             dataTableConsuption.addColumn({ type: 'datetime', id: 'Date' });
-            dataTableConsuption.addColumn({ type: 'number', id: 'avgAmount', label: 'ConsumptionPlace' });
+            dataTableConsuption.addColumn({ type: 'number', id: 'Weather', label: 'Weather' });
 
             createConsumptionDataTable(jsonConsuption, dataTableConsuption, 2);
-            addColumnData(jsonConsuption, dataTableConsuption, "Amount", 1);
-
+            addColumnData(jsonConsuption, dataTableConsuption, "Temperature", 1);
+            /*
+            Temperature = w.surfaceTemperature,
+                    Rain = w.rainfall,
+                    WindSpeed = w.windSpeed,
+                    Humidity = w.relativeHumidity,
+                    Solar = w.solarShine,
+                    Pressure = w.atmosphericPressure
+            */
             //for (var i = 0; i < jsonConsuption.length; i++) {
             //    var obj = jsonConsuption[i];
             //    var dtt = getDateFromString(obj["IDDate"]);
@@ -269,16 +284,15 @@
             //}
 
             var optionsConsuption = {
-                title: 'Overal consuption',
+                title: 'Weather description',
                 curveType: 'function'
             };
 
-            var chartConsuption = new google.visualization.LineChart(document.getElementById('consuptionGraph'));
+            var chartConsuption = new google.visualization.LineChart(document.getElementById('WeatherLineGraph'));
 
             chartConsuption.draw(dataTableConsuption, optionsConsuption);
 
             var chartParameter = chartConsuption;
-            var dataTableParameter = dataTableConsuption;
 
             function selectHandler() {
                 var selection = chartParameter.getSelection();
@@ -296,11 +310,7 @@
 
         }
 
-        drawConsuptionChart(jsonConsuption);
-
-        // The selection handler.
-        // Loop through all items in the selection and concatenate
-        // a single message from all of them.
+        drawWeatherLineChart(jsonConsuption);
 
         //SPIRAL
 
@@ -449,11 +459,11 @@
                 var order = obj["seriesNumber"];
                 var IDDate = jsonConsuption[order]["IDDate"];
                 if (IDDate == selDate) {
-                    
+
                     var outliernessList = obj["outlierness"];
                     for (var i = 0; i < outliernessList.length; i++) {
                         var str = toString(obj["weatherDependency"][i][0]);
-                        pieDataTable.addRow([toString(i), outliernessList[i]]);
+                        pieDataTable.addRow([toString(i), Math.abs(outliernessList[i])]);
                     }
                     break;
 

@@ -79,9 +79,16 @@ namespace VisualAnalytics.Controllers
             //WeatherColumns nonerue = new WeatherColumns(new byte[] { 0, 0, 0, 0, 1, 1 });
             outliers = am.findOutliers(DATA_PLACE, wd);
             outliers = am.FindLocalProperties(placeJson, modelJson, wd, outliers);
-            outliersList = outliers.OrderBy(o => o.outlierness.Max());
+            //outliersList = outliers.OrderBy(o => o.outlierness.Max());
+            Outlier emptyOutlier = new Outlier() { IDDate = 20130101, outlierness = new List<double>(4), seriesNumber = -1, tStats = new List<double>(4) };
+            for (int i = 0; i < 8; i++)
+            {
+                emptyOutlier.outlierness.Add(0);
+                emptyOutlier.tStats.Add(0);
+            }
 
-            return new ContentResult { Content = outliersList.ToJSON(), ContentType = "application/json" };
+            outliers.Insert(0, emptyOutlier);
+            return new ContentResult { Content = outliers.ToJSON(), ContentType = "application/json" };
         }
 
         public ActionResult About()

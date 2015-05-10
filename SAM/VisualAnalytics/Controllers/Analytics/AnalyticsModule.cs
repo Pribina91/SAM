@@ -274,6 +274,14 @@ namespace VisualAnalytics.Controllers.Analytics
                 WeatherColumns wc = new WeatherColumns() { humitdity = true };
                 outlierList = ExploreDefinedProperty(JSONdataWithWeather, modelName, outlierList, wc);
             }
+            //noneWeatherDependency
+            {
+                WeatherColumns wc = new WeatherColumns();
+                if (!outlierList.Exists(o => o.weatherDependency.Contains(wc)))
+                {
+                    outlierList = ExploreDefinedProperty(JSONdataWithWeather, modelName, outlierList, wc);
+                }
+            }
 
             return outlierList;
         }
