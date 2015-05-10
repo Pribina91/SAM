@@ -62,6 +62,12 @@ namespace VisualAnalytics.Controllers
             return View();
         }
 
+        public ContentResult markPoint(int IDDate)
+        {
+            log.Info("Point selected:" + IDDate);
+            return new ContentResult { Content = MODEL_JSON.ToJSON(), ContentType = "application/json" }; ;
+        }
+
         public ActionResult getBiggestOutliers(string model = "SUM", string weatherDependency = "000000", int IDConsuptionPlace = 1622)
         {
             const string MODEL_FIT = "model_fit";
@@ -127,6 +133,9 @@ namespace VisualAnalytics.Controllers
             string placeJson = getDailyPlaceTable(IDConsuptionPlace, endIDDate: startIDDate).Content;
 
             am.fitSeriesToModel(placeJson, MODEL_FIT, DATA_PLACE, wd);
+
+            am.makeForecast(placeJson, DATA_PLACE, wd);
+
             List<Outlier> outliers = new List<Outlier>();
             //WeatherColumns nonerue = new WeatherColumns(new byte[] { 0, 0, 0, 0, 1, 1 });
             outliers = am.findOutliers(DATA_PLACE, wd);
@@ -243,7 +252,7 @@ namespace VisualAnalytics.Controllers
                 };
 
             bigTable = bigTable.OrderBy(a => a.IDConsuptionPlace).ThenBy(a => a.IDDate);
-            int x = bigTable.Count();
+            //int x = bigTable.Count();
             modelJSON = bigTable.ToJSON();
 
             //    bigTable.Select(a => new

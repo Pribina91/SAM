@@ -286,6 +286,22 @@ namespace VisualAnalytics.Controllers.Analytics
             return outlierList;
         }
 
+        public List<Consuption> makeForecast(string JSONdataWithWeather, string fittedDataName, WeatherColumns weatherColumns, int forecastedNumber = 5)
+        {
+            //var sourceAmounts = rEngine.Evaluate("sourceDates <- " + fittingDataName + "$Amount").AsList();
+
+            //List<Consuption> retList = new List<Consuption>();
+            //for (int i = 0; i < fittedValuesList.Count; i++)
+            //{
+            //    Consuption c = new Consuption();
+            //    c.Amount = (float)fittedValuesList[i] + (float)sourceAmounts.AsNumeric().ElementAt(i);
+            //    c.IDDate = sourceDates.AsInteger().ElementAt(i);
+            //    retList.Add(c);
+            //}
+            //return retList;
+            throw new NotImplementedException();
+        }
+
         private static string GetRPath()
         {
             RegistryKey rCore = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\R-core");

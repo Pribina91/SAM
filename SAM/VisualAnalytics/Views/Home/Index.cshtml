@@ -11,6 +11,7 @@
             <input id="Radio2" type="radio" title="AVERAGE" value="AVERAGE" />
         </div>*@
     <div id="comboGraph" style="width: 800px; height: 600px; display: block"></div>
+
     <div id="WeatherLineGraph" style="width: 800px; height: 400px; display: block"></div>
 </div>
 
@@ -47,6 +48,7 @@
     </tr>
     </tr>
 </table>
+<p>Property explaination</p>
 <div id="pieChart"></div>
 <div id="calendar_basic" style="width: 1300px; height: 150px; display: block;"></div>
 <hr>
@@ -250,7 +252,18 @@
                 selectedData = selectedRow; // dataTableParameter.getValue(selectedRow, selectedColumn);
                 selectedDate = jsonConsuption[selectedRow]["IDDate"];
                 spiralGraphDraw();
+                //drawWeatherLineChart(jsonConsuption);
                 drawPieChart(selectedDate);
+                function AddToCart(selectedDate) {
+                    $.ajax({
+                        url: 'Home/markPoint?IDDate=' + selectedDate,
+                        dataType: "json",
+                        async: true
+                    }
+                    );
+                }
+
+                AddToCart(selectedDate);
                 //drawCalendarChart();
             }
 
@@ -451,7 +464,7 @@
             pieDataTable.addColumn({ type: 'string', id: 'Feature' });
             pieDataTable.addColumn({ type: 'number', id: 'outlierness' });
 
-            for (var i = 0; i < jsonOutliers.length; i++) {
+            for (var i = 1; i < jsonOutliers.length; i++) {
                 var obj = jsonOutliers[i];
                 //for (var key in obj) {
                 //var attrName = key;
@@ -462,8 +475,25 @@
 
                     var outliernessList = obj["outlierness"];
                     for (var i = 0; i < outliernessList.length; i++) {
-                        var str = toString(obj["weatherDependency"][i][0]);
-                        pieDataTable.addRow([toString(i), Math.abs(outliernessList[i])]);
+                        var str = "";
+                        var t = obj["weatherDependency"][i]["temperature"];
+                        if (t) { str += "Temperature "; }
+                        var r = obj["weatherDependency"][i]["rain"];
+                        if (r) { str += "Rain "; }
+                        var ws = obj["weatherDependency"][i]["windSpeed"];
+                        if (ws) { str += "WindSpeed "; }
+                        var h = obj["weatherDependency"][i]["humidity"];
+                        if (h) { str += "Humidity "; }
+                        var s = obj["weatherDependency"][i]["solar"];
+                        if (s) { str += "Solar "; }
+                        var p = obj["weatherDependency"][i]["pressure"];
+                        if (p) { str += "Pressure "; }
+
+                        if (!(t && r && ws && h && s && p)) {
+                            str += "None ";
+                        }
+
+                        pieDataTable.addRow([str, Math.abs(outliernessList[i])]);
                     }
                     break;
 
