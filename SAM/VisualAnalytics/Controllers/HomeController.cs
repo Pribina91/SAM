@@ -156,7 +156,7 @@ namespace VisualAnalytics.Controllers
             string placeJsonShort = getDailyPlaceTable(IDConsuptionPlace, startIDDate, startIDDate + lenght).Content;
             am.fitSeriesToModel(placeJsonShort, MODEL_FITTED_SHORTER, DATA_SHORT, wd);
 
-            List<double> forecatsList = am.makeForecast(MODEL_FITTED_SHORTER, wetherLocationForecastShort, lenght);
+            List<double> forecatsList = am.makeForecast(DATA_SHORT, wetherLocationForecastShort, lenght);
 
             return new ContentResult { Content = forecatsList.ToJSON(), ContentType = "application/json" };
         }
