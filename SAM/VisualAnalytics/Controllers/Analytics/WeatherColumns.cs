@@ -45,5 +45,16 @@ namespace VisualAnalytics.Controllers.Analytics
                     && this.pressure.Equals(other.pressure)
                     );
         }
+
+        public bool AllFalse()
+        {
+            return !(this.rain
+                    || this.windSpeed
+                    || this.temperature
+                    || this.solar
+                    || this.humitdity
+                    || this.pressure
+                );
+        }
     }
 }

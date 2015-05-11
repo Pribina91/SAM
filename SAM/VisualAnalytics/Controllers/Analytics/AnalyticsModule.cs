@@ -13,6 +13,7 @@ namespace VisualAnalytics.Controllers.Analytics
     {
         private const string WEATHERMATRIX = "weatherMatrix";
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private WeatherColumns modelWeatherColumns;
 
         private REngine rEngine;
 
@@ -52,6 +53,7 @@ namespace VisualAnalytics.Controllers.Analytics
 
             model.AsList()["x"].AsNumeric().CopyTo(dataSeries, lengthData);
             model.AsList()["residuals"].AsNumeric().CopyTo(errorSeries, lengthData);
+            modelWeatherColumns = wc;
             //residuals
         }
 
@@ -286,7 +288,7 @@ namespace VisualAnalytics.Controllers.Analytics
             return outlierList;
         }
 
-        public List<Consuption> makeForecast(string JSONdataWithWeather, string fittedDataName, WeatherColumns weatherColumns, int forecastedNumber = 5)
+        public List<double> makeForecast(string fittedDataName, string JSONWeatherForecastShort, int forecastedNumber = 5)
         {
             //var sourceAmounts = rEngine.Evaluate("sourceDates <- " + fittingDataName + "$Amount").AsList();
 
@@ -299,7 +301,39 @@ namespace VisualAnalytics.Controllers.Analytics
             //    retList.Add(c);
             //}
             //return retList;
-            throw new NotImplementedException();
+            const string fittingDataName = "dataName_short";
+            string forecasteListName = "forecastedValues";
+            string evaluate;
+
+            //evaluate = string.Format("{0} <-fromJSON(\'{1}\')", weatherModel, JSONweather);
+            //log.Debug("evaluateString:" + evaluate);
+            //rEngine.Evaluate(evaluate);
+
+            //evaluate = string.Format("{0} <-fromJSON(\'{1}\')", fittingDataName, JSONplaceDataShort);
+
+            if (modelWeatherColumns.AllFalse())
+            {
+                evaluate = string.Format("{0} <- forecast.Arima({1}, h={2})", forecasteListName, fittedDataName, forecastedNumber);
+            }
+            else
+            {
+                const string weatherDataShort = "weather_Data_short";
+                evaluate = string.Format("{0} <-fromJSON(\'{1}\')", weatherDataShort, JSONWeatherForecastShort);
+
+                //log.Debug("evaluateString:" + evaluate);
+                rEngine.Evaluate(evaluate);
+                CreateWeatherMatrix(weatherDataShort, modelWeatherColumns);
+                evaluate = string.Format("{0} <- forecast.Arima({1}, xreg={2})", forecasteListName, fittedDataName, WEATHERMATRIX);
+            }
+
+            //forecast
+            var result = rEngine.Evaluate(evaluate).AsList();
+
+            var means = result["mean"].AsNumeric().ToList();
+
+            List<double> forecastList = means;
+
+            return forecastList;
         }
 
         private static string GetRPath()

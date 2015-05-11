@@ -3,6 +3,13 @@
 }
 
 @*<div id="lineGraph" style="width: 1000px"></div>*@
+<input id="forecastButton" type="button" value="forecast" onclick="makeForecast()" />
+Weather dependency: <input id="TemperatureCheck" type="checkbox" value="True" />Temperature
+<input id="RainCheck" type="checkbox" value="False" />Rain
+<input id="WindSpeedCheck" type="checkbox" value="False" />WindSpeed
+<input id="HumidityCheck" type="checkbox" value="False" />Humidity
+<input id="SolarCheck" type="checkbox" value="False" />Solar
+<input id="PressureCheck" type="checkbox" value="False" />Pressure
 
 <hr>
 <div style="display: inline-block;">
@@ -95,16 +102,16 @@
                 dataTable.addRow([dtt, 0]);
             }
             else if (columnCount == 3) {
-                dataTable.addRow([dtt, 0, 0]);
+                dataTable.addRow([dtt, null, null]);
             }
             else if (columnCount == 4) {
-                dataTable.addRow([dtt, 0, 0, 0]);
+                dataTable.addRow([dtt, null, null, null]);
             }
             else if (columnCount == 5) {
-                dataTable.addRow([dtt, 0, 0, 0, 0]);
+                dataTable.addRow([dtt, null, null, null, null]);
             }
             else if (columnCount == 6) {//motion
-                dataTable.addRow([dtt, 0, 0, 0, 0, 0]);
+                dataTable.addRow([dtt, null, null, null, null, null]);
             }
 
         }
@@ -119,69 +126,21 @@
 
     }
 
+    var forecasting = false;
+    function makeForecast() {
+        forecasting = true;
+        drawChart();
+    }
+
+    function getforecastJson() {
+        return $.ajax({
+            url: "Home/getForecast?Type=SUM&idDistrict=62",
+            dataType: "json",
+            async: false
+        }).responseJSON;
+    }
+
     function drawChart() {
-
-        //WEATHER
-        //var weatherData = google.visualization.arrayToDataTable([
-        //    ['Month', 'Temperature', 'Humidity', 'Wind', 'Rain'],
-        //    ['2004/05', 165, 938, 50, 614.6],
-        //    ['2005/06', 135, 1120, 51, 682],
-        //    ['2006/07', 157, 1167, 589, 623],
-        //    ['2007/08', 139, 1110, 621, 609.4],
-        //    ['2008/09', 136, 691, 366, 569.6]
-        //        ]);
-
-        //var jsonWeather = $.ajax({
-        //    url: "home/getWeather",
-        //    dataType: "json",
-        //    async: false
-        //}).responseJSON;
-
-        //function drawWeatherChart() {
-        //    var weatherData = new google.visualization.DataTable();
-        //    weatherData.addColumn({ type: 'datetime', id: 'Date' });
-        //    weatherData.addColumn({ type: 'number', id: 'Temperature' });
-        //    weatherData.addColumn({ type: 'number', id: 'Humidity' });
-        //    // weatherData.addColumn({ type: 'number', id: 'Wind' });
-        //    weatherData.addColumn({ type: 'number', id: 'Rain' });
-
-        //    for (var i = 0; i < jsonWeather.length; i++) {
-        //        var obj = jsonWeather[i];
-        //        //for (var key in obj) {
-        //        //var attrName = key;
-        //        //var attrValue = obj[key];
-        //        var y = new Date(parseInt(obj["dtt"].substr(6)));
-        //        var temperature = obj["temperature"];
-        //        var humidity = obj["humidity"];
-        //        //var wind = obj["wind"];
-        //        var rain = obj["rain"];
-
-        //        weatherData.addRow([
-        //            y
-        //            , temperature
-        //            , humidity
-        //            //, wind
-        //            , rain]);
-        //        //}
-        //    }
-
-        //    var weatherOptions = {
-        //        title: 'Weather',
-        //        hAxis: { title: "Date" },
-        //        seriesType: "bars",
-        //        series: {
-        //            2: { type: "bars" }
-        //           , 0: { type: "line" }
-        //        },
-        //        legend: { position: 'bottom' }
-
-        //    };
-
-        //    var weatherChart = new google.visualization.ComboChart(document.getElementById('weatherGraph'));
-        //    weatherChart.draw(weatherData, weatherOptions);
-        //}
-
-        //drawWeatherChart();
 
         //CONSUPTION line chart
         var jsonConsuption = $.ajax({
@@ -216,12 +175,17 @@
             dataTableCombo.addColumn({ type: 'number', id: 'AvgAmount', label: 'District Model' });
             //dataTableCombo.addColumn({ type: 'number', id: 'SumAmount', label: 'Sum Model' });
             dataTableCombo.addColumn({ type: 'number', id: 'placeAmount', label: 'Place Consumtion' });
+            dataTableCombo.addColumn({ type: 'number', id: 'forecast', label: 'Forecast' });
             //TODO add outlier column
 
-            createConsumptionDataTable(jsonConsuptionModelAverage, dataTableCombo, 3);
+            createConsumptionDataTable(jsonConsuptionModelAverage, dataTableCombo, 4);
             addColumnData(jsonConsuptionModelAverage, dataTableCombo, "Amount", 1);
             // addColumnData(jsonConsuptionModelSum, dataTableCombo, "Amount", 2);
             addColumnData(jsonConsuption, dataTableCombo, "Amount", 2);
+
+            //if (forecasting) {
+            addColumnData(getforecastJson(), dataTableCombo, "Amount", 3);
+            //}
 
             function addOutlier(JsonData, outlierLimit) {
                 for (var i = 0; i < outlierLimit; i++) {
