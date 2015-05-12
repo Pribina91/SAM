@@ -17,6 +17,13 @@ namespace VisualAnalytics.Controllers.Analytics
 
         private REngine rEngine;
 
+        /// <summary>
+        /// Models the change.
+        /// </summary>
+        /// <param name="JSONmodelWithWeather">The jso nmodel with weather.</param>
+        /// <param name="modelName">Name of the model.</param>
+        /// <param name="wc">The wc.</param>
+        /// <exception cref="System.Exception">ARIMA error</exception>
         public void modelChange(string JSONmodelWithWeather, string modelName, WeatherColumns wc)
         {
             this.Init();
@@ -174,6 +181,14 @@ namespace VisualAnalytics.Controllers.Analytics
             //Console.ReadLine();
         }
 
+        /// <summary>
+        /// Fits the series to model.
+        /// </summary>
+        /// <param name="JSONdataWithWeather">The jso ndata with weather.</param>
+        /// <param name="modelName">Name of the model.</param>
+        /// <param name="fittedDataName">Name of the fitted data.</param>
+        /// <param name="weatherColumns">The weather columns.</param>
+        /// <returns></returns>
         public List<Consuption> fitSeriesToModel(string JSONdataWithWeather, string modelName, string fittedDataName, WeatherColumns weatherColumns)
         {
             string evaluate;
@@ -206,6 +221,12 @@ namespace VisualAnalytics.Controllers.Analytics
             //List<double> returnList = result.AsList();
         }
 
+        /// <summary>
+        /// Finds the outliers.
+        /// </summary>
+        /// <param name="fittedDataName">Name of the fitted data.</param>
+        /// <param name="wc">The wc.</param>
+        /// <returns></returns>
         public List<Outlier> findOutliers(string fittedDataName, WeatherColumns wc)
         {
             string evaluate;
@@ -246,6 +267,15 @@ namespace VisualAnalytics.Controllers.Analytics
             return retList;
         }
 
+        /// <summary>
+        /// Finds the local properties.
+        /// </summary>
+        /// <param name="JSONdataWithWeather">The jso ndata with weather.</param>
+        /// <param name="modelName">Name of the model.</param>
+        /// <param name="weatherColumns">The weather columns.</param>
+        /// <param name="outlierList">The outlier list.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception">outlierList not defined</exception>
         public List<Outlier> FindLocalProperties(string JSONdataWithWeather, string modelName, WeatherColumns weatherColumns, List<Outlier> outlierList)
         {
             if (outlierList == null)
@@ -295,6 +325,14 @@ namespace VisualAnalytics.Controllers.Analytics
             return outlierList;
         }
 
+        /// <summary>
+        /// Makes the forecast.
+        /// </summary>
+        /// <param name="fittedDataName">Name of the fitted data.</param>
+        /// <param name="JSONWeatherForecastShort">The json weather forecast short.</param>
+        /// <param name="forecastedNumber">The forecasted number.</param>
+        /// <param name="forecasteListName">Name of the forecaste list.</param>
+        /// <returns></returns>
         public List<double> makeForecast(string fittedDataName, string JSONWeatherForecastShort, int forecastedNumber = 5, string forecasteListName = "forecastedValues")
         {
             //var sourceAmounts = rEngine.Evaluate("sourceDates <- " + fittingDataName + "$Amount").AsList();
@@ -343,6 +381,12 @@ namespace VisualAnalytics.Controllers.Analytics
             return forecastList;
         }
 
+        /// <summary>
+        /// Compares the results.
+        /// </summary>
+        /// <param name="JSONmeasuredValues">The jso nmeasured values.</param>
+        /// <param name="forecastResultName">Name of the forecast result.</param>
+        /// <returns></returns>
         public AccuracyResult compareResults(string JSONmeasuredValues, string forecastResultName)
         {
             const string MEASURED_DATA = "measured_data";
@@ -396,6 +440,14 @@ namespace VisualAnalytics.Controllers.Analytics
             return (string)r.GetValue("InstallPath") + @"\bin\i386";
         }
 
+        /// <summary>
+        /// Explores the defined property.
+        /// </summary>
+        /// <param name="JSONdataWithWeather">The jso ndata with weather.</param>
+        /// <param name="JSONmodelWithWeather">The jso nmodel with weather.</param>
+        /// <param name="outlierList">The outlier list.</param>
+        /// <param name="wc">The wc.</param>
+        /// <returns></returns>
         private List<Outlier> ExploreDefinedProperty(string JSONdataWithWeather, string JSONmodelWithWeather, List<Outlier> outlierList, WeatherColumns wc)
         {
             string fittedDataName = "feature_data_" + wc.ToString(); ;

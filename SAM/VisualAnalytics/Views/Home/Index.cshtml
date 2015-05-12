@@ -132,13 +132,9 @@ Weather dependency: <input id="TemperatureCheck" type="checkbox" value="True" />
         drawChart();
     }
 
-    function getforecastJson() {
-        return $.ajax({
-            url: "Home/getForecast?Type=SUM&idDistrict=62",
-            dataType: "json",
-            async: false
-        }).responseJSON;
-    }
+
+        
+    
 
     function drawChart() {
 
@@ -167,6 +163,12 @@ Weather dependency: <input id="TemperatureCheck" type="checkbox" value="True" />
             async: false
         }).responseJSON;
 
+        var getforecastJson = $.ajax({
+            url: "Home/getForecast?Type=SUM&idDistrict=62",
+            dataType: "json",
+            async: false
+        }).responseJSON;
+
         function drawComboVisualization() {
             // Some raw data (not necessarily accurate)
             var dataTableCombo = new google.visualization.DataTable();
@@ -183,9 +185,9 @@ Weather dependency: <input id="TemperatureCheck" type="checkbox" value="True" />
             // addColumnData(jsonConsuptionModelSum, dataTableCombo, "Amount", 2);
             addColumnData(jsonConsuption, dataTableCombo, "Amount", 2);
 
-            //if (forecasting) {
-            addColumnData(getforecastJson(), dataTableCombo, "Amount", 3);
-            //}
+            if (forecasting) {
+            addColumnData(getforecastJson, dataTableCombo, "Amount", 3);
+            }
 
             function addOutlier(JsonData, outlierLimit) {
                 for (var i = 0; i < outlierLimit; i++) {

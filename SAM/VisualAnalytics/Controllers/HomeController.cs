@@ -43,40 +43,39 @@ namespace VisualAnalytics.Controllers
             set { ViewData[WEATHER_JSON] = value; }
         }
 
+        /// <summary>
+        /// Indexes this instance.
+        /// </summary>
+        /// <returns></returns>
         public ActionResult Index()
         {
-            //new AnalyticsModule().Test(this);
-
-            //new InputParser().parseCSVBelgium(@"D:\Workspace\SamData\20141215_RAJA_ASFEU_OOM_0.txt");
-
-            //getDailyAvgModelTable();
-
-            //WeatherColumns allTrue = new WeatherColumns(new byte[] { 1, 1, 1, 1, 1, 1 });
-            //string modelJson = getDailyAvgModelTable().Content;
-            //am.modelChange(modelJson, "fit_avg", allTrue);
-            //string placeJson = getDailyPlaceTable().Content;
-            //am.fitSeriesToModel(placeJson, "fit_avg", "dailyDataPlace", allTrue);
-            //List<Outlier> outliers = new List<Outlier>();
-            ////WeatherColumns nonerue = new WeatherColumns(new byte[] { 0, 0, 0, 0, 1, 1 });
-            //outliers = am.findOutliers("dailyDataPlace", allTrue);
-            //outliers = am.FindLocalProperties(placeJson, modelJson, allTrue, outliers);
-            //outliersList = outliers;
-            ////
-            //WeatherColumns nonerue = new WeatherColumns(new byte[] { 0, 0, 0, 0, 0, 1 });
-            //am.FindLocalProperties(place, "fit", allTrue, outliers);
-
-            //this.getForecast();
-            TestEvaluation();
             return View();
         }
 
         #region evaluationTesting
 
+        private string showGlobalWeather;
+        private int globalLocation;
+        private ConsPlace consPlace;
+        private string globalModel;
+
+        /// <summary>
+        /// Tests the evaluation.
+        /// </summary>
         private void TestEvaluation()
         {
-            var cps = db.ConsuptionPlaces.Where(x => x.DistrictName.Equals("Poprad"));
+            var cps = db.ConsuptionPlaces.Where(x => x.DistrictName.Equals("Snina"));
+            showGlobalWeather = getWeather(1, 20141210, 20141210 + 5).Content;
+
             foreach (ConsuptionPlace cp in cps)
             {
+                consPlace = db.ConsuptionPlaces
+                .Join(db.PlaceWeathers
+                    , cpx => cpx.DistrictName, pw => pw.DistrictName, (cpx, pw) => new ConsPlace() { IDLocation = pw.IDLocation, IDDistrict = pw.IDDistrict, IDConsuptionPlace = cpx.IDConsuptionPlace })
+                .Single(cpx => cpx.IDConsuptionPlace.Equals(cp.IDConsuptionPlace));
+
+                globalModel = getDailyModelTable("SUM", consPlace.IDDistrict, endIDDate: 20141210).Content;
+
                 getForecast("SUM", "000000", cp.IDConsuptionPlace);
                 getForecast("SUM", "100000", cp.IDConsuptionPlace);
                 getForecast("SUM", "010000", cp.IDConsuptionPlace);
@@ -85,6 +84,7 @@ namespace VisualAnalytics.Controllers
                 getForecast("SUM", "000010", cp.IDConsuptionPlace);
                 getForecast("SUM", "000001", cp.IDConsuptionPlace);
                 getForecast("SUM", "111111", cp.IDConsuptionPlace);
+                globalModel = getDailyModelTable("AVERAGE", consPlace.IDDistrict, endIDDate: 20141210).Content;
                 getForecast("AVERAGE", "000000", cp.IDConsuptionPlace);
                 getForecast("AVERAGE", "111111", cp.IDConsuptionPlace);
                 getForecast("AVERAGE", "100000", cp.IDConsuptionPlace);
@@ -94,9 +94,18 @@ namespace VisualAnalytics.Controllers
                 getForecast("AVERAGE", "000010", cp.IDConsuptionPlace);
                 getForecast("AVERAGE", "000001", cp.IDConsuptionPlace);
             }
-            cps = db.ConsuptionPlaces.Where(x => x.DistrictName.Equals("Nitra"));
+
+            cps = db.ConsuptionPlaces.Where(x => x.DistrictName.Equals("Bratislava"));
+            showGlobalWeather = getWeather(11, 20141210, 20141210 + 5).Content;
+
             foreach (ConsuptionPlace cp in cps)
             {
+                consPlace = db.ConsuptionPlaces
+                .Join(db.PlaceWeathers
+                    , cpx => cpx.DistrictName, pw => pw.DistrictName, (cpx, pw) => new ConsPlace() { IDLocation = pw.IDLocation, IDDistrict = pw.IDDistrict, IDConsuptionPlace = cpx.IDConsuptionPlace })
+                .Single(cpx => cpx.IDConsuptionPlace.Equals(cp.IDConsuptionPlace));
+
+                globalModel = getDailyModelTable("SUM", consPlace.IDDistrict, endIDDate: 20141210).Content;
                 getForecast("SUM", "000000", cp.IDConsuptionPlace);
                 getForecast("SUM", "100000", cp.IDConsuptionPlace);
                 getForecast("SUM", "010000", cp.IDConsuptionPlace);
@@ -105,6 +114,7 @@ namespace VisualAnalytics.Controllers
                 getForecast("SUM", "000010", cp.IDConsuptionPlace);
                 getForecast("SUM", "000001", cp.IDConsuptionPlace);
                 getForecast("SUM", "111111", cp.IDConsuptionPlace);
+                globalModel = getDailyModelTable("AVERAGE", consPlace.IDDistrict, endIDDate: 20141210).Content;
                 getForecast("AVERAGE", "000000", cp.IDConsuptionPlace);
                 getForecast("AVERAGE", "111111", cp.IDConsuptionPlace);
                 getForecast("AVERAGE", "100000", cp.IDConsuptionPlace);
@@ -138,12 +148,24 @@ namespace VisualAnalytics.Controllers
 
         #endregion evaluationTesting
 
+        /// <summary>
+        /// Marks the point.
+        /// </summary>
+        /// <param name="IDDate">The identifier date.</param>
+        /// <returns></returns>
         public ContentResult markPoint(int IDDate)
         {
             log.Debug("Point selected:" + IDDate);
             return new ContentResult { Content = MODEL_JSON.ToJSON(), ContentType = "application/json" }; ;
         }
 
+        /// <summary>
+        /// Gets the biggest outliers.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <param name="weatherDependency">The weather dependency.</param>
+        /// <param name="IDConsuptionPlace">The identifier consuption place.</param>
+        /// <returns></returns>
         public ActionResult getBiggestOutliers(string model = "SUM", string weatherDependency = "000000", int IDConsuptionPlace = 1622)
         {
             const string MODEL_FIT = "model_fit";
@@ -176,6 +198,10 @@ namespace VisualAnalytics.Controllers
             return new ContentResult { Content = outliers.ToJSON(), ContentType = "application/json" };
         }
 
+        /// <summary>
+        /// Abouts this instance.
+        /// </summary>
+        /// <returns></returns>
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
@@ -183,6 +209,10 @@ namespace VisualAnalytics.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Gets the events.
+        /// </summary>
+        /// <returns></returns>
         public ContentResult getEvents()
         {
             List<Event> events = db.Events.ToList();
@@ -199,6 +229,15 @@ namespace VisualAnalytics.Controllers
             return new ContentResult { Content = ev.ToJSON(), ContentType = "application/json" };
         }
 
+        /// <summary>
+        /// Gets the forecast.
+        /// </summary>
+        /// <param name="Type">The type.</param>
+        /// <param name="weatherDependency">The weather dependency.</param>
+        /// <param name="IDConsuptionPlace">The identifier consuption place.</param>
+        /// <param name="lenght">The lenght.</param>
+        /// <param name="startIDDate">The start identifier date.</param>
+        /// <returns></returns>
         public ContentResult getForecast(string Type = "SUM", string weatherDependency = "000000", long IDConsuptionPlace = 1622, int lenght = 5, int startIDDate = 20141210)
         {
             //const string MODEL_FIT = "model_fit";
@@ -220,8 +259,8 @@ namespace VisualAnalytics.Controllers
                 .Single(cp => cp.IDConsuptionPlace.Equals(IDConsuptionPlace));
             try
             {
-                string wetherLocationForecastShort = getWeather(consPlace.IDLocation, startIDDate, startIDDate + lenght).Content;
-                string modelJsonShort = getDailyModelTable(Type, consPlace.IDDistrict, endIDDate: startIDDate).Content;
+                string wetherLocationForecastShort = showGlobalWeather;
+                string modelJsonShort = globalModel;
                 am.modelChange(modelJsonShort, MODEL_FITTED_SHORTER, wd);
                 string placeJsonShort = getDailyPlaceTable(IDConsuptionPlace, endIDDate: startIDDate).Content;
                 am.fitSeriesToModel(placeJsonShort, MODEL_FITTED_SHORTER, DATA_SHORT, wd);
@@ -244,31 +283,13 @@ namespace VisualAnalytics.Controllers
             }
         }
 
-        //public ContentResult getConsuptions()
-        //{
-        //    var consuptions = db.Consuptions.Where(x => x.source == 2);
-
-        //    var ev = //consuptions.First();
-        //        consuptions
-        //        //.Where(x => x.source == 2 && x.MeasurementSequence == 10)
-        //        //.Where(x => x.source == 2 )
-        //            .GroupBy(ce => ce.IDDate)
-        //            .Select(a => new
-        //            {
-        //                amount = a.Sum(c => c.Amount),
-        //                dt = a.Key
-        //                //,measureOffset = a.MeasurementSequence
-        //            })
-        //            .OrderBy(x => x.dt)
-        //        //.ThenBy(x => x.measureOffset)
-        //        ;
-
-        //    //var jsonData = Json(ev, JsonRequestBehavior.AllowGet);
-        //    var json2 = ev.ToList().ToJSON();
-        //    return new ContentResult { Content = json2, ContentType = "application/json" };
-        //    ;
-        //}
-
+        /// <summary>
+        /// Gets the weather.
+        /// </summary>
+        /// <param name="idLocation">The identifier location.</param>
+        /// <param name="startIDDate">The start identifier date.</param>
+        /// <param name="endIDDate">The end identifier date.</param>
+        /// <returns></returns>
         public ContentResult getWeather(int idLocation, int startIDDate, int endIDDate = 20141231)
         {
             var weathers = db.WeathersDailies
@@ -291,44 +312,13 @@ namespace VisualAnalytics.Controllers
             return new ContentResult { Content = weathers.ToJSON(), ContentType = "application/json" };
         }
 
-        //public ContentResult getBigTable()
-        //{
-        //    var bigTable = db.Consuptions
-        //            .Where(x => x.source == 2)
-        //            .GroupBy(ce => ce.IDDate)
-        //            .Select(a => new { dt = a.Key, amount = a.Sum(c => c.Amount) })
-        //            .AsEnumerable()
-        //            .Where(temp => temp.dt < 20140401)
-        //            .Join(db.Weathers
-        //                .Where(x => x.dt < new DateTime(2014, 04, 01))
-        //                .AsEnumerable().GroupBy(gr => makeDateId(gr.dt))
-        //                .Select(grW => new
-        //                {
-        //                    iddate = grW.Key,
-        //                    Temperature = grW.Average(n => n.surfaceTemperature),
-        //                    Rain = grW.Average(n => n.rainfall),
-        //                    WindSpeed = grW.Average(n => n.windSpeed),
-        //                    Humidity = grW.Average(n => n.relativeHumidity),
-        //                    Solar = grW.Average(n => n.solarShine)
-        //                })
-        //                .OrderBy(orderW => orderW.iddate)
-        //                , c => c.dt, w => w.iddate, (c, w) => new { Consup = c, weat = w })
-
-        //            .Select(a => new
-        //                {
-        //                    Amount = a.Consup.amount,
-        //                    IDDate = a.Consup.dt,
-        //                    Temperature = a.weat.Temperature,
-        //                    Rain = a.weat.Rain,
-        //                    WindSpeed = a.weat.WindSpeed,
-        //                    Humidity = a.weat.Humidity,
-        //                    Solar = a.weat.Solar
-        //                }
-        //            )
-        //            .OrderBy(order => order.IDDate);
-        //    return new ContentResult { Content = bigTable.ToJSON(), ContentType = "application/json" };
-        //}
-
+        /// <summary>
+        /// Gets the daily place table.
+        /// </summary>
+        /// <param name="IDConsuptionPlace">The identifier consuption place.</param>
+        /// <param name="startIDDate">The start identifier date.</param>
+        /// <param name="endIDDate">The end identifier date.</param>
+        /// <returns></returns>
         public ContentResult getDailyPlaceTable(long IDConsuptionPlace = 1622, int startIDDate = 20140101, int endIDDate = 20150101)
         {
             var bigTable =
@@ -373,30 +363,17 @@ namespace VisualAnalytics.Controllers
                 log.Error(EX_NAME.Message);
             }
 
-            //    bigTable.Select(a => new
-            //{
-            //    a.Amount,
-            //    a.IDDate,
-            //    a.IDLocation,
-            //    a.IDConsuptionPlace
-            //}
-            //    ).ToJSON();
-
-            //weatherJSON = bigTable.Select(a => new
-            //{
-            //    a.Temperature,
-            //    a.Rain,
-            //    a.WindSpeed,
-            //    a.Humidity,
-            //    a.Solar,
-            //    a.Pressure,
-            //    a.IDDate,
-            //    a.IDLocation
-            //}).ToJSON();
-
             return new ContentResult { Content = bigTable.ToJSON(), ContentType = "application/json" };
         }
 
+        /// <summary>
+        /// Gets the fitted model table.
+        /// </summary>
+        /// <param name="Type">The type.</param>
+        /// <param name="idDistrict">The identifier district.</param>
+        /// <param name="weatherDependency">The weather dependency.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception">Bad type</exception>
         public ContentResult getFittedModelTable(string Type = "SUM", int idDistrict = 62, string weatherDependency = "000000")
         {
             WeatherColumns wd = WeatherColumnConversion.stringToWeatherColumn(weatherDependency);
@@ -426,13 +403,17 @@ namespace VisualAnalytics.Controllers
                 default:
                     throw new Exception("Bad type");
             }
-
-            //string place = getDailyPlaceTable().Content;
-            //am.fitSeriesToModel(place, "fit_avg", "dailyDataPlace", allTrue);
-            //List<Outlier> outliers = new List<Outlier>();
-            //outliers = am.findOutliers("dailyDataPlace", allTrue);
         }
 
+        /// <summary>
+        /// Gets the daily model table.
+        /// </summary>
+        /// <param name="Type">The type.</param>
+        /// <param name="idDistrict">The identifier district.</param>
+        /// <param name="startIDDate">The start identifier date.</param>
+        /// <param name="endIDDate">The end identifier date.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception">Bad type</exception>
         public ContentResult getDailyModelTable(string Type = "SUM", int idDistrict = 62, int startIDDate = 20140101, int endIDDate = 20150101)
         {
             ModelType modelTp = (ModelType)Enum.Parse(
@@ -452,6 +433,13 @@ namespace VisualAnalytics.Controllers
             }
         }
 
+        /// <summary>
+        /// Gets the daily average model table.
+        /// </summary>
+        /// <param name="startIDDate">The start identifier date.</param>
+        /// <param name="endIDDate">The end identifier date.</param>
+        /// <param name="idDistrict">The identifier district.</param>
+        /// <returns></returns>
         public ContentResult getDailyAvgModelTable(int startIDDate, int endIDDate, int idDistrict = 62)
         {
             var bigTable = BigDailyModelTable(idDistrict, "A", startIDDate, endIDDate);
@@ -460,6 +448,13 @@ namespace VisualAnalytics.Controllers
             return new ContentResult { Content = bigTable.ToJSON(), ContentType = "application/json" };
         }
 
+        /// <summary>
+        /// Gets the daily sum model table.
+        /// </summary>
+        /// <param name="startIDDate">The start identifier date.</param>
+        /// <param name="endIDDate">The end identifier date.</param>
+        /// <param name="idDistrict">The identifier district.</param>
+        /// <returns></returns>
         public ContentResult getDailySumModelTable(int startIDDate, int endIDDate, int idDistrict = 62)
         {
             var bigTable = BigDailyModelTable(idDistrict, "S", startIDDate, endIDDate);
@@ -468,6 +463,14 @@ namespace VisualAnalytics.Controllers
             return new ContentResult { Content = bigTable.ToJSON(), ContentType = "application/json" };
         }
 
+        /// <summary>
+        /// Bigs the daily model table.
+        /// </summary>
+        /// <param name="idDistrict">The identifier district.</param>
+        /// <param name="type">The type.</param>
+        /// <param name="startIDDate">The start identifier date.</param>
+        /// <param name="endIDDate">The end identifier date.</param>
+        /// <returns></returns>
         private IQueryable BigDailyModelTable(int idDistrict, string type, int startIDDate, int endIDDate)
         {
             var ret = from c in db.ConsuptionModelDailies
@@ -512,5 +515,12 @@ namespace VisualAnalytics.Controllers
     {
         public DateTime dt;
         public long importance;
+    }
+
+    internal class ConsPlace
+    {
+        public int IDLocation;
+        public int IDDistrict;
+        public long IDConsuptionPlace;
     }
 }
