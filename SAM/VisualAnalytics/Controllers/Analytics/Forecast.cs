@@ -8,13 +8,14 @@ namespace VisualAnalytics.Controllers.Analytics
     {
         public float OriginalAmount;
         public string Method;
-        public List<float> Means;
-        public List<float> Residuals;
+        public List<double> Means;
+        public List<double> Residuals;
+        public AccuracyResult Accuracy;
 
         public Forecast()
         {
-            Means = new List<float>();
-            Residuals = new List<float>();
+            Means = new List<double>();
+            Residuals = new List<double>();
         }
     }
 }

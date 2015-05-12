@@ -24,7 +24,7 @@ namespace VisualAnalytics.Controllers.Analytics
             string modelData = "modelData";
             string evaluate = string.Format("{0} <-fromJSON(\'{1}\')", modelData, JSONmodelWithWeather);
 
-            log.Debug("evaluateString:" + evaluate);
+            //log.Debug("evaluateString:" + evaluate);
             rEngine.Evaluate(evaluate);
 
             string weatherModel = "modelData";
@@ -37,13 +37,20 @@ namespace VisualAnalytics.Controllers.Analytics
             //log.Debug(engine.Evaluate("data"));
             //engine.Evaluate("data <- predata[,1]");
             evaluate = string.Format(modelName + "<- auto.arima({0}$Amount,xreg={1})", modelData, WEATHERMATRIX);
-
-            var model = rEngine.Evaluate(evaluate);
-
-            foreach (var item in model.AsList())
+            SymbolicExpression model;
+            try
             {
-                log.Debug(item.ToString());
+                model = rEngine.Evaluate(evaluate);
             }
+            catch (Exception ex)
+            {
+                throw new Exception("ARIMA error");
+            }
+
+            //foreach (var item in model.AsList())
+            //{
+            //    log.Debug(item.ToString());
+            //}
 
             var coef = model.AsList()["coef"].AsList();
 
@@ -288,7 +295,7 @@ namespace VisualAnalytics.Controllers.Analytics
             return outlierList;
         }
 
-        public List<double> makeForecast(string fittedDataName, string JSONWeatherForecastShort, int forecastedNumber = 5)
+        public List<double> makeForecast(string fittedDataName, string JSONWeatherForecastShort, int forecastedNumber = 5, string forecasteListName = "forecastedValues")
         {
             //var sourceAmounts = rEngine.Evaluate("sourceDates <- " + fittingDataName + "$Amount").AsList();
 
@@ -302,7 +309,6 @@ namespace VisualAnalytics.Controllers.Analytics
             //}
             //return retList;
             const string fittingDataName = "dataName_short";
-            string forecasteListName = "forecastedValues";
             string evaluate;
 
             //evaluate = string.Format("{0} <-fromJSON(\'{1}\')", weatherModel, JSONweather);
@@ -320,13 +326,14 @@ namespace VisualAnalytics.Controllers.Analytics
                 const string weatherDataShort = "weather_Data_short";
                 evaluate = string.Format("{0} <-fromJSON(\'{1}\')", weatherDataShort, JSONWeatherForecastShort);
 
-                //log.Debug("evaluateString:" + evaluate);
+                log.Debug(evaluate);
                 rEngine.Evaluate(evaluate);
                 CreateWeatherMatrix(weatherDataShort, modelWeatherColumns);
                 evaluate = string.Format("{0} <- forecast.Arima({1}, xreg={2})", forecasteListName, fittedDataName, WEATHERMATRIX);
             }
 
             //forecast
+            //log.Debug(evaluate);
             var result = rEngine.Evaluate(evaluate).AsList();
 
             var means = result["mean"].AsNumeric().ToList();
@@ -334,6 +341,42 @@ namespace VisualAnalytics.Controllers.Analytics
             List<double> forecastList = means;
 
             return forecastList;
+        }
+
+        public AccuracyResult compareResults(string JSONmeasuredValues, string forecastResultName)
+        {
+            const string MEASURED_DATA = "measured_data";
+
+            string evaluate;
+            evaluate = string.Format("{0} <-fromJSON(\'{1}\')", MEASURED_DATA, JSONmeasuredValues);
+            //log.Debug(evaluate);
+            rEngine.Evaluate(evaluate);
+
+            evaluate = string.Format("a <- accuracy(f={0}, x={1}$Amount)", forecastResultName, MEASURED_DATA);
+            //log.Debug(evaluate);
+            var accuracyResult = rEngine.Evaluate(evaluate).AsVector();
+            AccuracyResult ar = new AccuracyResult();
+
+            var train = accuracyResult;
+            int i = 0;
+            ar.ME = train.AsNumeric().ElementAt(i++);
+            ar.RMSE = train.AsNumeric().ElementAt(i++);
+            ar.MAE = train.AsNumeric().ElementAt(i++);
+            ar.MPE = train.AsNumeric().ElementAt(i++);
+            ar.MAPE = train.AsNumeric().ElementAt(i++);
+            ar.MASE = train.AsNumeric().ElementAt(i++);
+            ar.ACF1 = train.AsNumeric().ElementAt(i++);
+
+            ar.testME = train.AsNumeric().ElementAt(i++);
+            ar.testRMSE = train.AsNumeric().ElementAt(i++);
+            ar.testMAE = train.AsNumeric().ElementAt(i++);
+            ar.testMPE = train.AsNumeric().ElementAt(i++);
+            ar.testMAPE = train.AsNumeric().ElementAt(i++);
+            ar.testMASE = train.AsNumeric().ElementAt(i++);
+            double t = train.AsNumeric().ElementAt(i++);
+            //ME     RMSE      MAE       MPE     MAPE     MASE       ACF1
+
+            return ar;
         }
 
         private static string GetRPath()
