@@ -3,20 +3,27 @@
 }
 
 @*<div id="lineGraph" style="width: 1000px"></div>*@
-<input id="forecastButton" type="button" value="forecast" onclick="makeForecast()" />
-Weather dependency: <input id="TemperatureCheck" type="checkbox" value="True" />Temperature
-<input id="RainCheck" type="checkbox" value="False" />Rain
-<input id="WindSpeedCheck" type="checkbox" value="False" />WindSpeed
-<input id="HumidityCheck" type="checkbox" value="False" />Humidity
-<input id="SolarCheck" type="checkbox" value="False" />Solar
-<input id="PressureCheck" type="checkbox" value="False" />Pressure
+<input id="forecastButton" type="button" value="forecast" onclick="drawChart()" />
+Weather dependency: 
+<input id="TemperatureCheck" type="checkbox" onclick="tempClick(this,2)" value="false" />Temperature
+<input id="RainCheck" type="checkbox" onclick="tempClick(this,0)" value="False" />Rain
+<input id="WindSpeedCheck" type="checkbox" onclick="tempClick(this,1)"  value="False" />WindSpeed
+<input id="HumidityCheck" type="checkbox" onclick="tempClick(this,4)" value="False" />Humidity
+<input id="SolarCheck" type="checkbox" onclick="tempClick(this,3)"  value="False" />Solar
+<input id="PressureCheck" type="checkbox" onclick="tempClick(this,5)" value="False" />Pressure
 
 <hr>
+<input type="button" value="REFRESH" onclick="location.reload()">
+<select id="districtNamesList">Trebišov</select>
+<select id="consumptionPlacesNamesList">1622</select>
+<input type="button" value="zoom" onclick="zoom()">
+<hr />
 <div style="display: inline-block;">
     @*<div id="radioButtons" style="display: block">
             <input id="Radio1" type="radio" title="SUM" value="SUM" />
             <input id="Radio2" type="radio" title="AVERAGE" value="AVERAGE" />
         </div>*@
+    <div id="comboGraphHourly" style="width: 800px; height: 600px; display: none"></div>
     <div id="comboGraph" style="width: 800px; height: 600px; display: block"></div>
 
     <div id="WeatherLineGraph" style="width: 800px; height: 400px; display: block"></div>
@@ -56,7 +63,8 @@ Weather dependency: <input id="TemperatureCheck" type="checkbox" value="True" />
     </tr>
 </table>
 <p>Property explaination</p>
-<div id="pieChart"></div>
+<div id="pieChart2" style="display: inline-block"></div>
+<div id="pieChart" style="display: inline-block"></div>
 <div id="calendar_basic" style="width: 1300px; height: 150px; display: block;"></div>
 <hr>
 <p>Weekday analysis</p>
@@ -64,6 +72,65 @@ Weather dependency: <input id="TemperatureCheck" type="checkbox" value="True" />
 <div id="chartMotion" style="display: block"></div>
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript">
+
+    var weatherDependency = "000000";
+
+    function tempClick(cb,index) {
+        if (cb.checked) {
+            weatherDependency = weatherDependency.substr(0, index) + "1" + weatherDependency.substr(index + 1);
+        } else {
+            weatherDependency = weatherDependency.substr(0, index) + "0" + weatherDependency.substr(index + 1);
+        }
+    }
+
+
+
+    var zoomable = false;
+    function zoom() {
+        if (zoomable) {
+            var jsonConsuptionHourly = $.ajax({
+                url: "Home/getHourlyPlaceTable?startIDDate=" + selectedDate + "&endIDDate=" + selectedDate,
+                dataType: "json",
+                async: false
+            }).responseJSON;
+            var jsonConsuptionModelHourly = $.ajax({
+                url: "Home/getFittedModelHourlyTable?Type=SUM&idDistrict=62&startIDDate=" + selectedDate + "&endIDDate=" + selectedDate+"&weatherDependency="+weatherDependency,
+                dataType: "json",
+                async: false
+            }).responseJSON;
+            document.getElementById("comboGraphHourly").style.display = "block";
+
+            function drawHourly(jsonConsuptionModelAverage, jsonConsuption) {
+                // Some raw data (not necessarily accurate)
+                var dataTableCombo = new google.visualization.DataTable();
+
+                dataTableCombo.addColumn({ type: 'datetime', id: 'Date' });
+                dataTableCombo.addColumn({ type: 'number', id: 'AvgAmount', label: 'District Model' });
+                //dataTableCombo.addColumn({ type: 'number', id: 'SumAmount', label: 'Sum Model' });
+                dataTableCombo.addColumn({ type: 'number', id: 'placeAmount', label: 'Place Consumtion' });
+                //TODO add outlier column
+
+                createConsumptionDataTable(jsonConsuption, dataTableCombo, 3);
+                addColumnData(jsonConsuptionModelAverage, dataTableCombo, "Amount", 1);
+                // addColumnData(jsonConsuptionModelSum, dataTableCombo, "Amount", 2);
+                addColumnData(jsonConsuption, dataTableCombo, "Amount", 2);
+
+                var options = {
+                    title: 'Consumtion compared to district models in hours',
+                    vAxis: { title: "Amount" },
+                    hAxis: { title: "Date" },
+                    seriesType: "line",
+                    //series: { 5: { type: "line" } }
+                };
+
+                var chart = new google.visualization.ComboChart(document.getElementById('comboGraphHourly'));
+                chart.draw(dataTableCombo, options);
+            }
+
+            drawHourly(jsonConsuptionModelHourly, jsonConsuptionHourly);
+
+        }
+    }
 
     function selectHighlight(chart00) {
         var x = chart00.getSelection();
@@ -74,6 +141,7 @@ Weather dependency: <input id="TemperatureCheck" type="checkbox" value="True" />
     }
 
     google.load("visualization", "1", { packages: ["calendar", "corechart", "treemap", 'motionchart'] });
+    //google.setOnLoadCallback(drawAll);
     google.setOnLoadCallback(drawChart);
 
     var selectedData;
@@ -88,7 +156,12 @@ Weather dependency: <input id="TemperatureCheck" type="checkbox" value="True" />
             var month = stringDate.substring(4, 6);
             var day = stringDate.substring(6, 8);
 
-            return new Date(year, month - 1, day);
+            if (stringDate.length == 8) {
+                return new Date(year, month - 1, day);
+            } else {
+                var hour = stringDate.substring(8, 10);
+                return new Date(year, month - 1, day, hour, 0, 0, 0);
+            }
 
         }
         return null;
@@ -97,7 +170,19 @@ Weather dependency: <input id="TemperatureCheck" type="checkbox" value="True" />
     function createConsumptionDataTable(consData, dataTable, columnCount) {
         for (var i = 0; i < consData.length; i++) {
             var obj = consData[i];
-            var dtt = getDateFromString(obj["IDDate"]);
+            var time = obj["MeasurementTime"].toString();
+            var dtString = obj["IDDate"];
+            var dtt;
+            //if (time == 0) {
+            //    dtt = getDateFromString(dtString);
+            //} else
+            {
+                if (time < 10) {
+                    dtt = getDateFromString(dtString + "0" + time);
+                } else {
+                    dtt = getDateFromString(dtString + time);
+                }
+            }
             if (columnCount == 2) {
                 dataTable.addRow([dtt, 0]);
             }
@@ -130,11 +215,16 @@ Weather dependency: <input id="TemperatureCheck" type="checkbox" value="True" />
     function makeForecast() {
         forecasting = true;
         drawChart();
+        //drawComboVisualization();
+        spiralGraphDraw();
     }
-
-
-        
-    
+    //function drawAll() {
+    //    drawComboVisualization();
+    //    drawWeatherLineChart(jsonConsuption);
+    //    drawCalendarChart();
+    //    drawPieChart();
+    //    drawMotionGraph();
+    //}
 
     function drawChart() {
 
@@ -152,19 +242,19 @@ Weather dependency: <input id="TemperatureCheck" type="checkbox" value="True" />
         //}).responseJSON;
 
         var jsonConsuptionModelAverage = $.ajax({
-            url: "Home/getFittedModelTable?Type=SUM&idDistrict=62",
+            url: "Home/getFittedModelTable?Type=SUM&idDistrict=62" + "&weatherDependency=" + weatherDependency,
             dataType: "json",
             async: false
         }).responseJSON;
 
         var jsonOutliers = $.ajax({
-            url: "Home/getBiggestOutliers?Type=SUM&weatherDependency=001100&IDConsuptionPlace=1622",
+            url: "Home/getBiggestOutliers?Type=SUM&weatherDependency=" + weatherDependency + "&IDConsuptionPlace=1622",
             dataType: "json",
             async: false
         }).responseJSON;
 
         var getforecastJson = $.ajax({
-            url: "Home/getForecast?Type=SUM&idDistrict=62",
+            url: "Home/getForecast?Type=SUM&idDistrict=62&weatherDependency=" + weatherDependency,
             dataType: "json",
             async: false
         }).responseJSON;
@@ -185,8 +275,15 @@ Weather dependency: <input id="TemperatureCheck" type="checkbox" value="True" />
             // addColumnData(jsonConsuptionModelSum, dataTableCombo, "Amount", 2);
             addColumnData(jsonConsuption, dataTableCombo, "Amount", 2);
 
-            if (forecasting) {
-            addColumnData(getforecastJson, dataTableCombo, "Amount", 3);
+            // if (forecasting)
+            {
+                //addColumnData(getforecastJson, dataTableCombo, "Amount", 3);
+                for (var i = 0; i < getforecastJson.length; i++) {
+                    var obj = getforecastJson[i];
+                    //var amt = obj[jsonAttributeName];
+                    dataTableCombo.setCell(jsonConsuptionModelAverage.length - getforecastJson.length - 1 + i, 3, obj);
+                }
+
             }
 
             function addOutlier(JsonData, outlierLimit) {
@@ -218,14 +315,15 @@ Weather dependency: <input id="TemperatureCheck" type="checkbox" value="True" />
                 selectedData = selectedRow; // dataTableParameter.getValue(selectedRow, selectedColumn);
                 selectedDate = jsonConsuption[selectedRow]["IDDate"];
                 spiralGraphDraw();
+                zoomable = true;
                 //drawWeatherLineChart(jsonConsuption);
                 drawPieChart(selectedDate);
                 function AddToCart(selectedDate) {
                     $.ajax({
-                        url: 'Home/markPoint?IDDate=' + selectedDate,
-                        dataType: "json",
-                        async: true
-                    }
+                            url: 'Home/markPoint?IDDate=' + selectedDate,
+                            dataType: "json",
+                            async: true
+                        }
                     );
                 }
 
@@ -282,6 +380,7 @@ Weather dependency: <input id="TemperatureCheck" type="checkbox" value="True" />
                 selectedDate = jsonConsuption[selectedRow]["IDDate"];
                 spiralGraphDraw();
                 drawPieChart(selectedDate);
+                zoomable = true;
                 //drawCalendarChart();
             }
 
@@ -429,7 +528,19 @@ Weather dependency: <input id="TemperatureCheck" type="checkbox" value="True" />
             var pieDataTable = new google.visualization.DataTable();
             pieDataTable.addColumn({ type: 'string', id: 'Feature' });
             pieDataTable.addColumn({ type: 'number', id: 'outlierness' });
+            pieDataTable.addColumn({ type: 'string', role: 'style', id: 'color' });
 
+            var colGrp = new Array(8);
+            colGrp[0] = "silver";
+            colGrp[1] = "green";
+            colGrp[2] = "gold";
+            colGrp[3] = "red";
+            colGrp[4] = "blue";
+            colGrp[5] = "yellow";
+            colGrp[6] = "pink";
+            colGrp[7] = "orange";
+
+            var counter = 0;
             for (var i = 1; i < jsonOutliers.length; i++) {
                 var obj = jsonOutliers[i];
                 //for (var key in obj) {
@@ -455,11 +566,13 @@ Weather dependency: <input id="TemperatureCheck" type="checkbox" value="True" />
                         var p = obj["weatherDependency"][i]["pressure"];
                         if (p) { str += "Pressure "; }
 
-                        if (!(t && r && ws && h && s && p)) {
-                            str += "None ";
+                        if (!(t || r || ws || h || s || p)) {
+                            str = "None";
                         }
 
-                        pieDataTable.addRow([str, Math.abs(outliernessList[i])]);
+                        pieDataTable.addRow([str, Math.abs(outliernessList[i]), "color: " + colGrp[counter]]);
+                        counter++;
+                        if (counter > 7) { counter = 0; }
                     }
                     break;
 
@@ -467,49 +580,60 @@ Weather dependency: <input id="TemperatureCheck" type="checkbox" value="True" />
 
             }
             var pieChartOulier = new google.visualization.PieChart(document.getElementById('pieChart'));
-            var pieOptions = {};
-            pieChartOulier.draw(pieDataTable, pieOptions);
+            var options2 = {
+                title: "Outlierness explanations",
+                legend: { position: "none" },
+                colors: colGrp
+            };
+            pieChartOulier.draw(pieDataTable, options2);
+
+            var columnExplainChart = new google.visualization.ColumnChart(document.getElementById("pieChart2"));
+            columnExplainChart.draw(pieDataTable, options2);
         }
 
-        var dataMotion = new google.visualization.DataTable();
-        dataMotion.addColumn('string', 'WeekDay');
-        dataMotion.addColumn('date', 'Date');
-        dataMotion.addColumn('number', 'Amount');
-        dataMotion.addColumn('number', 'Temperature');
-        dataMotion.addColumn('number', 'Rainfall');
-        dataMotion.addColumn('number', 'Solar Flux');
+        function drawMotionGraph() {
+            var dataMotion = new google.visualization.DataTable();
+            dataMotion.addColumn('string', 'WeekDay');
+            dataMotion.addColumn('date', 'Date');
+            dataMotion.addColumn('number', 'Amount');
+            dataMotion.addColumn('number', 'Temperature');
+            dataMotion.addColumn('number', 'Rainfall');
+            dataMotion.addColumn('number', 'Solar Flux');
 
-        //var jsonBigTable = $.ajax({
-        //    url: "home/getBigTable",
-        //    dataType: "json",
-        //    async: false
-        //}).responseJSON;
+            //var jsonBigTable = $.ajax({
+            //    url: "home/getBigTable",
+            //    dataType: "json",
+            //    async: false
+            //}).responseJSON;
 
-        var weekday = new Array(7);
-        weekday[0] = "Sunday";
-        weekday[1] = "Monday";
-        weekday[2] = "Tuesday";
-        weekday[3] = "Wednesday";
-        weekday[4] = "Thursday";
-        weekday[5] = "Friday";
-        weekday[6] = "Saturday";
+            var weekday = new Array(7);
+            weekday[0] = "Sunday";
+            weekday[1] = "Monday";
+            weekday[2] = "Tuesday";
+            weekday[3] = "Wednesday";
+            weekday[4] = "Thursday";
+            weekday[5] = "Friday";
+            weekday[6] = "Saturday";
 
-        ;
+            ;
 
-        for (var i = 0; i < jsonConsuption.length; i++) {
-            var obj = jsonConsuption[i];
-            var dtt = getDateFromString(obj["IDDate"]);
-            dataMotion.addRow([weekday[dtt.getDay()], dtt, 0, 0, 0, 0]);
+            for (var i = 0; i < jsonConsuption.length; i++) {
+                var obj = jsonConsuption[i];
+                var dtt = getDateFromString(obj["IDDate"]);
+                dataMotion.addRow([weekday[dtt.getDay()], dtt, 0, 0, 0, 0]);
+            }
+
+            addColumnData(jsonConsuption, dataMotion, "Amount", 2);
+            addColumnData(jsonConsuption, dataMotion, "Temperature", 3);
+            addColumnData(jsonConsuption, dataMotion, "Rain", 4);
+            addColumnData(jsonConsuption, dataMotion, "Solar", 5);
+
+            var chartMotion = new google.visualization.MotionChart(document.getElementById('chartMotion'));
+
+            chartMotion.draw(dataMotion, { width: 1000, height: 500 });
         }
 
-        addColumnData(jsonConsuption, dataMotion, "Amount", 2);
-        addColumnData(jsonConsuption, dataMotion, "Temperature", 3);
-        addColumnData(jsonConsuption, dataMotion, "Rain", 4);
-        addColumnData(jsonConsuption, dataMotion, "Solar", 5);
-
-        var chartMotion = new google.visualization.MotionChart(document.getElementById('chartMotion'));
-
-        chartMotion.draw(dataMotion, { width: 1000, height: 500 });
+        drawMotionGraph();
 
     }
 </script>

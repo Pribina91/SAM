@@ -49,6 +49,8 @@ namespace VisualAnalytics.Controllers
         /// <returns></returns>
         public ActionResult Index()
         {
+            //var x = BigDailyModelTable(62, "AVERAGE", 20140101, 20150101);
+            //x.ToJSON();
             return View();
         }
 
@@ -147,6 +149,26 @@ namespace VisualAnalytics.Controllers
         }
 
         #endregion evaluationTesting
+
+        #region district and available consumption places
+
+        public ContentResult getDistricts()
+        {
+            var places = db.ConsuptionPlaces.Select(place => new { DistrictName = place.DistrictName });
+
+            return new ContentResult { Content = places.ToJSON(), ContentType = "application/json" }; ;
+        }
+
+        public ContentResult getConsumptionPlacesFromDistrict(string districtName)
+        {
+            var places = db.ConsuptionPlaces
+                .Where(p => p.DistrictName.Equals(districtName))
+                .Select(place => new { place.IDConsuptionPlace });
+
+            return new ContentResult { Content = places.ToJSON(), ContentType = "application/json" }; ;
+        }
+
+        #endregion district and available consumption places
 
         /// <summary>
         /// Marks the point.
@@ -259,22 +281,23 @@ namespace VisualAnalytics.Controllers
                 .Single(cp => cp.IDConsuptionPlace.Equals(IDConsuptionPlace));
             try
             {
-                string wetherLocationForecastShort = showGlobalWeather;
-                string modelJsonShort = globalModel;
+                string modelJsonShort = getDailyModelTable("SUM", consPlace.IDDistrict, endIDDate: 20141210).Content;
+
                 am.modelChange(modelJsonShort, MODEL_FITTED_SHORTER, wd);
                 string placeJsonShort = getDailyPlaceTable(IDConsuptionPlace, endIDDate: startIDDate).Content;
                 am.fitSeriesToModel(placeJsonShort, MODEL_FITTED_SHORTER, DATA_SHORT, wd);
 
                 string FORECAST_RESULT_VARIABLE = "forecast_result_variable";
-                List<double> forecatsList = am.makeForecast(DATA_SHORT, wetherLocationForecastShort, lenght, FORECAST_RESULT_VARIABLE);
+                List<double> forecatsList = am.makeForecast(DATA_SHORT, weatherDependency, lenght, FORECAST_RESULT_VARIABLE);
                 //measured values
                 string measuredValues = getDailyPlaceTable(consPlace.IDConsuptionPlace, startIDDate, startIDDate + lenght).Content;
 
                 Forecast f = new Forecast();
                 f.Means = forecatsList;
                 f.Accuracy = am.compareResults(measuredValues, FORECAST_RESULT_VARIABLE);
+                f.Residuals = forecatsList;
                 log.Info(string.Format("cp:{0}\tidDistrict:{1}\ttype:{3}\tweather:{4}\taccuracy:{2}", IDConsuptionPlace, consPlace.IDDistrict, f.Accuracy, Type, weatherDependency));
-                return new ContentResult { Content = f.ToJSON(), ContentType = "application/json" };
+                return new ContentResult { Content = forecatsList.ToJSON(), ContentType = "application/json" };
             }
             catch (Exception EX_NAME)
             {
@@ -295,7 +318,7 @@ namespace VisualAnalytics.Controllers
             var weathers = db.WeathersDailies
                 .Where(x => x.IDLocation.Equals(idLocation))
                 .Where(x => x.IDDate >= startIDDate && x.IDDate <= endIDDate)
-                .Select(w => new
+                .Select(w => new ConsumtionWithWeather
                 {
                     IDLocation = w.IDLocation,
                     IDDate = w.IDDate,
@@ -331,13 +354,60 @@ namespace VisualAnalytics.Controllers
                 //&& c.IDDate >= startIDDate
                 //&& c.IDDate <= endIDDate
                 //&& c.IDDate >= 20140401
-                select new
+                select new ConsumtionWithWeather
                 {
                     Amount = c.Amount,
-                    cp.IDConsuptionPlace,
+                    IDConsuptionPlace = cp.IDConsuptionPlace,
                     CityName = cp.CityName,
-                    cp.DistrictName,
-                    pw.IDLocation,
+                    DistrictName = cp.DistrictName,
+                    IDLocation = pw.IDLocation,
+                    IDDate = c.IDDate,
+                    MeasurementTime = c.MeasurementTime,
+                    Temperature = w.surfaceTemperature,
+                    Rain = w.rainfall,
+                    WindSpeed = w.windSpeed,
+                    Humidity = w.relativeHumidity,
+                    Solar = w.solarShine,
+                    Pressure = w.atmosphericPressure
+                };
+
+            bigTable = bigTable
+                //.Where(c => c.IDDate >= startIDDate && c.IDDate <= endIDDate)
+                .Where(c => c.IDConsuptionPlace.Equals(IDConsuptionPlace))
+                .OrderBy(a => a.IDConsuptionPlace).ThenBy(a => a.IDDate);
+            //int x = bigTable.Count();
+            try
+            {
+                placeJSON = bigTable.ToJSON();
+            }
+            catch (Exception EX_NAME)
+            {
+                Console.WriteLine(EX_NAME);
+                log.Error(EX_NAME.Message);
+            }
+
+            return new ContentResult { Content = bigTable.ToJSON(), ContentType = "application/json" };
+        }
+
+        public ContentResult getHourlyPlaceTable(long IDConsuptionPlace = 1622, int startIDDate = 20140101, int endIDDate = 20140102)
+        {
+            var bigTable =
+                from c in db.ConsuptionsHourlies
+                join cp in db.ConsuptionPlaces on new { c.IDConsuptionPlace } equals new { cp.IDConsuptionPlace }
+                join pw in db.PlaceWeathers on new { cp.DistrictName } equals new { pw.DistrictName }
+                join w in db.Weathers on new { n1 = c.IDDate, n3 = pw.IDLocation, n2 = c.MeasurementTime } equals
+                    new { n1 = w.IDDate, n3 = w.IDLocation, n2 = w.MeasurementTime }
+                where c.IDConsuptionPlace == IDConsuptionPlace //CP from 62 district
+                    && c.IDDate >= startIDDate
+                    && c.IDDate <= endIDDate
+
+                select new ConsumtionWithWeather
+                {
+                    Amount = c.Amount,
+                    IDConsuptionPlace = cp.IDConsuptionPlace,
+                    CityName = cp.CityName,
+                    DistrictName = cp.DistrictName,
+                    IDLocation = pw.IDLocation,
                     IDDate = c.IDDate,
                     MeasurementTime = c.MeasurementTime,
                     Temperature = w.surfaceTemperature,
@@ -405,6 +475,37 @@ namespace VisualAnalytics.Controllers
             }
         }
 
+        public ContentResult getFittedModelHourlyTable(string Type = "SUM", int idDistrict = 62, string weatherDependency = "000000", int startIDDate = 20140101, int endIDDate = 20150101)
+        {
+            WeatherColumns wd = WeatherColumnConversion.stringToWeatherColumn(weatherDependency);
+
+            ModelType modelTp = (ModelType)Enum.Parse(
+                                          typeof(ModelType), Type, true);
+            switch (modelTp)
+            {
+                case ModelType.AVERAGE:
+                    {
+                        am.modelChange(getHourlyModelTable(Type, idDistrict, startIDDate, endIDDate).Content, MODEL_FITTED, wd);
+                        var returnValue = am.fitSeriesToModel(getHourlyPlaceTable(1622, startIDDate, endIDDate).Content, MODEL_FITTED, "HourlyDataPlace", wd);
+
+                        return new ContentResult { Content = returnValue.ToJSON(), ContentType = "application/json" };
+                    }
+                    break;
+
+                case ModelType.SUM:
+                    {
+                        am.modelChange(getHourlyModelTable(Type, idDistrict, startIDDate, endIDDate).Content, MODEL_FITTED, wd);
+                        var returnValue = am.fitSeriesToModel(getHourlyPlaceTable(1622, startIDDate, endIDDate).Content, MODEL_FITTED, "HourlyDataPlace", wd);
+
+                        return new ContentResult { Content = returnValue.ToJSON(), ContentType = "application/json" };
+                    }
+                    break;
+
+                default:
+                    throw new Exception("Bad type");
+            }
+        }
+
         /// <summary>
         /// Gets the daily model table.
         /// </summary>
@@ -433,6 +534,25 @@ namespace VisualAnalytics.Controllers
             }
         }
 
+        public ContentResult getHourlyModelTable(string Type = "SUM", int idDistrict = 62, int startIDDate = 20140101, int endIDDate = 20150101)
+        {
+            ModelType modelTp = (ModelType)Enum.Parse(
+                                          typeof(ModelType), Type, true);
+            switch (modelTp)
+            {
+                case ModelType.AVERAGE:
+                    return getHourlyAvgModelTable(startIDDate, endIDDate, idDistrict);
+                    break;
+
+                case ModelType.SUM:
+                    return getHourlySumModelTable(startIDDate, endIDDate, idDistrict);
+                    break;
+
+                default:
+                    throw new Exception("Bad type");
+            }
+        }
+
         /// <summary>
         /// Gets the daily average model table.
         /// </summary>
@@ -449,6 +569,21 @@ namespace VisualAnalytics.Controllers
         }
 
         /// <summary>
+        /// Gets the houly average model table.
+        /// </summary>
+        /// <param name="startIDDate">The start identifier date.</param>
+        /// <param name="endIDDate">The end identifier date.</param>
+        /// <param name="idDistrict">The identifier district.</param>
+        /// <returns></returns>
+        public ContentResult getHourlyAvgModelTable(int startIDDate, int endIDDate, int idDistrict = 62)
+        {
+            var bigTable = BigHourlyModelTable(idDistrict, "A", startIDDate, endIDDate);
+            modelJSON = bigTable.ToJSON();
+
+            return new ContentResult { Content = bigTable.ToJSON(), ContentType = "application/json" };
+        }
+
+        /// <summary>
         /// Gets the daily sum model table.
         /// </summary>
         /// <param name="startIDDate">The start identifier date.</param>
@@ -458,6 +593,21 @@ namespace VisualAnalytics.Controllers
         public ContentResult getDailySumModelTable(int startIDDate, int endIDDate, int idDistrict = 62)
         {
             var bigTable = BigDailyModelTable(idDistrict, "S", startIDDate, endIDDate);
+            modelJSON = bigTable.ToJSON();
+
+            return new ContentResult { Content = bigTable.ToJSON(), ContentType = "application/json" };
+        }
+
+        /// <summary>
+        /// Gets the hourly sum model table.
+        /// </summary>
+        /// <param name="startIDDate">The start identifier date.</param>
+        /// <param name="endIDDate">The end identifier date.</param>
+        /// <param name="idDistrict">The identifier district.</param>
+        /// <returns></returns>
+        public ContentResult getHourlySumModelTable(int startIDDate, int endIDDate, int idDistrict = 62)
+        {
+            var bigTable = BigHourlyModelTable(idDistrict, "S", startIDDate, endIDDate);
             modelJSON = bigTable.ToJSON();
 
             return new ContentResult { Content = bigTable.ToJSON(), ContentType = "application/json" };
@@ -481,12 +631,12 @@ namespace VisualAnalytics.Controllers
                         && c.IDDistrict.Equals(idDistrict)
                       //&& c.IDDate >= startIDDate
                       //&& c.IDDate <= endIDDate
-                      select new
+                      select new ConsumtionWithWeather
                       {
                           Amount = c.Amount,
-                          pw.DistrictName,
-                          pw.IDDistrict,
-                          pw.IDLocation,
+                          DistrictName = pw.DistrictName,
+                          IDDistrict = pw.IDDistrict,
+                          IDLocation = pw.IDLocation,
                           IDDate = c.IDDate,
                           MeasurementTime = c.MeasurementTime,
                           Temperature = w.surfaceTemperature,
@@ -502,12 +652,55 @@ namespace VisualAnalytics.Controllers
             return ret;
         }
 
+        private IQueryable BigHourlyModelTable(int idDistrict, string type, int startIDDate, int endIDDate)
+        {
+            var ret = from c in db.ConsuptionModelHourlies
+                      join pw in db.PlaceWeathers on new { c.IDDistrict } equals new { pw.IDDistrict }
+                      join w in db.Weathers on new { n1 = c.IDDate, n3 = pw.IDLocation, n2 = c.MeasurementTime } equals
+                    new { n1 = w.IDDate, n3 = w.IDLocation, n2 = w.MeasurementTime }
+                      where c.Type == type
+                        && c.IDDistrict.Equals(idDistrict)
+                          && c.IDDate >= startIDDate
+                          && c.IDDate <= endIDDate
+                      select new ConsumtionWithWeather
+                      {
+                          Amount = c.Amount,
+                          DistrictName = pw.DistrictName,
+                          IDDistrict = pw.IDDistrict,
+                          IDLocation = pw.IDLocation,
+                          IDDate = c.IDDate,
+                          MeasurementTime = c.MeasurementTime,
+                          Temperature = w.surfaceTemperature,
+                          Rain = w.rainfall,
+                          WindSpeed = w.windSpeed,
+                          Humidity = w.relativeHumidity,
+                          Solar = w.solarShine,
+                          Pressure = w.atmosphericPressure
+                      };
+            ret = ret
+                //.Where(c => c.IDDate >= startIDDate && c.IDDate <= endIDDate)
+                .OrderBy(a => a.IDDistrict).ThenBy(a => a.IDDate).ThenBy(a => a.MeasurementTime);
+            return ret;
+        }
+
         private long makeDateId(DateTime? dt)
         {
             if (dt != null)
                 return ((DateTime)(dt)).Day + ((DateTime)(dt)).Month * 100 + ((DateTime)(dt)).Year * 10000;
             else
                 return 0;
+        }
+
+        private string makeHourString(int hour)
+        {
+            if (hour < 10)
+            {
+                return "0" + hour;
+            }
+            else
+            {
+                return hour.ToString();
+            }
         }
     }
 
@@ -522,5 +715,23 @@ namespace VisualAnalytics.Controllers
         public int IDLocation;
         public int IDDistrict;
         public long IDConsuptionPlace;
+    }
+
+    internal class ConsumtionWithWeather
+    {
+        public double? Amount;
+        public long IDConsuptionPlace;
+        public string CityName;
+        public string DistrictName;
+        public int IDDistrict;
+        public int IDLocation;
+        public long IDDate;
+        public int MeasurementTime;
+        public int? Temperature;
+        public int? Rain;
+        public int? WindSpeed;
+        public int? Humidity;
+        public int? Solar;
+        public int? Pressure;
     }
 }
