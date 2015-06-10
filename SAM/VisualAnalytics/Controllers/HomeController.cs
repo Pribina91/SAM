@@ -265,6 +265,7 @@ namespace VisualAnalytics.Controllers
             //const string MODEL_FIT = "model_fit";
             const string MODEL_FITTED_SHORTER = "model_fit_short";
             const string DATA_SHORT = "data_short";
+            weatherDependency = "000000";
             WeatherColumns wd = WeatherColumnConversion.stringToWeatherColumn(weatherDependency);
             //WeatherColumns wd = WeatherColumnConversion.stringToWeatherColumn(weatherDependency);
 
@@ -288,7 +289,7 @@ namespace VisualAnalytics.Controllers
                 am.fitSeriesToModel(placeJsonShort, MODEL_FITTED_SHORTER, DATA_SHORT, wd);
 
                 string FORECAST_RESULT_VARIABLE = "forecast_result_variable";
-                List<double> forecatsList = am.makeForecast(DATA_SHORT, weatherDependency, lenght, FORECAST_RESULT_VARIABLE);
+                List<double> forecatsList = am.makeForecast(DATA_SHORT, getWeather(consPlace.IDLocation, startIDDate, startIDDate + 4).Content, lenght, FORECAST_RESULT_VARIABLE);
                 //measured values
                 string measuredValues = getDailyPlaceTable(consPlace.IDConsuptionPlace, startIDDate, startIDDate + lenght).Content;
 
@@ -446,6 +447,7 @@ namespace VisualAnalytics.Controllers
         /// <exception cref="System.Exception">Bad type</exception>
         public ContentResult getFittedModelTable(string Type = "SUM", int idDistrict = 62, string weatherDependency = "000000")
         {
+           // weatherDependency = "000000";
             WeatherColumns wd = WeatherColumnConversion.stringToWeatherColumn(weatherDependency);
 
             ModelType modelTp = (ModelType)Enum.Parse(

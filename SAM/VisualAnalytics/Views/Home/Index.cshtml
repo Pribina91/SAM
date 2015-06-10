@@ -4,12 +4,12 @@
 
 @*<div id="lineGraph" style="width: 1000px"></div>*@
 <input id="forecastButton" type="button" value="forecast" onclick="drawChart()" />
-Weather dependency: 
-<input id="TemperatureCheck" type="checkbox" onclick="tempClick(this,2)" value="false" />Temperature
+Weather dependency:
+<input id="TemperatureCheck" type="checkbox" onclick="tempClick(this,2)" value="True" />Temperature
 <input id="RainCheck" type="checkbox" onclick="tempClick(this,0)" value="False" />Rain
-<input id="WindSpeedCheck" type="checkbox" onclick="tempClick(this,1)"  value="False" />WindSpeed
+<input id="WindSpeedCheck" type="checkbox" onclick="tempClick(this,1)" value="False" />WindSpeed
 <input id="HumidityCheck" type="checkbox" onclick="tempClick(this,4)" value="False" />Humidity
-<input id="SolarCheck" type="checkbox" onclick="tempClick(this,3)"  value="False" />Solar
+<input id="SolarCheck" type="checkbox" onclick="tempClick(this,3)" value="True" />Solar
 <input id="PressureCheck" type="checkbox" onclick="tempClick(this,5)" value="False" />Pressure
 
 <hr>
@@ -75,15 +75,19 @@ Weather dependency:
 
     var weatherDependency = "000000";
 
-    function tempClick(cb,index) {
+    function tempClick(cb, index) {
         if (cb.checked) {
             weatherDependency = weatherDependency.substr(0, index) + "1" + weatherDependency.substr(index + 1);
         } else {
             weatherDependency = weatherDependency.substr(0, index) + "0" + weatherDependency.substr(index + 1);
         }
+        //var temp = $.ajax({
+        //    url: "Home/setWeatherDependency?weatherDependency=" + weatherDependency,
+        //    dataType: "json",
+        //    async: false
+        //}).responseJSON;
+
     }
-
-
 
     var zoomable = false;
     function zoom() {
@@ -94,7 +98,7 @@ Weather dependency:
                 async: false
             }).responseJSON;
             var jsonConsuptionModelHourly = $.ajax({
-                url: "Home/getFittedModelHourlyTable?Type=SUM&idDistrict=62&startIDDate=" + selectedDate + "&endIDDate=" + selectedDate+"&weatherDependency="+weatherDependency,
+                url: "Home/getFittedModelHourlyTable?Type=SUM&idDistrict=62&startIDDate=" + selectedDate + "&endIDDate=" + selectedDate + "&weatherDependency=" + weatherDependency,
                 dataType: "json",
                 async: false
             }).responseJSON;
@@ -242,7 +246,7 @@ Weather dependency:
         //}).responseJSON;
 
         var jsonConsuptionModelAverage = $.ajax({
-            url: "Home/getFittedModelTable?Type=SUM&idDistrict=62" + "&weatherDependency=" + weatherDependency,
+            url: "Home/getFittedModelTable?Type=SUM&idDistrict=62", //+ "&weatherDependency=" + weatherDependency,
             dataType: "json",
             async: false
         }).responseJSON;
@@ -272,12 +276,13 @@ Weather dependency:
 
             createConsumptionDataTable(jsonConsuptionModelAverage, dataTableCombo, 4);
             addColumnData(jsonConsuptionModelAverage, dataTableCombo, "Amount", 1);
-            // addColumnData(jsonConsuptionModelSum, dataTableCombo, "Amount", 2);
+            //addColumnData(jsonConsuptionModelSum, dataTableCombo, "Amount", 2);
+
             addColumnData(jsonConsuption, dataTableCombo, "Amount", 2);
 
-            // if (forecasting)
+            //// if (forecasting)
             {
-                //addColumnData(getforecastJson, dataTableCombo, "Amount", 3);
+                addColumnData(getforecastJson, dataTableCombo, "Amount", 3);
                 for (var i = 0; i < getforecastJson.length; i++) {
                     var obj = getforecastJson[i];
                     //var amt = obj[jsonAttributeName];
@@ -320,10 +325,10 @@ Weather dependency:
                 drawPieChart(selectedDate);
                 function AddToCart(selectedDate) {
                     $.ajax({
-                            url: 'Home/markPoint?IDDate=' + selectedDate,
-                            dataType: "json",
-                            async: true
-                        }
+                        url: 'Home/markPoint?IDDate=' + selectedDate,
+                        dataType: "json",
+                        async: true
+                    }
                     );
                 }
 
